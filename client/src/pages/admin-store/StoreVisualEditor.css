@@ -1,0 +1,425 @@
+/* ========================================
+   STORE VISUAL EDITOR STYLES
+   ======================================== */
+
+.visual-editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--surface-100);
+    overflow: hidden;
+}
+
+/* --- Top Bar --- */
+.editor-top-bar {
+    height: 60px;
+    background: var(--surface-0);
+    border-bottom: 1px solid var(--surface-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-6);
+    z-index: 50;
+    box-shadow: var(--shadow-sm);
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.back-button:hover {
+    color: var(--text-main);
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: var(--surface-200);
+}
+
+.editor-title {
+    font-weight: 700;
+    font-size: var(--font-size-base);
+    color: var(--text-main);
+}
+
+.view-toggles {
+    display: flex;
+    background: var(--surface-50);
+    padding: 4px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--surface-200);
+}
+
+.view-toggle {
+    width: 40px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.view-toggle.active {
+    background: var(--surface-0);
+    color: var(--primary-600);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Top Bar Actions (Save Button) */
+.top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.top-bar-actions button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+/* --- Editor Main Layout --- */
+.editor-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* --- Sidebar --- */
+.editor-sidebar {
+    width: 80px;
+    background: var(--surface-0);
+    border-right: 1px solid var(--surface-200);
+    display: flex;
+    z-index: 40;
+}
+
+.sidebar-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: var(--spacing-4);
+    gap: var(--spacing-2);
+}
+
+.tool-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.tool-btn span {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.tool-btn:hover {
+    background: var(--surface-50);
+    color: var(--primary-600);
+}
+
+.tool-btn.active {
+    background: var(--primary-50);
+    color: var(--primary-600);
+}
+
+/* --- Active Tool Panel --- */
+.tool-panel {
+    position: absolute;
+    left: 80px;
+    top: 60px;
+    bottom: 0;
+    width: 320px;
+    background: var(--surface-0);
+    border-right: 1px solid var(--surface-200);
+    display: flex;
+    flex-direction: column;
+    animation: slideInLeft 0.2s ease-out;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.panel-header {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid var(--surface-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+}
+
+.close-panel {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+}
+
+.close-panel:hover {
+    background: var(--surface-100);
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-6);
+}
+
+/* --- Configuration Groups --- */
+.config-group {
+    margin-bottom: var(--spacing-6);
+}
+
+.config-group label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-3);
+}
+
+/* Option Cards (Layout, etc) */
+.grid-options {
+    display: grid;
+    gap: var(--spacing-2);
+}
+
+.card-option {
+    padding: var(--spacing-3);
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface-50);
+}
+
+.card-option:hover {
+    border-color: var(--surface-300);
+}
+
+.card-option.selected {
+    background: var(--primary-50);
+    border-color: var(--primary-500);
+    color: var(--primary-700);
+    font-weight: 500;
+}
+
+/* Color Presets */
+.color-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.preset-btn {
+    height: 40px;
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-md);
+    display: flex;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.preset-btn:hover {
+    transform: scale(1.05);
+}
+
+.color-dot {
+    flex: 1;
+    height: 100%;
+}
+
+.color-input {
+    margin-bottom: 12px;
+}
+
+.hex-input {
+    padding: 6px;
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    width: 80px;
+}
+
+/* Font Options */
+.font-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.font-option {
+    padding: 12px;
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.font-option:hover {
+    background: var(--surface-50);
+}
+
+.font-option.selected {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+}
+
+.font-preview {
+    display: block;
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+/* Image Upload */
+.upload-area {
+    border: 2px dashed var(--surface-200);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    text-align: center;
+    background: var(--surface-50);
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    object-fit: cover;
+}
+
+.preview-img.logo {
+    height: 60px;
+    width: auto;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--surface-0);
+    border: 1px solid var(--surface-300);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-btn:hover {
+    background: var(--surface-100);
+}
+
+/* Toggles */
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+/* --- Preview Area --- */
+.editor-preview {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    background: var(--surface-100);
+    padding: var(--spacing-8);
+    overflow-y: auto;
+    transition: all 0.3s;
+}
+
+/* Device Frames */
+.preview-device-frame {
+    background: white;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Desktop View */
+.editor-preview.desktop .preview-device-frame {
+    width: 100%;
+    max-width: 1024px;
+    height: fit-content;
+    min-height: 100%;
+    border-radius: var(--radius-lg);
+    margin-left: 80px;
+    /* Space for sidebar when panel is closed */
+}
+
+/* Mobile View */
+.editor-preview.mobile .preview-device-frame {
+    width: 375px;
+    height: 812px;
+    border-radius: 40px;
+    border: 12px solid #333;
+    overflow: hidden;
+    margin: auto;
+    position: relative;
+    box-shadow: 0 0 0 2px #555, 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.editor-preview.mobile .visual-editor-preview-container {
+    height: 100%;
+    overflow-y: auto;
+    /* Hide scrollbar */
+    scrollbar-width: none;
+}
+
+.editor-preview.mobile .visual-editor-preview-container::-webkit-scrollbar {
+    display: none;
+}

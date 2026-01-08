@@ -1,0 +1,251 @@
+/* Barber Landing Page - Industrial & Vintage Design */
+
+:root {
+    --barb-bg: #0a0a0a;
+    /* Almost Black */
+    --barb-surface: #171717;
+    /* Dark Grey */
+    --barb-accent: #d4af37;
+    /* Metallic Gold */
+    --barb-text-main: #ffffff;
+    --barb-text-muted: #a3a3a3;
+    --barb-red: #ef4444;
+    /* Barber Pole Red */
+    --barb-blue: #3b82f6;
+    /* Barber Pole Blue */
+
+    --barb-font-head: 'Oswald', 'Impact', sans-serif;
+    --barb-font-body: 'Roboto', sans-serif;
+}
+
+.barb-wrapper {
+    background-color: var(--barb-bg);
+    color: var(--barb-text-main);
+    font-family: var(--barb-font-body);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Typography */
+.barb-title {
+    font-family: var(--barb-font-head);
+    text-transform: uppercase;
+    font-size: 5rem;
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.barb-title span {
+    color: var(--barb-accent);
+    display: block;
+}
+
+.barb-section-title {
+    font-family: var(--barb-font-head);
+    text-transform: uppercase;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    letter-spacing: 2px;
+    position: relative;
+}
+
+.barb-section-title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 4px;
+    background: var(--barb-accent);
+    margin: 1rem auto;
+}
+
+/* Texture Overlay */
+.barb-texture {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.4;
+}
+
+/* Navbar */
+.barb-nav {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(5px);
+    position: fixed;
+    width: 100%;
+    z-index: 40;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.barb-logo {
+    font-family: var(--barb-font-head);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    border: 2px solid var(--barb-text-main);
+    padding: 0.25rem 0.75rem;
+}
+
+/* Hero */
+.barb-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: radial-gradient(circle at center, #1f1f1f 0%, #0a0a0a 100%);
+    padding-top: 80px;
+}
+
+.barb-hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 4rem;
+}
+
+.barb-pole-stripe {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 10px;
+    background: repeating-linear-gradient(45deg,
+            var(--barb-red),
+            var(--barb-red) 10px,
+            var(--barb-text-main) 10px,
+            var(--barb-text-main) 20px,
+            var(--barb-blue) 20px,
+            var(--barb-blue) 30px,
+            var(--barb-text-main) 30px,
+            var(--barb-text-main) 40px);
+    opacity: 0.5;
+}
+
+/* Buttons */
+.barb-btn {
+    padding: 1rem 3rem;
+    font-family: var(--barb-font-head);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+    background: var(--barb-button-bg, var(--barb-accent));
+    color: var(--barb-button-text, black);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barb-btn:hover {
+    background: white;
+    transform: skewX(-10deg);
+}
+
+/* Services Menu */
+.barb-menu-bg {
+    background: var(--barb-surface);
+    padding: 5rem 2rem;
+}
+
+.barb-menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.barb-menu-name {
+    font-family: var(--barb-font-head);
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.barb-menu-price {
+    font-family: var(--barb-font-head);
+    font-size: 1.5rem;
+    color: var(--barb-accent);
+}
+
+.barb-menu-desc {
+    color: var(--barb-text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Booking Card */
+.barb-booking-card {
+    background: var(--barb-accent);
+    color: black;
+    padding: 4rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    transform: translateY(-50%);
+}
+
+/* Gallery Grid */
+.barb-gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+}
+
+.barb-photo {
+    aspect-ratio: 1;
+    background: #333;
+    overflow: hidden;
+    position: relative;
+}
+
+.barb-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+    filter: grayscale(100%);
+}
+
+.barb-photo:hover img {
+    transform: scale(1.1);
+    filter: grayscale(0%);
+}
+
+@media (max-width: 768px) {
+    .barb-title {
+        font-size: 3rem;
+    }
+
+    .barb-hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .barb-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .barb-booking-card {
+        margin: 1rem;
+        width: auto;
+        transform: none;
+        margin-top: -2rem;
+    }
+}

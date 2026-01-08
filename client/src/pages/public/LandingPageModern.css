@@ -1,0 +1,277 @@
+/* LandingPageModern.css */
+:root {
+    --modern-glass-bg: rgba(255, 255, 255, 0.7);
+    --modern-glass-border: rgba(255, 255, 255, 0.5);
+    --modern-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --modern-blur: blur(12px);
+    --modern-primary: #5c7c8a;
+    /* A sophisticated muted blue/green */
+    --modern-accent: #e0b0a0;
+    /* A soft terra cotta */
+    --modern-text: #2d3436;
+    --modern-text-light: #636e72;
+}
+
+.modern-wrapper {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: var(--modern-text);
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Abstract Organic Shapes Background */
+.modern-bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.modern-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* Header / Nav */
+.modern-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: var(--modern-blur);
+    -webkit-backdrop-filter: var(--modern-blur);
+    border-bottom: 1px solid var(--modern-glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.modern-nav-links a {
+    margin-left: 2rem;
+    color: var(--modern-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.modern-nav-links a:hover {
+    color: var(--modern-primary);
+}
+
+.modern-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.modern-btn-primary {
+    background: var(--modern-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(92, 124, 138, 0.3);
+    margin-left: 2rem;
+}
+
+.modern-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(92, 124, 138, 0.4);
+}
+
+.modern-btn-outline {
+    background: transparent;
+    border: 1px solid var(--modern-primary);
+    color: var(--modern-primary);
+}
+
+.modern-btn-outline:hover {
+    background: var(--modern-primary);
+    color: white;
+}
+
+/* Hero Section */
+.modern-hero {
+    padding: 6rem 0;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.modern-hero-content {
+    flex: 1;
+}
+
+.modern-hero h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(45deg, var(--modern-text), var(--modern-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.modern-hero p {
+    font-size: 1.125rem;
+    color: var(--modern-text-light);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.modern-hero-image {
+    flex: 1;
+    position: relative;
+}
+
+.glass-card {
+    background: var(--modern-glass-bg);
+    box-shadow: var(--modern-glass-shadow);
+    backdrop-filter: var(--modern-blur);
+    -webkit-backdrop-filter: var(--modern-blur);
+    border: 1px solid var(--modern-glass-border);
+    border-radius: 24px;
+}
+
+/* About - Mosaic */
+.modern-about {
+    padding: 6rem 0;
+}
+
+.modern-mosaic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 200px);
+    gap: 1rem;
+}
+
+.mosaic-item {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mosaic-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.mosaic-item:hover img {
+    transform: scale(1.05);
+}
+
+.mosaic-item:first-child {
+    grid-row: span 2;
+}
+
+/* Services / Help */
+.modern-services {
+    padding: 6rem 0;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.service-card {
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Gallery */
+.modern-gallery {
+    padding: 6rem 0;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.gallery-item {
+    aspect-ratio: 1;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+/* FAQ */
+.modern-faq {
+    padding: 6rem 0;
+}
+
+.faq-item {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s;
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--modern-text-light);
+    line-height: 1.6;
+}
+
+/* Footer */
+.modern-footer {
+    background: white;
+    padding: 4rem 0 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .modern-hero {
+        flex-direction: column;
+        padding: 3rem 0;
+        text-align: center;
+    }
+
+    .modern-nav-links {
+        display: none;
+    }
+
+    .modern-mosaic-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .mosaic-item:first-child {
+        grid-row: auto;
+        aspect-ratio: 16/9;
+    }
+}

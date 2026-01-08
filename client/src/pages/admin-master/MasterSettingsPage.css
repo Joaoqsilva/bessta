@@ -1,0 +1,319 @@
+/* ========================================
+   MASTER SETTINGS PAGE STYLES
+   ======================================== */
+
+.master-settings-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+    .page-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.page-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.page-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-1);
+}
+
+/* Save Notification */
+.save-notification {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    background: var(--success-50);
+    border: 1px solid var(--success-200);
+    border-radius: var(--radius-lg);
+    color: var(--success-700);
+    font-weight: 500;
+    margin-bottom: var(--spacing-6);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Settings Container */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    background: var(--surface-0);
+    border: 1px solid var(--surface-100);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .settings-container {
+        flex-direction: row;
+    }
+}
+
+/* Settings Tabs */
+.settings-tabs {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    background: var(--surface-50);
+    border-bottom: 1px solid var(--surface-100);
+    padding: var(--spacing-2);
+    gap: var(--spacing-1);
+}
+
+@media (min-width: 768px) {
+    .settings-tabs {
+        flex-direction: column;
+        width: 220px;
+        border-bottom: none;
+        border-right: 1px solid var(--surface-100);
+        padding: var(--spacing-4);
+        gap: var(--spacing-2);
+    }
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: var(--surface-100);
+    color: var(--text-main);
+}
+
+.tab-btn.active {
+    background: var(--primary-50);
+    color: var(--primary-700);
+}
+
+.tab-btn.active svg {
+    color: var(--primary-500);
+}
+
+/* Settings Content */
+.settings-content {
+    flex: 1;
+    padding: var(--spacing-6);
+}
+
+/* Settings Section */
+.settings-section {
+    max-width: 600px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: var(--spacing-2);
+}
+
+.section-title svg {
+    color: var(--primary-500);
+}
+
+.section-description {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-6);
+}
+
+/* Settings Form */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.form-group label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.form-group textarea {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--surface-50);
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.form-hint {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Toggle Group */
+.toggle-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4);
+    background: var(--surface-50);
+    border-radius: var(--radius-lg);
+}
+
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.toggle-label {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.toggle-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+/* Toggle Switch */
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--surface-300);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle input:checked+.toggle-slider {
+    background: var(--primary-500);
+}
+
+.toggle input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* Plan Cards */
+.plan-card {
+    padding: var(--spacing-5);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--surface-100);
+}
+
+.plan-card h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    margin-bottom: var(--spacing-4);
+}
+
+.plan-card.free {
+    background: var(--surface-50);
+}
+
+.plan-card.free h3 {
+    color: var(--text-muted);
+}
+
+.plan-card.basic {
+    background: var(--primary-50);
+    border-color: var(--primary-100);
+}
+
+.plan-card.basic h3 {
+    color: var(--primary-700);
+}
+
+.plan-card.pro {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--accent-50) 100%);
+    border-color: var(--primary-100);
+}
+
+.plan-card.pro h3 {
+    color: var(--primary-700);
+}

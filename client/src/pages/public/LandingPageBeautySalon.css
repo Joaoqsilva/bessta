@@ -1,0 +1,545 @@
+/* LandingPageBeautySalon - Elegant & Modern Glass Implementation */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+    --beauty-bg: #f8f5f2;
+    --beauty-surface: #ffffff;
+    --beauty-primary: #c9a87c;
+    --beauty-primary-dark: #a88b5e;
+    --beauty-accent: #e8b4b8;
+    --beauty-dark: #2c2c2c;
+    --beauty-text: #3d3d3d;
+    --beauty-text-muted: #7a7a7a;
+
+    --beauty-font-serif: 'Cormorant Garamond', Georgia, serif;
+    --beauty-font-sans: 'Montserrat', sans-serif;
+
+    /* Modern UI Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-blur: blur(16px);
+    --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-full: 9999px;
+}
+
+.beauty-wrapper {
+    font-family: var(--beauty-font-sans);
+    background: radial-gradient(circle at top right, #fff5f5 0%, #fdf8f5 100%);
+    color: var(--beauty-text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.beauty-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Glass Utilities */
+.beauty-glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+}
+
+/* Navbar */
+.beauty-nav {
+    padding: 1.5rem 0;
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+}
+
+.beauty-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.beauty-logo {
+    font-family: var(--beauty-font-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--beauty-dark);
+}
+
+.beauty-nav-links {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.beauty-nav-link {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--beauty-text);
+    position: relative;
+}
+
+.beauty-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--beauty-primary);
+    transition: width 0.3s;
+}
+
+.beauty-nav-link:hover::after {
+    width: 100%;
+}
+
+.beauty-nav-cta {
+    background: var(--beauty-primary);
+    color: white;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(201, 168, 124, 0.4);
+}
+
+.beauty-nav-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(201, 168, 124, 0.6);
+}
+
+/* Hero */
+.beauty-hero {
+    padding: 180px 0 8rem;
+    position: relative;
+}
+
+/* Soft Blobs */
+.beauty-hero::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -10%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(232, 180, 184, 0.2) 0%, transparent 60%);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(60px);
+}
+
+.beauty-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+}
+
+.beauty-hero-subtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--beauty-primary);
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(201, 168, 124, 0.1);
+    border-radius: var(--radius-full);
+}
+
+.beauty-hero-title {
+    font-family: var(--beauty-font-serif);
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--beauty-dark);
+    margin-bottom: 2rem;
+}
+
+.beauty-hero-desc {
+    font-size: 1.1rem;
+    color: var(--beauty-text-muted);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    max-width: 500px;
+}
+
+.beauty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 2.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+}
+
+.beauty-btn-primary {
+    background: var(--beauty-dark);
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.beauty-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    background: black;
+}
+
+.beauty-btn-outline {
+    background: white;
+    color: var(--beauty-dark);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.beauty-btn-outline:hover {
+    border-color: var(--beauty-primary);
+    color: var(--beauty-primary);
+}
+
+.beauty-hero-image {
+    position: relative;
+    height: 700px;
+    border-radius: 200px 200px 20px 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.beauty-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s ease;
+}
+
+.beauty-hero-image:hover .beauty-hero-img {
+    transform: scale(1.05);
+}
+
+/* Services */
+.beauty-services {
+    padding: 8rem 0;
+    position: relative;
+}
+
+.beauty-section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.beauty-section-subtitle {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--beauty-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.beauty-section-title {
+    font-family: var(--beauty-font-serif);
+    font-size: 3rem;
+    color: var(--beauty-dark);
+}
+
+.beauty-services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.beauty-service-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    /* Standard syntax property */
+    -webkit-backdrop-filter: var(--glass-blur);
+    /* Safari specific property */
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+    box-shadow: var(--shadow-soft);
+}
+
+.beauty-service-card:hover {
+    transform: translateY(-10px);
+    background: white;
+    border-color: var(--beauty-primary);
+}
+
+.beauty-service-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 168, 124, 0.1);
+    border-radius: 50%;
+    color: var(--beauty-primary);
+    transition: all 0.3s;
+}
+
+.beauty-service-card:hover .beauty-service-icon {
+    background: var(--beauty-primary);
+    color: white;
+}
+
+.beauty-service-title {
+    font-family: var(--beauty-font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--beauty-dark);
+    margin-bottom: 1rem;
+}
+
+.beauty-service-price {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: var(--beauty-bg);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--beauty-dark);
+}
+
+/* Gallery - Mosaic Style */
+.beauty-gallery {
+    padding: 4rem 2rem;
+}
+
+.beauty-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.beauty-gallery-item {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+    aspect-ratio: 1;
+}
+
+.beauty-gallery-item:nth-child(2) {
+    margin-top: 3rem;
+}
+
+.beauty-gallery-item:nth-child(3) {
+    margin-top: -3rem;
+}
+
+.beauty-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.beauty-gallery-item:hover .beauty-gallery-img {
+    transform: scale(1.1);
+}
+
+/* About */
+.beauty-about {
+    padding: 10rem 0;
+}
+
+.beauty-about-image {
+    height: 600px;
+    border-radius: 20px 200px 20px 200px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+/* CTA */
+.beauty-cta {
+    padding: 8rem 0;
+    position: relative;
+    background: transparent;
+    text-align: center;
+    overflow: hidden;
+}
+
+.beauty-cta-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--beauty-dark);
+    border-radius: 40px;
+    margin: 0 2rem;
+    z-index: -1;
+}
+
+.beauty-cta-content {
+    color: white;
+    z-index: 1;
+}
+
+.beauty-cta-title {
+    font-size: 3.5rem;
+    font-family: var(--beauty-font-serif);
+    margin-bottom: 1.5rem;
+}
+
+.beauty-cta .beauty-btn-primary {
+    background: white;
+    color: var(--beauty-dark);
+}
+
+.beauty-cta .beauty-btn-primary:hover {
+    background: var(--beauty-primary);
+    color: white;
+}
+
+/* Footer Modern */
+.beauty-footer {
+    padding: 6rem 0 3rem;
+    background: #fcfcfc;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.beauty-footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+}
+
+.beauty-footer-brand {
+    font-size: 2rem;
+    font-family: var(--beauty-font-serif);
+    font-weight: 700;
+    color: var(--beauty-dark);
+    margin-bottom: 1.5rem;
+}
+
+.beauty-footer-desc {
+    color: var(--beauty-text-muted);
+    line-height: 1.8;
+}
+
+.beauty-footer-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--beauty-dark);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.beauty-footer-link {
+    display: block;
+    color: var(--beauty-text-muted);
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.beauty-footer-link:hover {
+    color: var(--beauty-primary);
+    padding-left: 5px;
+}
+
+/* Testimonials Section (New) */
+.beauty-testimonials {
+    padding: 8rem 0;
+    background: white;
+}
+
+.testimonial-card {
+    padding: 2.5rem;
+    background: #fafafa;
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    transition: all 0.3s;
+}
+
+.testimonial-card:hover {
+    background: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .beauty-hero-title {
+        font-size: 3.5rem;
+    }
+
+    .beauty-services-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .beauty-footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .beauty-hero-grid,
+    .beauty-about-grid {
+        grid-template-columns: 1fr;
+        gap: 4rem;
+    }
+
+    .beauty-hero-image {
+        height: 500px;
+        border-radius: 100px 100px 20px 20px;
+    }
+
+    .beauty-gallery-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .beauty-cta-title {
+        font-size: 2.5rem;
+    }
+}
+
+/* New Grid Utilities */
+.beauty-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+.beauty-testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .beauty-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .beauty-testimonials-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
