@@ -39,14 +39,29 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
+// Flag to track database status
+let isDbReady = false;
+
 // Health check (public)
 app.get('/health', (req, res) => {
     res.json({
         status: 'ok',
+        dbStatus: isDbReady ? 'connected' : 'disconnected',
         timestamp: new Date().toISOString(),
         version: '1.0.0',
         environment: process.env.NODE_ENV || 'development'
     });
+});
+
+// Middleware to check DB connection for API routes
+app.use('/api', (req, res, next) => {
+    if (!isDbReady) {
+        return res.status(503).json({
+            success: false,
+            error: 'Serviço em inicialização ou banco de dados indisponível'
+        });
+    }
+    next();
 });
 
 // API Routes
@@ -90,26 +105,29 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     });
 });
 
-// Start server
+// Start server function
 async function startServer() {
-    try {
-        // Connect to MongoDB
-        await connectDB();
-
-        app.listen(PORT, () => {
-            console.log(`
+    // 1. Start HTTP Server immediately
+    app.listen(PORT, () => {
+        console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                    🚀 BESSTA API SERVER                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Server:      http://localhost:${PORT}                          ║
 ║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(45)}║
-║  MongoDB:     ${process.env.MONGODB_URI ? 'Connected ✅' : 'Local 📦'.padEnd(45)}║
+║  Status:      Waiting for DB...                              ║
 ╚══════════════════════════════════════════════════════════════╝
-            `);
-        });
+        `);
+    });
+
+    // 2. Connect to MongoDB in background
+    try {
+        await connectDB();
+        isDbReady = true;
+        console.log('✅ Database is ready and accepting requests');
     } catch (error) {
-        console.error('❌ Failed to start server:', error);
-        process.exit(1);
+        console.error('❌ Failed to connect to MongoDB:', error);
+        // We don't exit process so logs can be read in Railway
     }
 }
 
