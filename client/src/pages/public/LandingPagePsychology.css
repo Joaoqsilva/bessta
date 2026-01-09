@@ -1,0 +1,262 @@
+/* Psychology Landing Page - Calming & Organic Design */
+
+:root {
+    --psy-bg: #fdfcf8;
+    /* Creamy White */
+    --psy-surface: #ffffff;
+    --psy-primary: #78866b;
+    /* Sage Green */
+    --psy-primary-light: #e5e9e2;
+    --psy-secondary: #d6cfc7;
+    /* Warm Grey */
+    --psy-accent: #b08968;
+    /* Earthy Brown */
+    --psy-text-main: #4a4a4a;
+    /* Soft Black */
+    --psy-text-muted: #8c8c8c;
+
+    --psy-font-serif: 'Playfair Display', serif;
+    --psy-font-sans: 'Outfit', sans-serif;
+
+    --psy-radius: 2rem;
+}
+
+.psy-wrapper {
+    background-color: var(--psy-bg);
+    color: var(--psy-text-main);
+    font-family: var(--psy-font-sans);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Organic Shapes */
+.psy-blob-bg {
+    position: absolute;
+    z-index: 0;
+    filter: blur(60px);
+    opacity: 0.5;
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    animation: float 10s infinite ease-in-out;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(20px, 20px) rotate(5deg);
+    }
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+    font-family: var(--psy-font-serif);
+    font-weight: 500;
+}
+
+.psy-title {
+    font-size: 3.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--psy-primary);
+}
+
+.psy-section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #575f50;
+}
+
+/* Navbar */
+.psy-nav {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.psy-logo {
+    font-family: var(--psy-font-serif);
+    font-size: 1.5rem;
+    color: var(--psy-primary);
+    font-weight: 600;
+}
+
+/* Hero */
+.psy-hero {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.psy-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 13px 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.psy-hero-content {
+    max-width: 600px;
+}
+
+.psy-lead {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: var(--psy-text-muted);
+    margin-bottom: 2.5rem;
+}
+
+/* Buttons */
+.psy-btn {
+    padding: 1rem 2rem;
+    border-radius: 99px;
+    font-family: var(--psy-font-sans);
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+}
+
+.psy-btn-primary {
+    background-color: var(--psy-button-bg, var(--psy-primary));
+    color: var(--psy-button-text, white);
+}
+
+.psy-btn-primary:hover {
+    background-color: #65725a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(120, 134, 107, 0.2);
+}
+
+.psy-btn-outline {
+    border-color: var(--psy-secondary);
+    color: var(--psy-text-main);
+}
+
+.psy-btn-outline:hover {
+    border-color: var(--psy-primary);
+    color: var(--psy-primary);
+}
+
+/* Cards */
+.psy-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 4rem 0;
+}
+
+.psy-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--psy-radius);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.psy-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--psy-primary-light);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.03);
+}
+
+.psy-icon {
+    color: var(--psy-icon, var(--psy-primary));
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+/* Quote Section */
+.psy-quote-section {
+    background-color: var(--psy-primary-light);
+    padding: 6rem 2rem;
+    text-align: center;
+    border-radius: 3rem;
+    margin: 4rem 2rem;
+}
+
+.psy-quote-text {
+    font-family: var(--psy-font-serif);
+    font-size: 2rem;
+    color: var(--psy-primary);
+    font-style: italic;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Image styling */
+.psy-photo-frame {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 400px;
+    height: 500px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    overflow: hidden;
+    background-color: #eee;
+    z-index: -1;
+}
+
+/* FAQ / Accordion simplified */
+.psy-faq-item {
+    border-bottom: 1px solid var(--psy-secondary);
+    padding: 1.5rem 0;
+}
+
+.psy-faq-q {
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.psy-faq-a {
+    margin-top: 1rem;
+    color: var(--psy-text-muted);
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .psy-hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 4rem;
+    }
+
+    .psy-photo-frame {
+        position: relative;
+        width: 300px;
+        height: 350px;
+        margin: 2rem auto;
+        transform: none;
+        right: auto;
+        top: auto;
+    }
+
+    .psy-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .psy-title {
+        font-size: 2.5rem;
+    }
+}

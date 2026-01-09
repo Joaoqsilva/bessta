@@ -1,0 +1,173 @@
+/* Modern Theme Variables */
+:root {
+    --modern-primary: #0284C7;
+    /* Sky 600 */
+    --modern-primary-dark: #0369A1;
+    /* Sky 700 */
+    --modern-secondary: #E0F2FE;
+    /* Sky 100 */
+    --modern-surface: #FFFFFF;
+    --modern-bg: #F8FAFC;
+    /* Slate 50 */
+    --modern-text: #334155;
+    /* Slate 700 */
+    --modern-text-light: #64748B;
+    /* Slate 500 */
+    --modern-heading: #0F172A;
+    /* Slate 900 */
+    --modern-accent: #F43F5E;
+    /* Rose 500 */
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+}
+
+.modern-theme {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--modern-text);
+    background-color: var(--modern-surface);
+    line-height: 1.6;
+}
+
+/* Typography */
+.modern-title {
+    color: var(--modern-heading);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+}
+
+.modern-subtitle {
+    color: var(--modern-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Buttons */
+.modern-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.modern-btn-primary {
+    background-color: var(--modern-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+    border: 1px solid transparent;
+}
+
+.modern-btn-primary:hover {
+    background-color: var(--modern-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.modern-btn-outline {
+    background-color: transparent;
+    color: var(--modern-primary);
+    border: 2px solid var(--modern-primary);
+}
+
+.modern-btn-outline:hover {
+    background-color: var(--modern-secondary);
+}
+
+/* Cards */
+.modern-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid #E2E8F0;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--modern-secondary);
+}
+
+/* Layout Utilities */
+.modern-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.modern-section {
+    padding: 6rem 0;
+}
+
+.bg-slate {
+    background-color: var(--modern-bg);
+}
+
+.bg-white {
+    background-color: white;
+}
+
+/* Grid Utilities (Reusing concepts but cleaner names) */
+.modern-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+.modern-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.modern-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .modern-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .modern-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .modern-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .modern-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Shapes */
+.shape-circle {
+    border-radius: 50%;
+}
+
+.shape-organic {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
