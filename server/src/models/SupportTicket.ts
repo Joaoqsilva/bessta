@@ -19,7 +19,7 @@ export interface ISupportTicket extends Document {
     category: 'billing' | 'technical' | 'account' | 'feature' | 'other';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     status: 'open' | 'in_progress' | 'waiting_response' | 'resolved' | 'closed';
-    // User info
+    // User info (optional for guests)
     userId?: Types.ObjectId;
     userName: string;
     userEmail: string;
@@ -35,7 +35,7 @@ export interface ISupportTicket extends Document {
 
 const TicketResponseSchema = new Schema<ITicketResponse>({
     message: { type: String, required: true },
-    responderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    responderId: { type: Schema.Types.ObjectId, ref: 'User' }, // Optional for system/guest (if ever needed)
     responderName: { type: String, required: true },
     isStaff: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },

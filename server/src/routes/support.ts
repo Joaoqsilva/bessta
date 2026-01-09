@@ -51,36 +51,6 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 /**
- * POST /api/support/public
- * Create a new public support ticket (no auth required)
- */
-router.post('/public', async (req, res) => {
-    try {
-        const { subject, message, name, email, category } = req.body;
-
-        if (!subject || !message || !name || !email) {
-            return res.status(400).json({ error: 'Nome, email, assunto e mensagem são obrigatórios' });
-        }
-
-        const ticket = await SupportTicket.create({
-            subject,
-            message,
-            category: category || 'other',
-            priority: 'medium', // Default priority for public tickets
-            status: 'open',
-            userName: name,
-            userEmail: email,
-            responses: []
-        });
-
-        res.status(201).json(ticket);
-    } catch (error: any) {
-        console.error('Error creating public support ticket:', error);
-        res.status(500).json({ error: 'Erro ao criar ticket de suporte' });
-    }
-});
-
-/**
  * POST /api/support
  * Create a new support ticket
  */
@@ -115,6 +85,36 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 /**
+ * POST /api/support/public
+ * Create a new support ticket (Guest)
+ */
+router.post('/public', async (req, res) => {
+    try {
+        const { subject, message, name, email, category } = req.body;
+
+        if (!subject || !message || !name || !email) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+        }
+
+        const ticket = await SupportTicket.create({
+            subject,
+            message,
+            category: category || 'other',
+            priority: 'medium',
+            status: 'open',
+            userName: name,
+            userEmail: email,
+            responses: []
+        });
+
+        res.status(201).json(ticket);
+    } catch (error: any) {
+        console.error('Error creating public ticket:', error);
+        res.status(500).json({ error: 'Erro ao criar ticket de suporte' });
+    }
+});
+
+/**
  * GET /api/support/:id
  * Get single ticket
  */
@@ -129,7 +129,12 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
         }
 
         // Check access
-        if (user.role !== 'admin_master' && !ticket.userId.equals(user._id)) {
+        // If ticket has no user (guest), only admin can see/edit
+        if (!ticket.userId) {
+            if (user.role !== 'admin_master') {
+                return res.status(403).json({ error: 'Acesso negado' });
+            }
+        } else if (user.role !== 'admin_master' && !ticket.userId.equals(user._id)) {
             return res.status(403).json({ error: 'Acesso negado' });
         }
 
@@ -156,7 +161,11 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
         }
 
         // Check access
-        if (user.role !== 'admin_master' && !ticket.userId.equals(user._id)) {
+        if (!ticket.userId) {
+            if (user.role !== 'admin_master') {
+                return res.status(403).json({ error: 'Acesso negado' });
+            }
+        } else if (user.role !== 'admin_master' && !ticket.userId.equals(user._id)) {
             return res.status(403).json({ error: 'Acesso negado' });
         }
 
