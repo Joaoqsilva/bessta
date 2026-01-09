@@ -37,9 +37,9 @@ export const MasterUsersPage = () => {
         filterUsers();
     }, [users, searchQuery, typeFilter]);
 
-    const loadUsers = () => {
+    const loadUsers = async () => {
         const allUsers: PlatformUser[] = [];
-        const stores = getAllRegisteredStores();
+        const stores = await getAllRegisteredStores();
 
         // Get store owners from registered stores
         stores.forEach(store => {

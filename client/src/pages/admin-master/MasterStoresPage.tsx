@@ -27,8 +27,8 @@ export const MasterStoresPage = () => {
         filterStores();
     }, [stores, searchQuery, statusFilter]);
 
-    const loadStores = () => {
-        const allStores = getAllRegisteredStores();
+    const loadStores = async () => {
+        const allStores = await getAllRegisteredStores();
         setStores(allStores);
     };
 

@@ -32,10 +32,10 @@ export const MasterDashboard = () => {
         loadData();
     }, []);
 
-    const loadData = () => {
+    const loadData = async () => {
         setIsLoading(true);
-        const platformStats = getPlatformStats();
-        const allStores = getAllRegisteredStores();
+        const platformStats = await getPlatformStats();
+        const allStores = await getAllRegisteredStores();
         setStats(platformStats);
         setStores(allStores);
         setIsLoading(false);
