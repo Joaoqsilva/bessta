@@ -14,6 +14,7 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { Button } from '../../components/Button';
+import { ChatWidget } from '../../components/ChatWidget';
 import './LandingPage.css';
 
 const features = [
@@ -389,6 +390,8 @@ export const LandingPage = () => {
                     </div>
                 </div>
             </section>
+
+            <ChatWidget />
         </div>
     );
 };

@@ -142,6 +142,11 @@ export const supportApi = {
         return response.data;
     },
 
+    createPublic: async (ticket: { subject: string; message: string; name: string; email: string; category?: string }): Promise<SupportTicket> => {
+        const response = await api.post('/support/public', ticket);
+        return response.data;
+    },
+
     update: async (id: string, updates: Partial<SupportTicket> & { response?: string }): Promise<SupportTicket> => {
         const response = await api.put(`/support/${id}`, updates);
         return response.data;

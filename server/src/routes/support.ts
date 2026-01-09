@@ -51,6 +51,36 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 /**
+ * POST /api/support/public
+ * Create a new public support ticket (no auth required)
+ */
+router.post('/public', async (req, res) => {
+    try {
+        const { subject, message, name, email, category } = req.body;
+
+        if (!subject || !message || !name || !email) {
+            return res.status(400).json({ error: 'Nome, email, assunto e mensagem são obrigatórios' });
+        }
+
+        const ticket = await SupportTicket.create({
+            subject,
+            message,
+            category: category || 'other',
+            priority: 'medium', // Default priority for public tickets
+            status: 'open',
+            userName: name,
+            userEmail: email,
+            responses: []
+        });
+
+        res.status(201).json(ticket);
+    } catch (error: any) {
+        console.error('Error creating public support ticket:', error);
+        res.status(500).json({ error: 'Erro ao criar ticket de suporte' });
+    }
+});
+
+/**
  * POST /api/support
  * Create a new support ticket
  */

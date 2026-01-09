@@ -20,7 +20,7 @@ export interface ISupportTicket extends Document {
     priority: 'low' | 'medium' | 'high' | 'urgent';
     status: 'open' | 'in_progress' | 'waiting_response' | 'resolved' | 'closed';
     // User info
-    userId: Types.ObjectId;
+    userId?: Types.ObjectId;
     userName: string;
     userEmail: string;
     // Store info (optional)
@@ -59,7 +59,7 @@ const SupportTicketSchema = new Schema<ISupportTicket>({
         enum: ['open', 'in_progress', 'waiting_response', 'resolved', 'closed'],
         default: 'open'
     },
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
     storeId: { type: Schema.Types.ObjectId, ref: 'Store' },
