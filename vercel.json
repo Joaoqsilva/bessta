@@ -19,8 +19,20 @@
             "destination": "/server/api/index.ts"
         },
         {
+            "source": "/assets/(.*)",
+            "destination": "/assets/$1"
+        },
+        {
+            "source": "/vite.svg",
+            "destination": "/vite.svg"
+        },
+        {
+            "source": "/og-image.png",
+            "destination": "/og-image.png"
+        },
+        {
             "source": "/(.*)",
-            "destination": "/client/$1"
+            "destination": "/index.html"
         }
     ]
 }
