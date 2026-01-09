@@ -27,15 +27,32 @@ const FAQ_ITEMS = [
     }
 ];
 
-export const ChatWidget = () => {
+interface ChatWidgetProps {
+    mode?: 'saas' | 'store';
+    storeId?: string;
+    storeName?: string;
+    storePhone?: string;
+}
+
+export const ChatWidget = ({
+    mode = 'saas',
+    storeId,
+    storeName,
+    storePhone
+}: ChatWidgetProps) => {
     const { user, isAuthenticated } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, setMode] = useState<ChatMode>('home');
+    const [currentMode, setCurrentMode] = useState<ChatMode>('home'); // Rename state variable to avoid conflict with prop
+    // ... existing state ...
     const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([
-        { text: 'Olá! Como posso ajudar você hoje?', isUser: false }
+        {
+            text: mode === 'store'
+                ? `Olá! Bem-vindo(a) à ${storeName || 'loja'}. Como podemos ajudar?`
+                : 'Olá! Como posso ajudar você hoje?', isUser: false
+        }
     ]);
 
-    // Ticket Form State
+    // ... existing Ticket Form State ...
     const [ticketData, setTicketData] = useState({
         name: '',
         email: '',
@@ -48,7 +65,7 @@ export const ChatWidget = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (isOpen && mode === 'home') {
+        if (isOpen && currentMode === 'home') {
             // Reset state when opening
         }
     }, [isOpen]);
@@ -65,11 +82,11 @@ export const ChatWidget = () => {
     const handleClose = () => setIsOpen(false);
 
     const handleBack = () => {
-        if (mode === 'ticket' && ticketSuccess) {
+        if (currentMode === 'ticket' && ticketSuccess) {
             setTicketSuccess(false);
             setTicketData({ name: '', email: '', subject: '', message: '' });
         }
-        setMode('home');
+        setCurrentMode('home');
     };
 
     const handleTicketSubmit = async (e: React.FormEvent) => {
@@ -78,12 +95,18 @@ export const ChatWidget = () => {
 
         try {
             if (isAuthenticated && user) {
-                // Authenticated Ticket
+                // Authenticated Ticket (Usually for SaaS support, but if store owner is logged in they might use this?
+                // Logic: If on store page, user might be a customer.
+                // If mode is store, we likely want to use createPublic WITH storeId even if logged in? 
+                // No, logged in users are usually System Users.
+                // Let's assume on store page, we always want to link to store.
+
                 await supportApi.create({
                     subject: ticketData.subject,
                     message: ticketData.message,
                     category: 'other',
-                    priority: 'medium'
+                    priority: 'medium',
+                    storeId
                 });
             } else {
                 // Guest Ticket
@@ -91,22 +114,27 @@ export const ChatWidget = () => {
                     name: ticketData.name,
                     email: ticketData.email,
                     subject: ticketData.subject,
-                    message: ticketData.message
+                    message: ticketData.message,
+                    storeId
                 });
             }
             setTicketSuccess(true);
         } catch (error) {
             console.error('Error creating ticket:', error);
-            // Show error message logic could go here
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const startWhatsAppChat = () => {
-        // Replace with actual number
-        const phoneNumber = '5511999999999';
-        const message = 'Olá, gostaria de saber mais sobre o BookMe.';
+        const phoneNumber = mode === 'store' && storePhone
+            ? storePhone.replace(/\D/g, '')
+            : '5511999999999'; // SaaS default
+
+        const message = mode === 'store'
+            ? `Olá ${storeName}, gostaria de tirar uma dúvida.`
+            : 'Olá, gostaria de saber mais sobre o BookMe.';
+
         window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
@@ -126,20 +154,20 @@ export const ChatWidget = () => {
                     {/* Header */}
                     <div className="chat-header">
                         <div className="chat-header-info">
-                            {mode !== 'home' && (
+                            {currentMode !== 'home' && (
                                 <button className="chat-back-btn" onClick={handleBack}>
                                     <ChevronLeft size={20} />
                                 </button>
                             )}
                             <div className="chat-title-group">
                                 <h3 className="chat-title">
-                                    {mode === 'home' && 'Atendimento Online'}
-                                    {mode === 'faq' && 'Dúvidas Frequentes'}
-                                    {mode === 'ticket' && 'Enviar Mensagem'}
+                                    {currentMode === 'home' && (mode === 'store' ? storeName : 'Atendimento Online')}
+                                    {currentMode === 'faq' && 'Dúvidas Frequentes'}
+                                    {currentMode === 'ticket' && 'Enviar Mensagem'}
                                 </h3>
                                 <p className="chat-subtitle">
-                                    {mode === 'home' && 'Selecione uma opção abaixo'}
-                                    {mode === 'ticket' && 'Responderemos por email'}
+                                    {currentMode === 'home' && 'Selecione uma opção abaixo'}
+                                    {currentMode === 'ticket' && 'Responderemos por email'}
                                 </p>
                             </div>
                         </div>
@@ -152,34 +180,39 @@ export const ChatWidget = () => {
                     <div className="chat-content">
 
                         {/* HOME MODE */}
-                        {mode === 'home' && (
+                        {currentMode === 'home' && (
                             <div className="chat-home">
                                 <div className="chat-bot-message">
                                     <div className="bot-avatar">
                                         <MessageSquare size={16} />
                                     </div>
                                     <div className="message-bubble">
-                                        Olá! 👋 <br />
-                                        Sou o assistente virtual do BookMe. Como posso te ajudar hoje?
+                                        {messages[0].text}
                                     </div>
                                 </div>
 
                                 <div className="chat-options">
-                                    <button className="chat-option-btn" onClick={() => setMode('faq')}>
-                                        <HelpCircle size={18} className="text-primary" />
-                                        <span>Dúvidas Frequentes</span>
-                                        <ChevronRight size={16} className="ml-auto opacity-50" />
-                                    </button>
+                                    {mode === 'saas' && (
+                                        <button className="chat-option-btn" onClick={() => setCurrentMode('faq')}>
+                                            <HelpCircle size={18} className="text-primary" />
+                                            <span>Dúvidas Frequentes</span>
+                                            <ChevronRight size={16} className="ml-auto opacity-50" />
+                                        </button>
+                                    )}
 
                                     <button className="chat-option-btn" onClick={startWhatsAppChat}>
                                         <MessageMessageIcon size={18} className="text-success" />
-                                        <span>Falar com Atendente</span>
+                                        <span>
+                                            {mode === 'store' ? 'Falar pelo WhatsApp' : 'Falar com Atendente'}
+                                        </span>
                                         <span className="badge-new">WhatsApp</span>
                                     </button>
 
-                                    <button className="chat-option-btn" onClick={() => setMode('ticket')}>
+                                    <button className="chat-option-btn" onClick={() => setCurrentMode('ticket')}>
                                         <Mail size={18} className="text-warning" />
-                                        <span>Enviar Email / Ticket</span>
+                                        <span>
+                                            {mode === 'store' ? 'Enviar Mensagem / Email' : 'Enviar Email / Ticket'}
+                                        </span>
                                         <ChevronRight size={16} className="ml-auto opacity-50" />
                                     </button>
                                 </div>
@@ -187,7 +220,7 @@ export const ChatWidget = () => {
                         )}
 
                         {/* FAQ MODE */}
-                        {mode === 'faq' && (
+                        {currentMode === 'faq' && (
                             <div className="chat-faq">
                                 {FAQ_ITEMS.map((item, index) => (
                                     <details key={index} className="faq-item">
@@ -200,7 +233,7 @@ export const ChatWidget = () => {
                                 ))}
                                 <div className="faq-footer">
                                     <p>Não achou o que procurava?</p>
-                                    <Button size="sm" variant="outline" onClick={() => setMode('ticket')} fullWidth>
+                                    <Button size="sm" variant="outline" onClick={() => setCurrentMode('ticket')} fullWidth>
                                         Enviar uma mensagem
                                     </Button>
                                 </div>
@@ -208,7 +241,7 @@ export const ChatWidget = () => {
                         )}
 
                         {/* TICKET MODE */}
-                        {mode === 'ticket' && (
+                        {currentMode === 'ticket' && (
                             <div className="chat-ticket">
                                 {ticketSuccess ? (
                                     <div className="ticket-success">

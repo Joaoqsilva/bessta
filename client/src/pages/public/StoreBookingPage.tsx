@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loader } from 'lucide-react';
+import { ChatWidget } from '../../components/ChatWidget';
 import { useStoreBySlug, type UserStore } from '../../context/AuthContext';
 import {
     getCustomizationBySlug,
@@ -235,6 +236,13 @@ export const StoreBookingPage = ({
                 customization={customization}
                 isOpen={isBookingWizardOpen}
                 onClose={() => setIsBookingWizardOpen(false)}
+            />
+
+            <ChatWidget
+                mode="store"
+                storeId={store.id}
+                storeName={store.name}
+                storePhone={store.phone}
             />
         </div>
     );

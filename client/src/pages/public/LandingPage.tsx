@@ -393,7 +393,7 @@ export const LandingPage = () => {
                     </div>
                 </div>
             </section>
-            <ChatWidget />
+            <ChatWidget mode="saas" />
         </div>
     );
 };

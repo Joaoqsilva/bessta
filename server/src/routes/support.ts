@@ -90,7 +90,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
  */
 router.post('/public', async (req, res) => {
     try {
-        const { subject, message, name, email, category } = req.body;
+        const { subject, message, name, email, category, storeId } = req.body;
 
         if (!subject || !message || !name || !email) {
             return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
@@ -104,6 +104,7 @@ router.post('/public', async (req, res) => {
             status: 'open',
             userName: name,
             userEmail: email,
+            storeId, // Optional link to specific store
             responses: []
         });
 
