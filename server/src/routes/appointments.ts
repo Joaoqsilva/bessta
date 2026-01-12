@@ -1,11 +1,54 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { Appointment } from '../models/Appointment';
 import { Service } from '../models/Service';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { Store } from '../models/Store';
 import { User } from '../models/User';
+import NotificationService from '../services/NotificationService';
 
 const router = express.Router();
+
+// Rate limiter for public appointment creation (prevent spam/abuse)
+const appointmentLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // Max 10 appointments per hour per IP
+    message: 'Muitos agendamentos criados. Tente novamente mais tarde.'
+});
+
+// Get my appointments (Client - by email)
+router.get('/my', authMiddleware, async (req: AuthRequest, res) => {
+    try {
+        const { storeId } = req.query;
+        const userEmail = req.user?.email;
+
+        console.log('[MY_APPOINTMENTS] Fetching for email:', userEmail, 'storeId:', storeId);
+
+        if (!userEmail) {
+            return res.status(401).json({ success: false, error: 'Usuário não autenticado' });
+        }
+
+        const query: any = { customerEmail: userEmail };
+
+        // Filter by store if provided
+        if (storeId) {
+            query.storeId = storeId;
+        }
+
+        console.log('[MY_APPOINTMENTS] Query:', JSON.stringify(query));
+
+        const appointments = await Appointment.find(query)
+            .sort({ date: -1 })
+            .limit(50);
+
+        console.log('[MY_APPOINTMENTS] Found:', appointments.length, 'appointments');
+
+        res.json({ success: true, appointments });
+    } catch (error: any) {
+        console.error('Error fetching client appointments:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // List appointments for a store (Store Owner only)
 router.get('/store/:storeId', authMiddleware, async (req: AuthRequest, res) => {
@@ -41,7 +84,7 @@ router.get('/store/:storeId', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // Create Appointment (Public)
-router.post('/', async (req, res) => {
+router.post('/', appointmentLimiter, async (req, res) => {
     try {
         const {
             storeId,
@@ -90,10 +133,21 @@ router.post('/', async (req, res) => {
             customerPhone,
             customerEmail,
             notes,
-            status: 'confirmed' // Auto-confirm for now
+            status: 'pending' // All new appointments start as pending
         });
 
         res.status(201).json({ success: true, appointment });
+
+        // Trigger notification for store owner
+        if (store.ownerId) {
+            NotificationService.create(
+                store.ownerId,
+                'appointment',
+                'Novo Agendamento',
+                `${customerName} agendou ${service.name} para ${startDate.toLocaleString('pt-BR')}`,
+                `/app/appointments`
+            );
+        }
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -110,12 +164,37 @@ router.put('/:id/status', authMiddleware, async (req: AuthRequest, res) => {
         }
 
         // Verify ownership
-        if (req.user?.role !== 'admin_master' && req.user?.storeId?.toString() !== appointment.storeId.toString()) {
-            return res.status(403).json({ success: false, error: 'Sem permissão' });
+        const userStoreId = req.user?.storeId?.toString();
+        const aptStoreId = appointment.storeId?.toString();
+
+        if (req.user?.role !== 'admin_master') {
+            if (!userStoreId || userStoreId !== aptStoreId) {
+                console.warn(`[UPDATE_STATUS_DENIED] User: ${req.user?._id} (${req.user?.email}) Store: ${userStoreId}, AptStore: ${aptStoreId}`);
+                return res.status(403).json({ success: false, error: 'Sem permissão para alterar este agendamento' });
+            }
         }
 
         appointment.status = status;
         await appointment.save();
+
+        // Trigger notification for store owner (confirmation of their own action or system update)
+        // Also could notify customer if we had a customer notification system
+        const store = await Store.findById(appointment.storeId);
+        if (store && store.ownerId) {
+            const statusMap: any = {
+                'confirmed': 'Confirmado',
+                'cancelled': 'Cancelado',
+                'completed': 'Concluído'
+            };
+
+            NotificationService.create(
+                store.ownerId,
+                'appointment',
+                'Status de Agendamento Atualizado',
+                `O agendamento de ${appointment.customerName} foi alterado para: ${statusMap[status] || status}`,
+                `/app/appointments`
+            );
+        }
 
         res.json({ success: true, appointment });
     } catch (error: any) {

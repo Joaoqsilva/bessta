@@ -132,11 +132,12 @@
 }
 
 /* Users Container */
-.users-container {
-    background: var(--surface-0);
-    border: 1px solid var(--surface-100);
-    border-radius: var(--radius-2xl);
-    overflow: hidden;
+.users-container,
+.users-container table,
+.users-container tbody,
+.users-container tr,
+.users-container td {
+    overflow: visible !important;
 }
 
 /* Users Table */

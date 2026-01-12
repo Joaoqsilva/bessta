@@ -4,9 +4,9 @@
     --doc-bg: #fafaf9;
     /* Stone 50 */
     --doc-surface: #ffffff;
-    --doc-primary: #57534e;
+    --doc-primary: var(--store-primary, #57534e);
     /* Stone 600 */
-    --doc-accent: #d4a373;
+    --doc-accent: var(--store-accent, #d4a373);
     /* Bronze/Gold muted */
     --doc-text-main: #292524;
     /* Stone 800 */

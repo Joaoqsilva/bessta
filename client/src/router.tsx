@@ -2,10 +2,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
+// import { LandingPageBeautySalon } from './pages/public/LandingPageBeautySalon';
+// import { LandingPagePsychology } from './pages/public/LandingPagePsychology';
 import { LandingPage } from './pages/public/LandingPage';
-import { LandingPageNew } from './pages/public/LandingPageNew';
+import { LandingPageSophisticated } from './pages/public/LandingPageSophisticated';
 import { LandingPageModern } from './pages/public/LandingPageModern';
-import { LandingPagePsychology } from './pages/public/LandingPagePsychology';
+import { LandingPageTherapy } from './pages/public/LandingPageTherapy';
+import { LandingPageClinic } from './pages/public/LandingPageClinic';
+import { LandingPageHarmony } from './pages/public/LandingPageHarmony';
+import { LandingPageVibrant } from './pages/public/LandingPageVibrant';
+import { LandingPageSunny } from './pages/public/LandingPageSunny';
+import { LandingPageVitality } from './pages/public/LandingPageVitality';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { StoreBookingPage } from './pages/public/StoreBookingPage';
@@ -32,20 +39,25 @@ const router = createBrowserRouter([
         path: '/',
         element: <MainLayout />,
         children: [
-            { index: true, element: <LandingPage /> },
+            { index: true, element: <LandingPage /> }, // Main conversion landing page
             { path: 'login', element: <LoginPage /> },
             { path: 'register', element: <RegisterPage /> },
         ],
     },
-    { path: 'store/:slug', element: <StoreBookingPage /> },
     { path: ':slug', element: <StoreBookingPage /> },
-    { path: 'new-landing', element: <LandingPageNew /> },
+    // Removed legacy individual routes if not needed, keeping others for now
+    { path: 'sophisticated', element: <LandingPageSophisticated /> },
     { path: 'modern-landing', element: <LandingPageModern /> },
-    { path: 'landing-psychology', element: <LandingPagePsychology /> },
+    { path: 'therapy-new', element: <LandingPageTherapy /> },
+    { path: 'clinic-new', element: <LandingPageClinic /> },
+    { path: 'harmony-new', element: <LandingPageHarmony /> },
+    { path: 'vibrant-new', element: <LandingPageVibrant /> },
+    { path: 'sunny-new', element: <LandingPageSunny /> },
+    { path: 'vitality-new', element: <LandingPageVitality /> },
     {
         path: '/app/editor',
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['store_owner', 'admin_master']}>
                 <StoreVisualEditor />
             </ProtectedRoute>
         ),
@@ -53,7 +65,7 @@ const router = createBrowserRouter([
     {
         path: '/app',
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['store_owner', 'admin_master']}>
                 <DashboardLayout type="store" />
             </ProtectedRoute>
         ),
@@ -69,7 +81,7 @@ const router = createBrowserRouter([
     {
         path: '/admin/master',
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin_master']}>
                 <DashboardLayout type="master" />
             </ProtectedRoute>
         ),

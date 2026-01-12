@@ -57,12 +57,15 @@ export const MasterAnalyticsPage = () => {
     const maxAppointments = Math.max(...monthlyData.map(m => m.appointments), 1);
     const maxRevenue = Math.max(...monthlyData.map(m => m.revenue), 1);
 
-    // Calculate plan distribution
-    const planDistribution = {
-        free: stores.filter(s => s.plan === 'free').length,
-        basic: stores.filter(s => s.plan === 'basic').length,
-        pro: stores.filter(s => s.plan === 'pro').length,
+    // Use real plan distribution from backend stats
+    const planDistribution = stats?.planDistribution || {
+        free: 0,
+        basic: 0,
+        pro: 0,
     };
+
+    const professionalCount = (planDistribution.basic || 0) + (planDistribution.pro || 0);
+    const totalPlans = (planDistribution.free + professionalCount) || 1;
 
     // Calculate category distribution
     const categoryDistribution: Record<string, number> = {};
@@ -232,31 +235,19 @@ export const MasterAnalyticsPage = () => {
                             <div className="distribution-bar">
                                 <div
                                     className="distribution-fill free"
-                                    style={{ width: `${(planDistribution.free / (stores.length || 1)) * 100}%` }}
+                                    style={{ width: `${(planDistribution.free / totalPlans) * 100}%` }}
                                 />
                             </div>
                         </div>
                         <div className="distribution-item">
                             <div className="distribution-header">
                                 <span className="distribution-label">Profissional</span>
-                                <span className="distribution-count">{planDistribution.basic}</span>
-                            </div>
-                            <div className="distribution-bar">
-                                <div
-                                    className="distribution-fill basic"
-                                    style={{ width: `${(planDistribution.basic / (stores.length || 1)) * 100}%` }}
-                                />
-                            </div>
-                        </div>
-                        <div className="distribution-item">
-                            <div className="distribution-header">
-                                <span className="distribution-label">Enterprise</span>
-                                <span className="distribution-count">{planDistribution.pro}</span>
+                                <span className="distribution-count">{professionalCount}</span>
                             </div>
                             <div className="distribution-bar">
                                 <div
                                     className="distribution-fill pro"
-                                    style={{ width: `${(planDistribution.pro / (stores.length || 1)) * 100}%` }}
+                                    style={{ width: `${(professionalCount / totalPlans) * 100}%` }}
                                 />
                             </div>
                         </div>

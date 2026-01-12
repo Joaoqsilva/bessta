@@ -67,7 +67,7 @@ const appointmentSchema = new Schema<IAppointment>({
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'completed', 'cancelled'],
-        default: 'confirmed', // Assuming auto-confirm for simplicity initially
+        default: 'pending', // All new appointments start as pending
     },
     notes: {
         type: String,

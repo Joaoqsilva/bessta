@@ -14,7 +14,7 @@ router.use(authMiddleware);
 router.get('/store/:storeId', async (req: any, res) => {
     try {
         const { storeId } = req.params;
-        const userId = req.user.userId;
+        const userId = req.user?._id?.toString() || req.userId;
         const userRole = req.user.role;
 
         // Check ownership
@@ -38,7 +38,7 @@ router.get('/store/:storeId', async (req: any, res) => {
 router.post('/store/:storeId', async (req: any, res) => {
     try {
         const { storeId } = req.params;
-        const userId = req.user.userId;
+        const userId = req.user?._id?.toString() || req.userId;
         const userRole = req.user.role;
         const customerData = req.body;
 
@@ -68,9 +68,11 @@ router.post('/store/:storeId', async (req: any, res) => {
 router.put('/:id', async (req: any, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.userId;
-        const userRole = req.user.role;
-        const updates = req.body;
+        const userId = req.user?._id?.toString() || req.userId; // Fixed: use correct property
+        const userRole = req.user?.role;
+
+        // Security: Explicit field assignment to prevent mass assignment attacks
+        const { name, email, phone, notes } = req.body;
 
         const customer = await Customer.findById(id);
         if (!customer) {
@@ -83,9 +85,16 @@ router.put('/:id', async (req: any, res) => {
             return res.status(403).json({ error: 'Acesso negado' });
         }
 
+        // Only allow updating specific fields (prevent storeId manipulation)
+        const allowedUpdates: any = {};
+        if (name !== undefined) allowedUpdates.name = name;
+        if (email !== undefined) allowedUpdates.email = email;
+        if (phone !== undefined) allowedUpdates.phone = phone;
+        if (notes !== undefined) allowedUpdates.notes = notes;
+
         const updatedCustomer = await Customer.findByIdAndUpdate(
             id,
-            { $set: updates },
+            { $set: allowedUpdates },
             { new: true, runValidators: true }
         );
 
@@ -99,8 +108,8 @@ router.put('/:id', async (req: any, res) => {
 router.delete('/:id', async (req: any, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.userId;
-        const userRole = req.user.role;
+        const userId = req.user?._id?.toString() || req.userId;
+        const userRole = req.user?.role;
 
         const customer = await Customer.findById(id);
         if (!customer) {

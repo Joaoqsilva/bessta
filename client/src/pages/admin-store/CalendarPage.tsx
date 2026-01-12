@@ -19,7 +19,6 @@ const getStatusColor = (status: string) => {
         pending: 'var(--warning-500)',
         completed: 'var(--surface-400)',
         cancelled: 'var(--error-500)',
-        in_progress: 'var(--primary-500)',
     };
     return colors[status] || 'var(--surface-400)';
 };
@@ -532,10 +531,6 @@ export const CalendarPage = () => {
                         <div className="legend-item">
                             <span className="legend-dot" style={{ backgroundColor: 'var(--warning-500)' }} />
                             <span>Pendente</span>
-                        </div>
-                        <div className="legend-item">
-                            <span className="legend-dot" style={{ backgroundColor: 'var(--primary-500)' }} />
-                            <span>Em Andamento</span>
                         </div>
                         <div className="legend-item">
                             <span className="legend-dot" style={{ backgroundColor: 'var(--surface-400)' }} />

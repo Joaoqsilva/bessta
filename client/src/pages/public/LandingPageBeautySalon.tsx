@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Trash2, Plus, Star, User } from 'lucide-react';
 import { EditOverlay } from '../../components/EditOverlay';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
+import { StoreFooterRating } from '../../components/StoreFooterRating';
+import { EditableImage } from '../../components/EditableImage';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import './LandingPageBeautySalon.css';
 
@@ -48,9 +50,9 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
     ];
 
     const testimonials = [
-        { name: "Ana Souza", text: "Melhor experiência que já tive! O ambiente é incrível e saí de lá me sentindo renovada." },
-        { name: "Carla Dias", text: "Profissionais extremamente qualificados. Amei meu novo corte e a cor ficou perfeita." },
-        { name: "Julia Lima", text: "Atendimento impecável desde a recepção. Recomendo de olhos fechados!" }
+        { author: "Ana Souza", text: "Melhor experiência que já tive! O ambiente é incrível e saí de lá me sentindo renovada." },
+        { author: "Carla Dias", text: "Profissionais extremamente qualificados. Amei meu novo corte e a cor ficou perfeita." },
+        { author: "Julia Lima", text: "Atendimento impecável desde a recepção. Recomendo de olhos fechados!" }
     ];
 
     const galleryImages = customization?.galleryImages || [];
@@ -71,7 +73,41 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+
+        // Auto-populate defaults in Editor Mode if empty
+        if (isEditorMode && onEditAction) {
+            if (!customization?.servicesList || customization.servicesList.length === 0) {
+                const defaultServices = services.map((s, i) => ({
+                    id: `def_${i}`,
+                    title: s.title,
+                    description: s.desc,
+                    price: s.price,
+                    icon: s.iconName
+                }));
+                onEditAction('init-services__', JSON.stringify(defaultServices));
+            }
+            if (!customization?.testimonials || customization.testimonials.length === 0) {
+                const defaultTestimonials = {
+                    testimonials: testimonials.map((t, i) => ({ text: t.text, author: t.author, role: 'Cliente', rating: 5, id: i.toString() })),
+                    images: ["", "", ""]
+                };
+                onEditAction('init-testimonials__', JSON.stringify(defaultTestimonials));
+            }
+            if (!customization?.team || customization.team.length === 0) {
+                const defaultTeam = {
+                    team: [
+                        { id: '1', name: 'Juliana', role: 'Hair Stylist', bio: 'Especialista em colorimetria.' },
+                        { id: '2', name: 'Carla', role: 'Manicure', bio: 'Unhas artísticas e spa.' },
+                        { id: '3', name: 'Fernanda', role: 'Esteticista', bio: 'Tratamentos faciais avançados.' }
+                    ],
+                    images: ["", "", ""]
+                };
+                onEditAction('init-team__', JSON.stringify(defaultTeam));
+            }
+        }
+    }, [isEditorMode]);
+
+
 
     return (
         <div className="beauty-wrapper" style={dynamicStyle}>
@@ -80,11 +116,12 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                 <div className="beauty-container beauty-nav-inner">
                     <EditableText id="beauty_name" defaultText={d.name} className="beauty-logo" tagName="div" {...editProps} />
                     <div className="beauty-nav-links">
-                        <a href="#services" className="beauty-nav-link">Serviços</a>
-                        <a href="#about" className="beauty-nav-link">Sobre</a>
-                        <a href="#contact" className="beauty-nav-link">Contato</a>
-                        <Link to={store ? `/store/${store.slug}` : "/store/demo"} onClick={onBook} className="beauty-nav-cta">
-                            Agendar
+                        <a href="#services" className="beauty-nav-link"><EditableText id="beauty_nav_1" defaultText="Serviços" tagName="span" {...editProps} /></a>
+                        <a href="#about" className="beauty-nav-link"><EditableText id="beauty_nav_2" defaultText="Sobre" tagName="span" {...editProps} /></a>
+                        <a href="#contact" className="beauty-nav-link"><EditableText id="beauty_nav_3" defaultText="Contato" tagName="span" {...editProps} /></a>
+
+                        <Link to={store ? `/${store.slug}` : "/demo"} onClick={onBook} className="beauty-nav-cta">
+                            <EditableText id="beauty_nav_cta" defaultText="Agendar" tagName="span" {...editProps} />
                         </Link>
                     </div>
                 </div>
@@ -102,7 +139,7 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                             <EditableText id="beauty_hero_desc" defaultText={d.heroDesc} className="beauty-hero-desc" tagName="p" {...editProps} />
 
                             <div className="flex gap-4 flex-wrap">
-                                <Link to={store ? `/store/${store.slug}` : "/store/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
+                                <Link to={store ? `/${store.slug}` : "/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
                                     <EditableText id="beauty_cta_primary" defaultText={d.ctaPrimary} tagName="span" {...editProps} />
                                     <ArrowRight size={16} />
                                 </Link>
@@ -135,12 +172,12 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                     </div>
 
                     <div className="beauty-services-grid">
-                        {services.map((service, idx) => (
+                        {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : services).map((service: any, idx) => (
                             <div key={idx} className="beauty-service-card">
                                 <div className="beauty-service-icon">
                                     <EditableIcon
                                         id={`beauty_svc_icon_${idx}`}
-                                        defaultIcon={service.iconName}
+                                        defaultIcon={service.iconName || 'Sparkles'}
                                         size={30}
                                         customization={customization}
                                         isEditorMode={isEditorMode}
@@ -148,12 +185,32 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                                     />
                                 </div>
                                 <EditableText id={`beauty_svc_title_${idx}`} defaultText={service.title} className="beauty-service-title" tagName="h3" {...editProps} />
-                                <EditableText id={`beauty_svc_desc_${idx}`} defaultText={service.desc} className="beauty-service-desc" tagName="p" {...editProps} />
+                                <EditableText id={`beauty_svc_desc_${idx}`} defaultText={service.description || service.desc} className="beauty-service-desc" tagName="p" {...editProps} />
                                 <div className="beauty-service-price">
-                                    <EditableText id={`beauty_svc_price_${idx}`} defaultText={service.price} tagName="span" {...editProps} />
+                                    <EditableText id={`beauty_svc_price_${idx}`} defaultText={service.price || 'Consulte'} tagName="span" {...editProps} />
                                 </div>
+                                {isEditorMode && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('service-remove__' + idx); }}
+                                        className="absolute top-2 right-2 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                        title="Remover Serviço"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
                             </div>
                         ))}
+                        {isEditorMode && (
+                            <button
+                                onClick={() => onEditAction?.('service-add')}
+                                className="beauty-service-card border-2 border-dashed border-[#c9a87c]/30 hover:bg-[#fdf8f5] flex flex-col items-center justify-center cursor-pointer min-h-[250px] transition-colors group"
+                            >
+                                <div className="w-12 h-12 rounded-full bg-[#fdf8f5] group-hover:bg-[#c9a87c]/20 flex items-center justify-center mb-4 text-[#c9a87c]">
+                                    <Plus size={24} />
+                                </div>
+                                <span className="font-bold text-[#c9a87c] text-lg">Adicionar Serviço</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </section>
@@ -168,8 +225,17 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                         </div>
                         <div className="beauty-gallery-grid">
                             {galleryImages.slice(0, 4).map((img: string, idx: number) => (
-                                <div key={idx} className="beauty-gallery-item">
+                                <div key={idx} className="beauty-gallery-item relative group">
                                     <img src={img} alt={`Gallery ${idx + 1}`} className="beauty-gallery-img" />
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('gallery-remove__' + idx); }}
+                                            className="absolute top-2 right-2 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                            title="Remover Imagem"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -197,11 +263,66 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                             </div>
                             <EditableText id="beauty_about_title" defaultText={d.aboutTitle} className="beauty-section-title mb-6" tagName="h2" {...editProps} />
                             <EditableText id="beauty_about_text" defaultText={d.aboutText} className="text-gray-600 leading-relaxed mb-8 text-lg" tagName="p" {...editProps} />
-                            <Link to={store ? `/store/${store.slug}` : "/store/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
+                            <Link to={store ? `/${store.slug}` : "/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
                                 Agendar Visita
                                 <ArrowRight size={16} />
                             </Link>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Team Section */}
+            <section className="beauty-services" id="team" style={{ background: 'white' }}>
+                <div className="beauty-container">
+                    <div className="beauty-section-header">
+                        <EditableText id="beauty_team_sub" defaultText="Nossa Equipe" className="beauty-section-subtitle" tagName="div" {...editProps} />
+                        <EditableText id="beauty_team_title" defaultText="Especialistas em Beleza" className="beauty-section-title" tagName="h2" {...editProps} />
+                    </div>
+                    <div className="beauty-services-grid">
+                        {(customization?.team && customization.team.length > 0 ? customization.team : customization?.teamImages?.length ? [] : [
+                            { name: 'Juliana', role: 'Hair Stylist', bio: 'Especialista em colorimetria.' }
+                        ]).map((member: any, i: number) => (
+                            <div key={i} className="beauty-service-card relative group p-0 overflow-hidden">
+                                <div className="h-64 bg-[#fdf8f5] relative">
+                                    <EditableImage
+                                        editKey={`teamImages__${i}`}
+                                        currentSrc={customization?.teamImages?.[i]}
+                                        isEditorMode={isEditorMode}
+                                        onEditAction={onEditAction}
+                                        className="w-full h-full object-cover"
+                                        alt={member.name}
+                                        renderPlaceholder={() => (
+                                            <div className="w-full h-full flex items-center justify-center text-[#c9a87c]/30">
+                                                <EditableIcon id={`beauty_team_ph_${i}`} defaultIcon="User" size={48} {...editProps} />
+                                            </div>
+                                        )}
+                                    />
+                                </div>
+                                <div className="p-6 text-center">
+                                    <EditableText id={`beauty_team_n${i}`} defaultText={member.name || 'Nome'} className="font-bold text-xl mb-1 block text-[#c9a87c]" tagName="h3" {...editProps} />
+                                    <EditableText id={`beauty_team_r${i}`} defaultText={member.role || 'Cargo'} className="text-gray-500 text-sm mb-4 block font-medium uppercase tracking-wider" tagName="span" {...editProps} />
+                                    <EditableText id={`beauty_team_b${i}`} defaultText={member.bio || 'Bio'} className="text-gray-500 text-sm leading-relaxed" tagName="p" {...editProps} />
+                                </div>
+                                {isEditorMode && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('team-remove__' + i); }}
+                                        className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {isEditorMode && (
+                            <button
+                                onClick={() => onEditAction?.('team-add')}
+                                className="beauty-service-card border-2 border-dashed border-[#c9a87c]/30 hover:bg-[#fdf8f5] flex flex-col items-center justify-center cursor-pointer min-h-[300px] transition-colors group"
+                            >
+                                <Plus size={24} className="text-[#c9a87c] mb-2" />
+                                <span className="font-bold text-[#c9a87c]">Adicionar Membro</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </section>
@@ -236,15 +357,62 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                         <EditableText id="beauty_test_title" defaultText="O que dizem nossas clientes" className="beauty-section-title" tagName="h2" {...editProps} />
                     </div>
                     <div className="beauty-testimonials-grid">
-                        {testimonials.map((t, i) => (
-                            <div key={i} className="testimonial-card">
-                                <div className="flex gap-1 text-yellow-400 mb-4">
-                                    {[1, 2, 3, 4, 5].map(s => <Sparkles key={s} size={14} fill="currentColor" />)}
+                        {(customization?.testimonials && customization.testimonials.length > 0 ? customization.testimonials : testimonials).map((t: any, i: number) => (
+                            <div key={i} className="testimonial-card relative group">
+                                <div className="flex gap-1 text-[#c9a87c] mb-4">
+                                    {[1, 2, 3, 4, 5].map(s => (
+                                        <Star
+                                            key={s}
+                                            size={14}
+                                            fill={s <= (t.rating || 5) ? "currentColor" : "none"}
+                                            className={`cursor-pointer ${s <= (t.rating || 5) ? '' : 'text-gray-300'}`}
+                                            onClick={isEditorMode ? (e) => { e.stopPropagation(); onEditAction?.(`testimonial-rating__${i}__${s}`); } : undefined}
+                                        />
+                                    ))}
                                 </div>
-                                <EditableText id={`beauty_test_txt_${i}`} defaultText={`"${t.text}"`} className="text-gray-600 italic mb-4 block leading-relaxed" tagName="p" {...editProps} />
-                                <EditableText id={`beauty_test_author_${i}`} defaultText={t.name} className="font-bold text-[var(--beauty-primary)]" tagName="span" {...editProps} />
+                                <div className="mb-4">
+                                    <EditableText id={`beauty_test_txt_${i}`} defaultText={`"${t.text}"`} className="text-gray-600 italic block leading-relaxed" tagName="p" {...editProps} />
+                                </div>
+                                <div className="flex items-center gap-4 mt-4 border-t border-[#e8b4b8]/20 pt-4">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-[#fdf8f5] relative shrink-0">
+                                        <EditableImage
+                                            editKey={`testimonialImages__${i}`}
+                                            currentSrc={customization?.testimonialImages?.[i]}
+                                            isEditorMode={isEditorMode}
+                                            onEditAction={onEditAction}
+                                            className="w-full h-full object-cover"
+                                            alt={t.author}
+                                            renderPlaceholder={() => (
+                                                <div className="w-full h-full bg-[#c9a87c] text-white flex items-center justify-center font-bold text-xs">
+                                                    {t.author.charAt(0)}
+                                                </div>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <EditableText id={`beauty_test_author_${i}`} defaultText={t.author} className="font-bold text-[var(--beauty-primary)] block text-sm" tagName="span" {...editProps} />
+                                        <EditableText id={`beauty_test_role_${i}`} defaultText={t.role || 'Cliente'} className="text-xs text-gray-500 block" tagName="span" {...editProps} />
+                                    </div>
+                                </div>
+                                {isEditorMode && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('testimonial-remove__' + i); }}
+                                        className="absolute top-2 right-2 bg-red-50 p-1 rounded-full text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
                             </div>
                         ))}
+                        {isEditorMode && (
+                            <button
+                                onClick={() => onEditAction?.('testimonial-add')}
+                                className="testimonial-card border-2 border-dashed border-[#c9a87c]/30 hover:bg-[#fdf8f5] flex flex-col items-center justify-center cursor-pointer transition-colors group min-h-[200px]"
+                            >
+                                <Plus size={24} className="text-[#c9a87c] mb-2" />
+                                <span className="font-bold text-[#c9a87c]">Adicionar Depoimento</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </section>
@@ -255,7 +423,7 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                 <div className="beauty-container beauty-cta-content relative">
                     <EditableText id="beauty_cta_title" defaultText={d.ctaTitle} className="beauty-cta-title" tagName="h2" {...editProps} />
                     <EditableText id="beauty_cta_desc" defaultText={d.ctaDesc} className="beauty-cta-desc" tagName="p" {...editProps} />
-                    <Link to={store ? `/store/${store.slug}` : "/store/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
+                    <Link to={store ? `/${store.slug}` : "/demo"} onClick={onBook} className="beauty-btn beauty-btn-primary">
                         Agendar Agora
                         <ArrowRight size={16} />
                     </Link>
@@ -271,25 +439,33 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                             <EditableText id="beauty_footer_desc" defaultText={d.footerDesc} className="beauty-footer-desc" tagName="p" {...editProps} />
                         </div>
                         <div>
-                            <h4 className="beauty-footer-title">Links</h4>
-                            <a href="#services" className="beauty-footer-link">Serviços</a>
-                            <a href="#about" className="beauty-footer-link">Sobre Nós</a>
-                            <Link to={store ? `/store/${store.slug}` : "/store/demo"} onClick={onBook} className="beauty-footer-link">Agendar</Link>
+                            <h4 className="beauty-footer-title"><EditableText id="beauty_ft_title_1" defaultText="Links" tagName="span" {...editProps} /></h4>
+                            <a href="#services" className="beauty-footer-link"><EditableText id="beauty_ft_link_1" defaultText="Serviços" tagName="span" {...editProps} /></a>
+                            <a href="#about" className="beauty-footer-link"><EditableText id="beauty_ft_link_2" defaultText="Sobre Nós" tagName="span" {...editProps} /></a>
+                            <Link to={store ? `/${store.slug}` : "/demo"} onClick={onBook} className="beauty-footer-link"><EditableText id="beauty_ft_link_3" defaultText="Agendar" tagName="span" {...editProps} /></Link>
                         </div>
                         <div>
-                            <h4 className="beauty-footer-title">Contato</h4>
+                            <h4 className="beauty-footer-title"><EditableText id="beauty_ft_title_2" defaultText="Contato" tagName="span" {...editProps} /></h4>
                             <EditableText id="beauty_footer_phone" defaultText="(11) 99999-9999" className="beauty-footer-link" tagName="div" {...editProps} />
                             <EditableText id="beauty_footer_email" defaultText="contato@beleza.com" className="beauty-footer-link" tagName="div" {...editProps} />
                         </div>
                         <div>
-                            <h4 className="beauty-footer-title">Horários</h4>
-                            <p className="beauty-footer-link">Seg - Sex: 9h - 20h</p>
-                            <p className="beauty-footer-link">Sáb: 9h - 18h</p>
+                            <h4 className="beauty-footer-title"><EditableText id="beauty_ft_title_3" defaultText="Horários" tagName="span" {...editProps} /></h4>
+                            <p className="beauty-footer-link"><EditableText id="beauty_ft_h_1" defaultText="Seg - Sex: 9h - 20h" tagName="span" {...editProps} /></p>
+                            <p className="beauty-footer-link"><EditableText id="beauty_ft_h_2" defaultText="Sáb: 9h - 18h" tagName="span" {...editProps} /></p>
                         </div>
                     </div>
 
-                    <div className="beauty-footer-bottom">
-                        © {new Date().getFullYear()} <EditableText id="beauty_copy" defaultText={d.name} tagName="span" {...editProps} /> - Todos os direitos reservados.
+                    <div className="beauty-footer-bottom flex flex-col items-center gap-4">
+                        <p>© {new Date().getFullYear()} <EditableText id="beauty_copy" defaultText={d.name} tagName="span" {...editProps} /> - <EditableText id="beauty_rights" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
+                        <StoreFooterRating
+                            storeId={store?.id || 'demo'}
+                            rating={store?.rating}
+                            totalReviews={store?.totalReviews}
+                            color="#ec4899"
+                            isEditorMode={isEditorMode}
+                            textColor="#fbcfe8" // Light pinkish text
+                        />
                     </div>
                 </div>
             </footer>

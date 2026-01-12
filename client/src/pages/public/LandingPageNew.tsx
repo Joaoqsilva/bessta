@@ -23,7 +23,19 @@ export const LandingPageNew = ({ store, customization, onBook, isEditorMode, onE
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+
+        // Auto-populate defaults in Editor Mode if empty
+        if (isEditorMode && onEditAction) {
+            if (!customization?.servicesList || customization.servicesList.length === 0) {
+                const defaultServices = clinicaData.services.items;
+                onEditAction('init-services__', JSON.stringify(defaultServices));
+            }
+            if (!customization?.faq || customization.faq.length === 0) {
+                const defaultFaq = clinicaData.faq.items;
+                onEditAction('init-faq__', JSON.stringify(defaultFaq));
+            }
+        }
+    }, [isEditorMode]);
 
     // Merge static data with dynamic customization defaults or overrides where applicable
     // Note: The child components now prioritize 'customization' prop for their defaults
@@ -46,7 +58,7 @@ export const LandingPageNew = ({ store, customization, onBook, isEditorMode, onE
 
     return (
         <div className="clinica-theme" style={dynamicStyle}>
-            <ClinicaHeader content={content.header} onBook={onBook} {...commonProps} />
+            <ClinicaHeader content={content.header} onBook={onBook} {...commonProps} storeId={store?._id || store?.id} />
 
             <main>
                 <ClinicaHero content={content.hero} onBook={onBook} {...commonProps} />
@@ -56,7 +68,14 @@ export const LandingPageNew = ({ store, customization, onBook, isEditorMode, onE
                 <ClinicaFAQ content={content.faq} {...commonProps} />
             </main>
 
-            <ClinicaFooter content={content.footer} navItems={content.header.menuItems} {...commonProps} />
+            <ClinicaFooter
+                content={content.footer}
+                navItems={content.header.menuItems}
+                {...commonProps}
+                storeId={store?._id || store?.id}
+                storeRating={store?.rating}
+                storeTotalReviews={store?.totalReviews}
+            />
         </div>
     );
 };

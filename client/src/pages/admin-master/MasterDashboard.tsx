@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Store, Users, AlertCircle, TrendingUp, DollarSign, Calendar, Star, ArrowUpRight, ArrowDownRight, Eye, MoreVertical } from 'lucide-react';
+import { Store, Users, AlertCircle, TrendingUp, DollarSign, Calendar, Star, ArrowUpRight, ArrowDownRight, Eye, MoreVertical, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import { Button } from '../../components/Button';
-import { getPlatformStats, getAllRegisteredStores, type PlatformStats, type RegisteredStore } from '../../context/AdminMasterService';
+import { getPlatformStats, getAllRegisteredStores, updateStoreStatus, deleteStore, type PlatformStats, type RegisteredStore } from '../../context/AdminMasterService';
 import './MasterDashboard.css';
 
 const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }: any) => (
@@ -26,6 +26,8 @@ const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }: any) => (
 export const MasterDashboard = () => {
     const [stats, setStats] = useState<PlatformStats | null>(null);
     const [stores, setStores] = useState<RegisteredStore[]>([]);
+    const [user, setUser] = useState<any>(null); // To store current user for actions
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -34,20 +36,59 @@ export const MasterDashboard = () => {
 
     const loadData = async () => {
         setIsLoading(true);
-        const platformStats = await getPlatformStats();
-        const allStores = await getAllRegisteredStores();
-        setStats(platformStats);
-        setStores(allStores);
-        setIsLoading(false);
+        try {
+            const [platformStats, allStores] = await Promise.all([
+                getPlatformStats(),
+                getAllRegisteredStores()
+            ]);
+            setStats(platformStats);
+            setStores(allStores);
+        } catch (error) {
+            console.error('Error loading master data:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    // Calculate plan distribution
-    const planDistribution = {
-        free: stores.filter(s => s.plan === 'free').length,
-        basic: stores.filter(s => s.plan === 'basic').length,
-        pro: stores.filter(s => s.plan === 'pro').length,
+    const handleToggleStatus = async (store: RegisteredStore) => {
+        const newStatus = store.status === 'suspended' ? 'active' : 'suspended';
+        const confirmMsg = newStatus === 'suspended'
+            ? `Tem certeza que deseja desativar o site "${store.name}"? O proprietário não poderá vender e clientes não poderão agendar.`
+            : `Deseja reativar o site "${store.name}"?`;
+
+        if (window.confirm(confirmMsg)) {
+            const success = await updateStoreStatus(store.id, newStatus);
+            if (success) {
+                loadData();
+                setActiveMenu(null);
+            } else {
+                alert('Erro ao atualizar status da loja');
+            }
+        }
     };
-    const totalPlans = stores.length || 1;
+
+    const handleDeleteStore = async (store: RegisteredStore) => {
+        if (window.confirm(`⚠️ AÇÃO IRREVERSÍVEL: Tem certeza que deseja EXCLUIR permanentemente a loja "${store.name}" e todos os seus dados?`)) {
+            const success = await deleteStore(store.id);
+            if (success) {
+                loadData();
+                setActiveMenu(null);
+            } else {
+                alert('Erro ao excluir loja');
+            }
+        }
+    };
+
+    // Use real plan distribution from backend stats
+    const planDistribution = stats?.planDistribution || {
+        free: 0,
+        basic: 0,
+        pro: 0,
+    };
+
+    // Merge basic and pro into Professional count as Enterprise is removed
+    const professionalCount = (planDistribution.basic || 0) + (planDistribution.pro || 0);
+    const totalPlans = (planDistribution.free + professionalCount) || 1;
 
     if (isLoading || !stats) {
         return (
@@ -172,7 +213,7 @@ export const MasterDashboard = () => {
                                             <td className="owner-cell">{store.ownerName}</td>
                                             <td>
                                                 <span className={`plan-badge plan-${store.plan}`}>
-                                                    {store.plan === 'free' ? 'Grátis' : store.plan === 'basic' ? 'Profissional' : 'Enterprise'}
+                                                    {store.plan === 'free' ? 'Grátis' : 'Profissional'}
                                                 </span>
                                             </td>
                                             <td className="appointments-cell">{store.totalAppointments}</td>
@@ -183,14 +224,59 @@ export const MasterDashboard = () => {
                                             </td>
                                             <td>
                                                 <div className="actions-cell">
-                                                    <Link to={`/store/${store.slug}`} target="_blank">
+                                                    <Link to={`/${store.slug}`} target="_blank">
                                                         <button className="action-btn" title="Ver Loja">
                                                             <Eye size={16} />
                                                         </button>
                                                     </Link>
-                                                    <button className="action-btn" title="Mais Opções">
-                                                        <MoreVertical size={16} />
-                                                    </button>
+                                                    <div className="relative" style={{ zIndex: activeMenu === store.id ? 100 : 1 }}>
+                                                        <button
+                                                            className={`action-btn ${activeMenu === store.id ? 'active' : ''}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                e.preventDefault();
+                                                                console.log('Action menu clicked for store:', store.id);
+                                                                setActiveMenu(activeMenu === store.id ? null : store.id);
+                                                            }}
+                                                            title="Mais Opções"
+                                                        >
+                                                            <MoreVertical size={16} />
+                                                        </button>
+
+                                                        {activeMenu === store.id && (
+                                                            <div
+                                                                className="dropdown-menu"
+                                                                style={{
+                                                                    border: '4px solid red',
+                                                                    backgroundColor: 'yellow',
+                                                                    color: 'black',
+                                                                    zIndex: 9999,
+                                                                    display: 'block',
+                                                                    opacity: 1,
+                                                                    visibility: 'visible',
+                                                                    minHeight: '100px'
+                                                                }}
+                                                            >
+                                                                {(() => { console.log('DROPDOWN IS RENDERING FOR:', store.id); return null; })()}
+                                                                <button onClick={() => {
+                                                                    console.log('Toggle status clicked');
+                                                                    handleToggleStatus(store);
+                                                                }} className="dropdown-item" style={{ backgroundColor: 'yellow', color: 'black' }}>
+                                                                    {store.status === 'suspended' ? (
+                                                                        <><CheckCircle size={14} /> Ativar Site</>
+                                                                    ) : (
+                                                                        <><Ban size={14} /> Desativar Site</>
+                                                                    )}
+                                                                </button>
+                                                                <button onClick={() => {
+                                                                    console.log('Delete store clicked');
+                                                                    handleDeleteStore(store);
+                                                                }} className="dropdown-item delete" style={{ backgroundColor: 'yellow', color: 'red' }}>
+                                                                    <Trash2 size={14} /> Excluir Loja
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -216,16 +302,9 @@ export const MasterDashboard = () => {
                             <div className="plan-row">
                                 <span className="plan-name">Profissional</span>
                                 <div className="plan-bar">
-                                    <div className="plan-fill basic" style={{ width: `${(planDistribution.basic / totalPlans) * 100}%` }} />
+                                    <div className="plan-fill pro" style={{ width: `${(professionalCount / totalPlans) * 100}%` }} />
                                 </div>
-                                <span className="plan-count">{planDistribution.basic}</span>
-                            </div>
-                            <div className="plan-row">
-                                <span className="plan-name">Enterprise</span>
-                                <div className="plan-bar">
-                                    <div className="plan-fill pro" style={{ width: `${(planDistribution.pro / totalPlans) * 100}%` }} />
-                                </div>
-                                <span className="plan-count">{planDistribution.pro}</span>
+                                <span className="plan-count">{professionalCount}</span>
                             </div>
                         </div>
                     </div>

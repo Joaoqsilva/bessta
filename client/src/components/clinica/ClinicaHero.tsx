@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { type ClinicaContent } from '../../data/clinicaContent';
 import { EditableText } from '../EditableText';
-import { EditOverlay } from '../EditOverlay';
+import { EditableImage } from '../EditableImage';
 import { type StoreCustomization } from '../../context/StoreCustomizationService';
 
 interface ClinicaHeroProps {
@@ -104,9 +104,13 @@ export const ClinicaHero = ({ content, isEditorMode, onEditAction, customization
                             overflow: 'hidden',
                             boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
                         }}>
-                            <EditOverlay label="Alterar Capa" action="cover-image" isEditorMode={isEditorMode} onEditAction={onEditAction} />
-                            <img
-                                src={heroImage}
+                            <EditableImage
+                                editKey="coverImage"
+                                currentSrc={heroImage}
+                                isEditorMode={isEditorMode}
+                                onEditAction={onEditAction}
+                                className="w-full h-full object-cover"
+                                label="Alterar Capa"
                                 alt="Ambiente Terapêutico"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
@@ -118,7 +122,8 @@ export const ClinicaHero = ({ content, isEditorMode, onEditAction, customization
                                 right: '-20px',
                                 left: '20px',
                                 padding: '1.5rem',
-                                maxWidth: '80%'
+                                maxWidth: '80%',
+                                zIndex: 10
                             }}>
                                 <p style={{
                                     fontFamily: 'var(--font-serif)',

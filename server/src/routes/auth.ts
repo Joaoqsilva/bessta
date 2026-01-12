@@ -8,6 +8,18 @@ import { User } from '../models/User';
 import { Store } from '../models/Store';
 import { generateToken, authMiddleware, AuthRequest } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
+import NotificationService from '../services/NotificationService';
+import AuditLogService from '../services/AuditLogService';
+import AccountLockoutService from '../services/AccountLockoutService';
+import rateLimit from 'express-rate-limit';
+import { validate } from '../middleware/validate';
+import { registerSchema, loginSchema, updateProfileSchema } from '../schemas/authSchema';
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 15, // Max 15 attempts per IP (secure limit)
+    message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
+});
 
 const router = Router();
 
@@ -27,117 +39,18 @@ function createSlug(name: string): string {
  * POST /api/auth/register
  * Register a new user and store
  */
-router.post('/register', async (req: AuthRequest, res: Response) => {
+router.post('/register', validate(registerSchema), async (req: AuthRequest, res: Response) => {
     try {
-        const { email, password, ownerName, phone, storeName, category } = req.body;
+        const { email, password, ownerName, phone, storeName, category, role, storeId } = req.body;
 
-        // ========================================
-        // VALIDAÇÕES ROBUSTAS
-        // ========================================
-
-        // Validar campos obrigatórios
-        if (!email || !password || !ownerName || !storeName) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email, senha, nome e nome da loja são obrigatórios'
-            });
-        }
-
-        // Validar email
+        // Clean data (already validated structure, just trimming for consistency)
         const emailTrimmed = String(email).trim().toLowerCase();
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(emailTrimmed)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email inválido'
-            });
-        }
-        if (emailTrimmed.length > 100) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email deve ter no máximo 100 caracteres'
-            });
-        }
-
-        // Validar senha
-        const passwordStr = String(password);
-        if (passwordStr.length < 8) {
-            return res.status(400).json({
-                success: false,
-                error: 'Senha deve ter pelo menos 8 caracteres'
-            });
-        }
-        if (passwordStr.length > 50) {
-            return res.status(400).json({
-                success: false,
-                error: 'Senha deve ter no máximo 50 caracteres'
-            });
-        }
-        if (!/[A-Z]/.test(passwordStr)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Senha deve conter pelo menos uma letra maiúscula'
-            });
-        }
-        if (!/[a-z]/.test(passwordStr)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Senha deve conter pelo menos uma letra minúscula'
-            });
-        }
-        if (!/[0-9]/.test(passwordStr)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Senha deve conter pelo menos um número'
-            });
-        }
-
-        // Validar nome do proprietário
         const ownerNameTrimmed = String(ownerName).trim();
-        if (ownerNameTrimmed.length < 3) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nome deve ter pelo menos 3 caracteres'
-            });
-        }
-        if (ownerNameTrimmed.length > 100) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nome deve ter no máximo 100 caracteres'
-            });
-        }
-        if (!/^[a-zA-ZÀ-ÿ\s\-'.]+$/.test(ownerNameTrimmed)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nome deve conter apenas letras'
-            });
-        }
 
-        // Validar nome da loja
-        const storeNameTrimmed = String(storeName).trim();
-        if (storeNameTrimmed.length < 3) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nome da loja deve ter pelo menos 3 caracteres'
-            });
-        }
-        if (storeNameTrimmed.length > 50) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nome da loja deve ter no máximo 50 caracteres'
-            });
-        }
-
-        // Validar telefone (opcional)
+        // Clean phone
         let phoneCleaned = '';
         if (phone) {
             phoneCleaned = String(phone).replace(/\D/g, '');
-            if (phoneCleaned.length > 0 && (phoneCleaned.length < 10 || phoneCleaned.length > 11)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Telefone deve ter 10 ou 11 dígitos (com DDD)'
-                });
-            }
         }
 
         // Check if email already exists
@@ -149,6 +62,56 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
             });
         }
 
+        // --- CLIENT USER REGISTRATION FLOW ---
+        if (role === 'client_user') {
+            if (!storeId) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'ID da loja é obrigatório para cadastro de cliente'
+                });
+            }
+
+            // Verify store exists
+            const storeExists = await Store.findById(storeId);
+            if (!storeExists) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Loja não encontrada'
+                });
+            }
+
+            const clientUser = new User({
+                email: emailTrimmed,
+                password: password,
+                ownerName: ownerNameTrimmed, // Name of the client
+                phone: phoneCleaned,
+                role: 'client_user',
+                plan: 'free', // Clients don't have plans, but field is required
+                storeId: storeId // Link to the store they registered at
+            });
+
+            await clientUser.save();
+
+            const token = generateToken(clientUser);
+
+            return res.status(201).json({
+                success: true,
+                token,
+                user: {
+                    id: clientUser._id,
+                    email: clientUser.email,
+                    ownerName: clientUser.ownerName,
+                    phone: clientUser.phone,
+                    role: clientUser.role,
+                    storeId: clientUser.storeId,
+                    plan: clientUser.plan,
+                }
+            });
+        }
+
+        // --- STORE OWNER REGISTRATION FLOW (Default) ---
+        const storeNameTrimmed = String(storeName).trim();
+
         // Generate unique slug
         let slug = createSlug(storeNameTrimmed);
         const existingSlug = await Store.findOne({ slug });
@@ -159,7 +122,7 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
         // Create user first
         const user = new User({
             email: emailTrimmed,
-            password: passwordStr,
+            password: password,
             ownerName: ownerNameTrimmed,
             phone: phoneCleaned,
             role: 'store_owner',
@@ -183,12 +146,34 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
 
         await store.save();
 
+        // Notify Admins about new store registration
+        const admins = await User.find({ role: 'admin_master' });
+        for (const admin of admins) {
+            NotificationService.create(
+                admin._id,
+                'system',
+                'Nova Loja Registrada',
+                `A loja ${storeNameTrimmed} foi criada por ${ownerNameTrimmed}.`,
+                `/admin/master/stores`
+            );
+        }
+
         // Update user with store reference
         user.storeId = store._id;
         await user.save();
 
         // Generate token
         const token = generateToken(user);
+
+        // Log successful registration
+        const ip = req.ip || req.socket.remoteAddress || 'unknown';
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'REGISTER',
+            details: { email: emailTrimmed, storeName: storeNameTrimmed, role: 'store_owner' },
+            ip,
+            severity: 'info'
+        });
 
         res.status(201).json({
             success: true,
@@ -200,6 +185,7 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
                 phone: user.phone,
                 role: user.role,
                 storeId: store._id,
+                plan: user.plan,
             },
             store: {
                 id: store._id,
@@ -230,31 +216,58 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
  * POST /api/auth/login
  * Login with email and password
  */
-router.post('/login', async (req: AuthRequest, res: Response) => {
+router.post('/login', validate(loginSchema), async (req: AuthRequest, res: Response) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
     try {
         const { email, password } = req.body;
+        const normalizedEmail = email.toLowerCase();
 
-        if (!email || !password) {
-            return res.status(400).json({
+        // Check if account is locked
+        const lockStatus = await AccountLockoutService.isLocked(normalizedEmail);
+        if (lockStatus.locked) {
+            await AuditLogService.log({
+                action: 'LOGIN_FAILED',
+                details: { email: normalizedEmail, reason: 'Account locked' },
+                ip,
+                userAgent,
                 success: false,
-                error: 'Email e senha são obrigatórios'
+                severity: 'warning'
+            });
+
+            return res.status(423).json({
+                success: false,
+                error: `Conta temporariamente bloqueada. Tente novamente em ${lockStatus.remainingTime} minutos.`,
+                locked: true,
+                remainingTime: lockStatus.remainingTime
             });
         }
 
         // Find user with password field
         const user = await User.findOne({
-            email: email.toLowerCase()
+            email: normalizedEmail
         }).select('+password');
 
         if (!user) {
+            // Record failed attempt
+            const lockResult = await AccountLockoutService.recordFailedAttempt(normalizedEmail, ip);
+            await AuditLogService.loginFailed(normalizedEmail, ip, userAgent, 'User not found');
+
+            if (lockResult.locked) {
+                await AuditLogService.accountLocked(normalizedEmail, ip, 'Too many failed attempts');
+            }
+
             return res.status(401).json({
                 success: false,
-                error: 'Email ou senha incorretos'
+                error: 'Email ou senha incorretos',
+                attemptsRemaining: lockResult.attemptsRemaining
             });
         }
 
         // Check if user is active
         if (!user.isActive) {
+            await AuditLogService.loginFailed(normalizedEmail, ip, userAgent, 'Account disabled');
             return res.status(401).json({
                 success: false,
                 error: 'Conta desativada. Entre em contato com o suporte.'
@@ -264,11 +277,24 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
         // Compare password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
+            // Record failed attempt
+            const lockResult = await AccountLockoutService.recordFailedAttempt(normalizedEmail, ip);
+            await AuditLogService.loginFailed(normalizedEmail, ip, userAgent, 'Invalid password');
+
+            if (lockResult.locked) {
+                await AuditLogService.accountLocked(user._id.toString(), ip, 'Too many failed attempts');
+            }
+
             return res.status(401).json({
                 success: false,
-                error: 'Email ou senha incorretos'
+                error: 'Email ou senha incorretos',
+                attemptsRemaining: lockResult.attemptsRemaining
             });
         }
+
+        // Successful login - clear failed attempts
+        await AccountLockoutService.clearAttempts(normalizedEmail);
+        await AuditLogService.loginSuccess(user._id.toString(), ip, userAgent);
 
         // Get store if exists
         let store = null;
@@ -289,6 +315,7 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
                 phone: user.phone,
                 role: user.role,
                 storeId: user.storeId,
+                plan: user.plan,
             },
             store: store ? {
                 id: store._id,
@@ -300,7 +327,15 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
             } : null
         });
     } catch (error: any) {
-        console.error('Login error:', error);
+        console.error('Login error details:', error);
+        await AuditLogService.log({
+            action: 'LOGIN_FAILED',
+            details: { error: error.message },
+            ip,
+            userAgent,
+            success: false,
+            severity: 'error'
+        });
         res.status(500).json({
             success: false,
             error: 'Erro ao fazer login'
@@ -331,6 +366,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
                 phone: user.phone,
                 role: user.role,
                 storeId: user.storeId,
+                plan: user.plan,
                 createdAt: user.createdAt,
             },
             store: store ? {
@@ -361,14 +397,25 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
  * PUT /api/auth/profile
  * Update user profile
  */
-router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.put('/profile', authMiddleware, validate(updateProfileSchema), async (req: AuthRequest, res: Response) => {
     try {
         const user = req.user!;
         const { ownerName, phone } = req.body;
 
-        // Update user
-        if (ownerName) user.ownerName = ownerName;
-        if (phone !== undefined) user.phone = phone;
+        // Security: Prevent Mass Assignment / Privilege Escalation
+        // Explicitly check if user is trying to update restricted fields
+        const restrictedFields = ['role', 'plan', 'storeId', 'email', 'password', 'isActive'];
+        const attemptedRestrictedUpdates = restrictedFields.filter(field => req.body[field] !== undefined);
+
+        if (attemptedRestrictedUpdates.length > 0) {
+            console.warn(`Security Warning: User ${user._id} attempted to update restricted fields: ${attemptedRestrictedUpdates.join(', ')}`);
+            // We can strictly fail, or just ignore. Failing is safer/clearer for security testing.
+            // For now, we ignore but log, as the manual assignment below protects us.
+        }
+
+        // Update user (Explicit field assignment)
+        if (ownerName) user.ownerName = ownerName.trim();
+        if (phone !== undefined) user.phone = phone.trim();
 
         await user.save();
 
@@ -440,6 +487,15 @@ router.put('/password', authMiddleware, async (req: AuthRequest, res: Response) 
         user.password = newPassword;
         await user.save();
 
+        // Log password change
+        const ip = req.ip || req.socket.remoteAddress || 'unknown';
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'PASSWORD_CHANGE',
+            ip,
+            severity: 'info'
+        });
+
         res.json({
             success: true,
             message: 'Senha atualizada com sucesso'
@@ -452,5 +508,4 @@ router.put('/password', authMiddleware, async (req: AuthRequest, res: Response) 
         });
     }
 });
-
 export default router;

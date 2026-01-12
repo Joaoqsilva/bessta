@@ -30,7 +30,6 @@ const getStatusBadge = (status: string) => {
         pending: 'badge-warning',
         completed: 'badge-neutral',
         cancelled: 'badge-error',
-        in_progress: 'badge-primary',
     };
     return styles[status] || 'badge-neutral';
 };
@@ -41,7 +40,6 @@ const formatStatus = (status: string) => {
         pending: 'Pendente',
         completed: 'Concluído',
         cancelled: 'Cancelado',
-        in_progress: 'Em Andamento',
     };
     return labels[status] || status;
 };
@@ -338,11 +336,11 @@ export const StoreDashboard = () => {
                                                     <MoreVertical size={18} />
                                                 </button>
                                                 <div className="dropdown-menu">
+                                                    <button onClick={() => updateAppointmentStatus(apt.id, 'pending')}>
+                                                        Pendente
+                                                    </button>
                                                     <button onClick={() => updateAppointmentStatus(apt.id, 'confirmed')}>
                                                         Confirmar
-                                                    </button>
-                                                    <button onClick={() => updateAppointmentStatus(apt.id, 'in_progress')}>
-                                                        Iniciar
                                                     </button>
                                                     <button onClick={() => updateAppointmentStatus(apt.id, 'completed')}>
                                                         Concluir

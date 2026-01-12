@@ -143,7 +143,7 @@ export const LandingPage = () => {
                                     Começar Gratuitamente
                                 </Button>
                             </Link>
-                            <Link to="/store/urban-styles">
+                            <Link to="/urban-styles">
                                 <Button variant="outline" size="xl">
                                     Ver Demonstração
                                 </Button>

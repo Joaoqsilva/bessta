@@ -275,3 +275,10 @@
         aspect-ratio: 16/9;
     }
 }
+
+/* Editor Mode Overrides */
+.is-editor .modern-nav {
+    position: absolute !important;
+    top: 0;
+    width: 100%;
+}

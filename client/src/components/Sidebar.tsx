@@ -21,6 +21,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { useAuth } from '../context/AuthContext';
 import { paymentService } from '../services/paymentService';
+import { notificationService, type Notification } from '../services/notificationService';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -48,13 +49,7 @@ const masterNavItems = [
     { to: '/admin/master/settings', icon: Settings, label: 'Configurações' },
 ];
 
-// Mock notifications
-const mockNotifications = [
-    { id: 1, title: 'Novo agendamento', message: 'Carlos Santos agendou para hoje às 14:00', time: '5 min', unread: true },
-    { id: 2, title: 'Lembrete', message: 'Você tem 3 agendamentos para hoje', time: '1h', unread: true },
-    { id: 3, title: 'Avaliação recebida', message: 'Pedro deixou uma avaliação de 5 estrelas', time: '2h', unread: true },
-    { id: 4, title: 'Pagamento confirmado', message: 'Assinatura Pro renovada com sucesso', time: '1 dia', unread: false },
-];
+// Mock notifications removed
 
 export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
     const location = useLocation();
@@ -67,30 +62,71 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [notifications, setNotifications] = useState(mockNotifications);
-    const [currentPlan, setCurrentPlan] = useState<'free' | 'pro'>('free');
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [currentPlan, setCurrentPlan] = useState<'free' | 'pro'>(
+        (store?.plan as any) === 'pro' || (user as any)?.plan === 'pro' ? 'pro' : 'free'
+    );
+    const [isCancelling, setIsCancelling] = useState(false);
 
-    // Load current plan on mount
+    // Initial load of notifications
+    useEffect(() => {
+        loadNotifications();
+
+        // Polling for new notifications every 30 seconds
+        const interval = setInterval(loadNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadNotifications = async () => {
+        try {
+            const data = await notificationService.getNotifications();
+            setNotifications(data);
+            const count = await notificationService.getUnreadCount();
+            setUnreadCount(count);
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+        }
+    };
+
+    // Load current plan on mount and when returning from Stripe portal
     useEffect(() => {
         if (type === 'store') {
             const loadPlan = async () => {
                 try {
                     const response = await paymentService.getSubscriptionStatus();
+                    console.log('DEBUG [Sidebar]: Subscription status:', response);
                     if (response.success) {
                         setCurrentPlan(response.plan === 'pro' ? 'pro' : 'free');
+                        setIsCancelling(!!response.subscription?.cancelAtPeriodEnd);
                     }
                 } catch (error) {
                     console.error('Error loading plan:', error);
                 }
             };
+
+            // Load on mount
             loadPlan();
+
+            // Reload when tab becomes visible (user returns from Stripe portal)
+            const handleVisibilityChange = () => {
+                if (document.visibilityState === 'visible') {
+                    loadPlan();
+                }
+            };
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            return () => {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+            };
         }
     }, [type]);
 
     // Get store slug from auth context
     const storeSlug = store?.slug || 'urban-styles';
 
-    const unreadCount = notifications.filter(n => n.unread).length;
+    // unreadCount is now in state
 
     const handleLogout = () => {
         logout();
@@ -98,17 +134,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
     };
 
     const handleVisitStore = () => {
-        window.open(`/store/${storeSlug}`, '_blank');
+        window.open(`/${storeSlug}`, '_blank');
     };
 
-    const markAllAsRead = () => {
-        setNotifications(notifications.map(n => ({ ...n, unread: false })));
+    const markAllAsRead = async () => {
+        try {
+            await notificationService.markAllAsRead();
+            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+            setUnreadCount(0);
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
     };
 
-    const markAsRead = (id: number) => {
-        setNotifications(notifications.map(n =>
-            n.id === id ? { ...n, unread: false } : n
-        ));
+    const markAsRead = async (id: string) => {
+        try {
+            await notificationService.markAsRead(id);
+            setNotifications(prev => prev.map(n =>
+                n._id === id ? { ...n, read: true } : n
+            ));
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    };
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
+
+        if (diffInMinutes < 1) return 'Agora';
+        if (diffInMinutes < 60) return `${diffInMinutes}m`;
+
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) return `${diffInHours}h`;
+
+        const diffInDays = Math.floor(diffInHours / 24);
+        return `${diffInDays}d`;
     };
 
     return (
@@ -123,11 +186,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                             <span className="sidebar-brand">BookMe</span>
                             <span className="sidebar-type">{title}</span>
                             {type === 'store' && (
-                                <span className={`sidebar-plan-badge ${currentPlan === 'pro' ? 'pro' : 'free'}`}>
-                                    {currentPlan === 'pro' ? (
+                                <span className={`sidebar-plan-badge ${currentPlan === 'free' ? 'free' : 'pro'}`}>
+                                    {currentPlan !== 'free' ? (
                                         <>
                                             <Crown size={12} />
-                                            <span>Profissional</span>
+                                            <span>
+                                                {isCancelling ? 'Encerra em breve' : 'Profissional'}
+                                            </span>
                                         </>
                                     ) : (
                                         <span>Starter</span>
@@ -236,19 +301,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                         </button>
                     )}
                     <div className="notifications-list">
-                        {notifications.map(notification => (
-                            <div
-                                key={notification.id}
-                                className={`notification-item ${notification.unread ? 'unread' : ''}`}
-                                onClick={() => markAsRead(notification.id)}
-                            >
-                                <div className="notification-content">
-                                    <span className="notification-title">{notification.title}</span>
-                                    <span className="notification-message">{notification.message}</span>
-                                </div>
-                                <span className="notification-time">{notification.time}</span>
+                        {notifications.length === 0 ? (
+                            <div className="empty-notifications">
+                                <Bell size={32} />
+                                <p>Nenhuma notificação</p>
                             </div>
-                        ))}
+                        ) : (
+                            notifications.map(notification => (
+                                <div
+                                    key={notification._id}
+                                    className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                                    onClick={() => !notification.read && markAsRead(notification._id)}
+                                >
+                                    <div className="notification-content">
+                                        <span className="notification-title">{notification.title}</span>
+                                        <span className="notification-message">{notification.message}</span>
+                                    </div>
+                                    <span className="notification-time">{formatDate(notification.createdAt)}</span>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </Modal>

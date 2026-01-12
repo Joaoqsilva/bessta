@@ -639,6 +639,16 @@
     color: var(--text-muted);
 }
 
+.current-plan-badge.cancelling {
+    background: var(--warning-50);
+    color: var(--warning-700);
+    border: 1px solid var(--warning-200);
+}
+
+.current-plan-badge.cancelling svg {
+    color: var(--warning-600);
+}
+
 /* Image Upload */
 .image-upload-grid {
     display: grid;

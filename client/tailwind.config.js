@@ -92,9 +92,9 @@ export default {
                 white: '#ffffff',
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'sans-serif'],
+                heading: ['Outfit', 'Inter', 'sans-serif'],
                 serif: ['Playfair Display', 'serif'],
-                outfit: ['Outfit', 'sans-serif'],
             },
             borderRadius: {
                 'none': 'var(--radius-none)',

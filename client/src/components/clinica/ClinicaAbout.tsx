@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 import { type ClinicaContent } from '../../data/clinicaContent';
 import { EditableText } from '../EditableText';
-import { EditOverlay } from '../EditOverlay';
+import { EditableImage } from '../EditableImage';
 import { type StoreCustomization } from '../../context/StoreCustomizationService';
 
 interface ClinicaAboutProps {
@@ -33,7 +33,7 @@ export const ClinicaAbout = ({ content, isEditorMode, onEditAction, customizatio
                         gap: '1rem',
                         position: 'relative'
                     }}>
-                        <EditOverlay label="Alterar Fotos" action="about-image" isEditorMode={isEditorMode} onEditAction={onEditAction} />
+
 
                         {/* Decorative background element */}
                         <div style={{
@@ -48,24 +48,51 @@ export const ClinicaAbout = ({ content, isEditorMode, onEditAction, customizatio
                             opacity: 0.5
                         }}></div>
 
-                        <div className="mosaic-item" style={{ gridColumn: '1 / 8', gridRow: '1 / 8', zIndex: 1, borderRadius: '24px 0 24px 24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                            <img src={mainImage} alt="Sobre 1" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div className="mosaic-item relative group" style={{ gridColumn: '1 / 8', gridRow: '1 / 8', zIndex: 1, borderRadius: '24px 0 24px 24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                            <EditableImage
+                                editKey="aboutImage"
+                                currentSrc={mainImage}
+                                isEditorMode={isEditorMode}
+                                onEditAction={onEditAction}
+                                className="w-full h-full object-cover"
+                                label="Imagem Principal"
+                                alt="Sobre 1"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
                         </div>
 
-                        {content.images[1] && (
-                            <div className="mosaic-item" style={{ gridColumn: '8 / 13', gridRow: '2 / 7', zIndex: 2, borderRadius: '16px', overflow: 'hidden', transform: 'translateY(10px)' }}>
-                                <img src={content.images[1]} alt="Sobre 2" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {(customization?.galleryImages?.[0] || content.images[1]) && (
+                            <div className="mosaic-item relative group" style={{ gridColumn: '8 / 13', gridRow: '2 / 7', zIndex: 2, borderRadius: '16px', overflow: 'hidden', transform: 'translateY(10px)' }}>
+                                <EditableImage
+                                    editKey="galleryImages__0"
+                                    currentSrc={customization?.galleryImages?.[0] || content.images[1]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 2"
+                                    alt="Sobre 2"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
                             </div>
                         )}
 
-                        {content.images[2] && (
-                            <div className="mosaic-item" style={{ gridColumn: '6 / 13', gridRow: '7 / 13', zIndex: 1, borderRadius: '0 24px 24px 24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                                <img src={content.images[2]} alt="Sobre 3" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {(customization?.galleryImages?.[1] || content.images[2]) && (
+                            <div className="mosaic-item relative group" style={{ gridColumn: '6 / 13', gridRow: '7 / 13', zIndex: 1, borderRadius: '0 24px 24px 24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                                <EditableImage
+                                    editKey="galleryImages__1"
+                                    currentSrc={customization?.galleryImages?.[1] || content.images[2]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 3"
+                                    alt="Sobre 3"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
                             </div>
                         )}
 
-                        {content.images[3] && (
-                            <div className="mosaic-item glass-panel" style={{
+                        {(customization?.galleryImages?.[2] || content.images[3]) && (
+                            <div className="mosaic-item glass-panel relative group" style={{
                                 gridColumn: '2 / 6',
                                 gridRow: '8 / 12',
                                 zIndex: 3,
@@ -75,14 +102,23 @@ export const ClinicaAbout = ({ content, isEditorMode, onEditAction, customizatio
                                 justifyContent: 'center',
                                 padding: '0.5rem'
                             }}>
-                                <img src={content.images[3]} alt="Sobre 4" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />
+                                <EditableImage
+                                    editKey="galleryImages__2"
+                                    currentSrc={customization?.galleryImages?.[2] || content.images[3]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 4"
+                                    alt="Sobre 4"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }}
+                                />
                             </div>
                         )}
                     </div>
 
                     {/* Content */}
                     <div className="about-content">
-                        <span className="clinica-subtitle">Sobre Nós</span>
+                        <span className="clinica-subtitle"><EditableText id="cl_abt_label" defaultText="Sobre Nós" tagName="span" {...editProps} /></span>
                         <h2 className="clinica-title" style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>
                             <EditableText
                                 id="clinica_about_title"

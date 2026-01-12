@@ -10,11 +10,17 @@ import {
 } from '../../context/StoreCustomizationService';
 import type { Store, Service, Appointment } from '../../types';
 import './StoreBookingPage.css';
-import { LandingPagePsychology } from './LandingPagePsychology';
-import { LandingPageBeautySalon } from './LandingPageBeautySalon';
+import { LandingPagePsychology } from './LandingPagePsychology'; // Still keep potentially if needed but likely removing usage logic
+import { LandingPageBeautySalon } from './LandingPageBeautySalon'; // Keep for now until full confirmation or delete file
 import { LandingPageModern } from './LandingPageModern';
 import { LandingPageSophisticated } from './LandingPageSophisticated';
 import { LandingPageNew } from './LandingPageNew';
+import { LandingPageTherapy } from './LandingPageTherapy';
+import { LandingPageClinic } from './LandingPageClinic';
+import { LandingPageHarmony } from './LandingPageHarmony';
+import { LandingPageVibrant } from './LandingPageVibrant';
+import { LandingPageSunny } from './LandingPageSunny';
+import { LandingPageVitality } from './LandingPageVitality';
 import { BookingWizard } from '../../components/BookingWizard';
 
 const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -106,7 +112,7 @@ export const StoreBookingPage = ({
                             setCustomization({
                                 storeId: store?.id || '',
                                 ...DEFAULT_CUSTOMIZATION,
-                                layout: 'psychology-office'
+                                layout: 'therapy-new'
                             });
                         }
                     }
@@ -147,35 +153,50 @@ export const StoreBookingPage = ({
     // Apply custom CSS from customization
     useEffect(() => {
         if (customization) {
-            const root = isEditorMode ? document.querySelector('.visual-editor-preview-container') as HTMLElement : document.documentElement;
-            // Fallback to documentElement if wrapper not found (shouldn't happen in editor) or normal mode
-            const target = root || document.documentElement;
+            const applyVariables = (target: HTMLElement) => {
+                target.style.setProperty('--store-primary', customization.primaryColor);
+                target.style.setProperty('--store-secondary', customization.secondaryColor);
+                target.style.setProperty('--store-accent', customization.accentColor);
 
-            target.style.setProperty('--store-primary', customization.primaryColor);
-            target.style.setProperty('--store-secondary', customization.secondaryColor);
-            target.style.setProperty('--store-accent', customization.accentColor);
-
-            // Apply font family
-            const fontMap: Record<string, string> = {
-                'inter': 'Inter, sans-serif',
-                'poppins': 'Poppins, sans-serif',
-                'roboto': 'Roboto, sans-serif',
-                'outfit': 'Outfit, sans-serif',
+                // Apply font family
+                const fontMap: Record<string, string> = {
+                    'inter': 'Inter, sans-serif',
+                    'poppins': 'Poppins, sans-serif',
+                    'roboto': 'Roboto, sans-serif',
+                    'outfit': 'Outfit, sans-serif',
+                };
+                const fontFamily = fontMap[customization.fontFamily] || fontMap['inter'];
+                target.style.setProperty('--store-font', fontFamily);
             };
-            const fontFamily = fontMap[customization.fontFamily] || fontMap['inter'];
-            target.style.setProperty('--store-font', fontFamily);
+
+            const root = document.documentElement;
+            applyVariables(root);
+
+            // Also apply to body to be safe
+            applyVariables(document.body);
+
+            // If in editor mode, try to find the specific container
+            if (isEditorMode) {
+                const previewContainer = document.querySelector('.visual-editor-preview-container') as HTMLElement;
+                if (previewContainer) {
+                    applyVariables(previewContainer);
+                }
+            }
         }
 
-        // No cleanup needed for editor mode as updates are continuous
-        // For normal mode, we might want cleanup on unmount
-        if (!isEditorMode) {
-            return () => {
-                document.documentElement.style.removeProperty('--store-primary');
-                document.documentElement.style.removeProperty('--store-secondary');
-                document.documentElement.style.removeProperty('--store-accent');
-                document.documentElement.style.removeProperty('--store-font');
-            };
-        }
+        // Cleanup
+        return () => {
+            if (!isEditorMode) {
+                const removeVariables = (target: HTMLElement) => {
+                    target.style.removeProperty('--store-primary');
+                    target.style.removeProperty('--store-secondary');
+                    target.style.removeProperty('--store-accent');
+                    target.style.removeProperty('--store-font');
+                };
+                removeVariables(document.documentElement);
+                removeVariables(document.body);
+            }
+        };
     }, [customization, isEditorMode]);
 
 
@@ -206,22 +227,30 @@ export const StoreBookingPage = ({
         );
     }
 
-    let LayoutComponent: any = LandingPageBeautySalon; // Default fallback
+    let LayoutComponent: any = LandingPageTherapy; // Default new fallback (was BeautySalon)
 
-    if (customization.layout === 'psychology-office') {
-        LayoutComponent = LandingPagePsychology;
-    } else if (customization.layout === 'beauty-salon') {
-        LayoutComponent = LandingPageBeautySalon;
-    } else if (customization.layout === 'modern-therapy') {
+    if (customization.layout === 'modern-therapy') {
         LayoutComponent = LandingPageModern;
     } else if (customization.layout === 'sophisticated-therapy') {
         LayoutComponent = LandingPageSophisticated;
     } else if (customization.layout === 'lacanian-clinic') {
         LayoutComponent = LandingPageNew;
+    } else if (customization.layout === 'therapy-new') {
+        LayoutComponent = LandingPageTherapy; // Layout Terapia (Novo)
+    } else if (customization.layout === 'clinic-new') {
+        LayoutComponent = LandingPageClinic; // Layout Clinica (Novo)
+    } else if (customization.layout === 'harmony-new') {
+        LayoutComponent = LandingPageHarmony; // Layout Harmony (Novo)
+    } else if (customization.layout === 'vibrant-new') {
+        LayoutComponent = LandingPageVibrant; // Layout Vibrant (Novo)
+    } else if (customization.layout === 'sunny-new') {
+        LayoutComponent = LandingPageSunny; // Layout Sunny (Novo)
+    } else if (customization.layout === 'vitality-new') {
+        LayoutComponent = LandingPageVitality; // Layout Vitality (Novo)
     }
 
     return (
-        <div className={`booking-page layout-${customization.layout}`}>
+        <div className={`booking-page layout-${customization.layout} ${isEditorMode ? 'is-editor' : ''}`}>
             <LayoutComponent
                 store={store}
                 customization={customization}

@@ -8,6 +8,7 @@ import { serviceApi } from '../services/serviceApi';
 import { appointmentApi } from '../services/appointmentApi';
 import type { Service, Appointment, Store } from '../types';
 import type { StoreCustomization } from '../context/StoreCustomizationService';
+import { formatPhone } from '../utils/formatters';
 
 // Reusing styles from StoreBookingPage is the best way to ensure consistency
 // We just need to make sure the parent doesn't override wizard specific styles if we add any.
@@ -38,15 +39,16 @@ const getDefaultWeeklySlots = (): WeeklyTimeSlots => ({
 });
 
 export const BookingWizard = ({ store, customization, isOpen, onClose }: BookingWizardProps) => {
+    const { user } = useAuth();
     const [step, setStep] = useState<BookingStep>('service');
     const [services, setServices] = useState<Service[]>([]);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [customerData, setCustomerData] = useState<CustomerData>({
-        name: '',
-        email: '',
-        phone: '',
+        name: user?.ownerName || user?.name || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
         notes: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +56,19 @@ export const BookingWizard = ({ store, customization, isOpen, onClose }: Booking
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [weeklyTimeSlots, setWeeklyTimeSlots] = useState<WeeklyTimeSlots>(getDefaultWeeklySlots());
     const [storeAppointments, setStoreAppointments] = useState<Appointment[]>([]);
+
+    // Update customer data when user changes (e.g., login)
+    useEffect(() => {
+        if (user) {
+            setCustomerData(prev => ({
+                ...prev,
+                name: prev.name || user.ownerName || user.name || '',
+                email: prev.email || user.email || '',
+                phone: prev.phone || user.phone || ''
+            }));
+        }
+    }, [user]);
+
 
     useEffect(() => {
         const loadData = async () => {
@@ -515,7 +530,7 @@ export const BookingWizard = ({ store, customization, isOpen, onClose }: Booking
                                                     label="Telefone"
                                                     placeholder="(11) 99999-9999"
                                                     value={customerData.phone}
-                                                    onChange={e => setCustomerData({ ...customerData, phone: e.target.value })}
+                                                    onChange={e => setCustomerData({ ...customerData, phone: formatPhone(e.target.value) })}
                                                     leftIcon={<Phone size={18} />}
                                                     required
                                                 />

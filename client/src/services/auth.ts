@@ -10,12 +10,14 @@ interface AuthResponse {
 }
 
 interface RegisterData {
-    storeName: string;
+    storeName?: string;
     ownerName: string;
     email: string;
     phone: string;
     password: string;
     category?: string;
+    role?: 'store_owner' | 'client_user';
+    storeId?: string;
 }
 
 export const authService = {

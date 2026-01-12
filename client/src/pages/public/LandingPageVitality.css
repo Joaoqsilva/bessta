@@ -1,0 +1,354 @@
+/* LandingPageVitality.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --vit-primary: var(--store-primary, #10b981);
+    /* Emerald */
+    --vit-secondary: var(--store-secondary, #059669);
+    /* Darker Emerald */
+    --vit-accent: var(--store-accent, #84cc16);
+    /* Lime */
+    --vit-dark: #064e3b;
+    /* Deep Green Text */
+    --vit-light: #ecfdf5;
+    /* Very Light Mint */
+    --vit-white: #ffffff;
+    --vit-bg: #f0fdf4;
+    --vit-gradient: linear-gradient(135deg, var(--store-primary, #10b981) 0%, var(--store-secondary, #34d399) 100%);
+}
+
+.vit-wrapper {
+    background-color: var(--vit-white);
+    color: var(--vit-dark);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.vit-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Typography */
+.vit-heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--vit-dark);
+    line-height: 1.25;
+}
+
+.vit-text-gradient {
+    background: var(--vit-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Buttons */
+.vit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.vit-btn-primary {
+    background: var(--vit-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.vit-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.vit-btn-outline {
+    background: transparent;
+    border: 2px solid var(--vit-primary);
+    color: var(--vit-primary);
+}
+
+.vit-btn-outline:hover {
+    background: var(--vit-light);
+}
+
+/* Cards */
+.vit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.vit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: var(--vit-primary);
+}
+
+/* 1. Navbar */
+.vit-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.vit-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vit-logo {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--vit-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vit-nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.vit-nav-link {
+    text-decoration: none;
+    color: var(--vit-dark);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.vit-nav-link:hover {
+    color: var(--vit-primary);
+}
+
+/* 2. Hero */
+.vit-hero {
+    padding-top: 8rem;
+    padding-bottom: 6rem;
+    background: radial-gradient(circle at top right, var(--vit-light) 0%, white 60%);
+    position: relative;
+    overflow: hidden;
+}
+
+.vit-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.vit-hero-img-box {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 20px 20px 0 var(--vit-accent);
+}
+
+.vit-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 3. Highlights */
+.vit-highlights {
+    padding: 4rem 0;
+    margin-top: -3rem;
+    position: relative;
+    z-index: 10;
+}
+
+.vit-highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* 4. About */
+.vit-about {
+    padding: 6rem 0;
+}
+
+.vit-about-container {
+    display: grid;
+    grid-template-columns: 0.8fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.vit-about-img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: -10px -10px 0 var(--vit-light);
+}
+
+/* 5. Trust (Stats) */
+.vit-trust {
+    padding: 4rem 0;
+    background: var(--vit-dark);
+    color: white;
+}
+
+.vit-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+/* 6. Services */
+.vit-services {
+    padding: 6rem 0;
+    background: var(--vit-light);
+}
+
+.vit-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* 7. Journey */
+.vit-journey {
+    padding: 6rem 0;
+}
+
+.vit-journey-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    position: relative;
+}
+
+.vit-journey-steps::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: var(--vit-light);
+    z-index: 0;
+}
+
+/* 8. Feature (Deep Dive) */
+.vit-feature {
+    padding: 6rem 0;
+    background: white;
+}
+
+.vit-feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+/* 9. Testimonials */
+.vit-testimonials {
+    padding: 6rem 0;
+    background: var(--vit-bg);
+}
+
+/* 10. FAQ */
+.vit-faq {
+    padding: 6rem 0;
+    background: white;
+}
+
+.vit-faq-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.vit-faq-q {
+    padding: 1.25rem;
+    background: var(--vit-bg);
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+}
+
+.vit-faq-a {
+    padding: 1.25rem;
+    border-top: 1px solid #e2e8f0;
+    color: #4b5563;
+}
+
+/* 11. Contact */
+.vit-contact {
+    padding: 6rem 0;
+    background: var(--vit-dark);
+    color: white;
+    text-align: center;
+}
+
+.vit-footer {
+    padding: 2rem 0;
+    text-align: center;
+    background: #022c22;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+
+    .vit-hero-grid,
+    .vit-about-container,
+    .vit-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .vit-stats-grid,
+    .vit-journey-steps {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .vit-nav-links {
+        display: none;
+    }
+
+    .vit-journey-steps::before {
+        display: none;
+    }
+}
+
+/* Editor Mode Overrides */
+.is-editor .vit-nav {
+    position: absolute !important;
+    top: 0;
+    width: 100%;
+}

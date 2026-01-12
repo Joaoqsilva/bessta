@@ -1,4 +1,5 @@
-import { Brain, Users, BookOpen, MessageCircle, Heart, Sparkles } from 'lucide-react';
+import { Brain, Users, BookOpen, MessageCircle, Heart, Sparkles, Plus, Trash2 } from 'lucide-react';
+
 import { type ClinicaContent } from '../../data/clinicaContent';
 import { EditableText } from '../EditableText';
 import { EditableIcon } from '../EditableIcon';
@@ -34,7 +35,7 @@ export const ClinicaServices = ({ content, isEditorMode, onEditAction, customiza
 
             <div className="clinica-container">
                 <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                    <span className="clinica-subtitle">Atendimento</span>
+                    <span className="clinica-subtitle"><EditableText id="clinica_services_label" defaultText="Atendimento" tagName="span" {...editProps} /></span>
                     <h2 className="clinica-title" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
                         <EditableText
                             id="clinica_services_title"
@@ -54,14 +55,15 @@ export const ClinicaServices = ({ content, isEditorMode, onEditAction, customiza
                 </div>
 
                 <div className="grid-4" style={{ gap: '2rem' }}>
-                    {content.items.map((item, idx) => {
-                        const defaultIconName = item.icon || 'Sparkles';
+                    {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : content.items).map((item, idx) => {
+                        // Handle both old 'icon' and new 'iconName' property if one exists, fallback to item.icon or item.iconName
+                        const defaultIconName = (item as any).iconName || item.icon || 'Sparkles';
                         const Icon = iconMap[defaultIconName] || Sparkles;
 
                         return (
                             <div
                                 key={idx}
-                                className="glass-card"
+                                className="glass-card relative group"
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -120,9 +122,32 @@ export const ClinicaServices = ({ content, isEditorMode, onEditAction, customiza
                                         {...editProps}
                                     />
                                 </div>
+
+                                {isEditorMode && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('service-remove__' + idx); }}
+                                        className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 shadow-sm"
+                                        title="Remover Serviço"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
                             </div>
                         );
                     })}
+
+                    {isEditorMode && (
+                        <div
+                            className="glass-card flex flex-col items-center justify-center p-8 border-2 border-dashed border-[var(--clinica-primary)] bg-white/30 hover:bg-white/50 cursor-pointer transition-all"
+                            onClick={() => onEditAction?.('service-add')}
+                            style={{ minHeight: '300px' }}
+                        >
+                            <div className="w-16 h-16 rounded-full bg-[var(--clinica-secondary)] flex items-center justify-center text-[var(--clinica-primary)] mb-4">
+                                <Plus size={32} />
+                            </div>
+                            <span className="font-serif text-lg font-semibold text-[var(--clinica-dark)]">Adicionar Serviço</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

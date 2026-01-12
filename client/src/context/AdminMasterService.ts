@@ -38,6 +38,11 @@ export interface PlatformStats {
     pendingSupport: number;
     openSupportTickets: number;
     averagePlatformRating: number;
+    planDistribution?: {
+        free: number;
+        basic: number;
+        pro: number;
+    };
     monthlyData?: {
         month: string;
         appointments: number;
@@ -52,7 +57,7 @@ export const getAllRegisteredStores = async (): Promise<RegisteredStore[]> => {
         const result = await platformManagementApi.getStores();
         if (result.success) {
             return result.stores.map((store: any) => ({
-                id: store._id || store.id,
+                id: String(store._id || store.id),
                 slug: store.slug,
                 name: store.name,
                 category: store.category || 'Serviços',

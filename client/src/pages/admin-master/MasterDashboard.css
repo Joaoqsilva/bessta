@@ -181,7 +181,7 @@
     background: var(--surface-0);
     border: 1px solid var(--surface-100);
     border-radius: var(--radius-2xl);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .card-header {
@@ -199,8 +199,12 @@
 }
 
 /* Stores Table */
-.stores-table {
-    overflow-x: auto;
+.stores-table,
+.stores-table table,
+.stores-table tbody,
+.stores-table tr,
+.stores-table td {
+    overflow: visible !important;
 }
 
 .stores-table table {
@@ -466,11 +470,19 @@
     color: var(--text-muted);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 .action-btn:hover {
     background: var(--surface-100);
     color: var(--text-main);
+}
+
+.action-btn.active {
+    background: var(--surface-100);
+    color: var(--primary-600);
 }
 
 .appointments-cell {
@@ -506,4 +518,63 @@
 
 .activity-item svg {
     opacity: 0.8;
+}
+
+/* Floating Dropdown Menu */
+.relative {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 100;
+    min-width: 160px;
+    margin-top: var(--spacing-2);
+    background: var(--surface-0);
+    border: 1px solid var(--surface-100);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+.dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--text-main);
+    text-align: left;
+    transition: background 0.2s;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: var(--surface-50);
+}
+
+.dropdown-item.delete {
+    color: var(--error-600);
+}
+
+.dropdown-item.delete:hover {
+    background: var(--error-50);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

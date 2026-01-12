@@ -78,7 +78,7 @@ export interface StoreCustomization {
     logo: string | null;
     coverImage: string | null;
     // Layout
-    layout: 'beauty-salon' | 'psychology-office' | 'modern-therapy' | 'sophisticated-therapy' | 'lacanian-clinic';
+    layout: 'modern-therapy' | 'sophisticated-therapy' | 'lacanian-clinic' | 'therapy-new' | 'clinic-new' | 'harmony-new' | 'vibrant-new' | 'sunny-new' | 'vitality-new';
     daysLayout?: 'grid' | 'list';
     showRating: boolean;
     showAddress: boolean;
@@ -91,9 +91,18 @@ export interface StoreCustomization {
     aboutTitle?: string;
     aboutText?: string;
     textOverrides?: Record<string, { content?: string; color?: string }>;
-    specialties?: string[];
-    teamImages?: string[];
+
+    // Dynamic Content Arrays
+    specialties?: string[]; // Kept for backward compat or simple lists
+    servicesList?: ServiceItem[];
+    team?: TeamMember[];
+    testimonials?: TestimonialItem[];
+    faq?: FAQItem[];
+
+    teamImages?: string[]; // Deprecated but kept for now
+    testimonialImages?: string[]; // New for dynamic testimonials
     iconOverrides?: Record<string, string>;
+    visibleSections?: Record<string, boolean>;
     // Fontes
     fontFamily: 'inter' | 'poppins' | 'roboto' | 'outfit';
     // Estilos
@@ -110,6 +119,35 @@ export interface StoreCustomization {
     whatsapp: string;
     facebook: string;
     updatedAt: string;
+}
+
+export interface FAQItem {
+    id: string;
+    question: string;
+    answer: string;
+}
+
+export interface TestimonialItem {
+    id: string;
+    text: string;
+    author: string;
+    role?: string;
+    rating?: number;
+}
+
+export interface ServiceItem {
+    id: string;
+    title: string;
+    description: string;
+    icon?: string;
+}
+
+export interface TeamMember {
+    id: string;
+    name: string;
+    role: string;
+    photoUrl?: string; // or use an icon placeholder if null
+    bio?: string;
 }
 
 // ===============================

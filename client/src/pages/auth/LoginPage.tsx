@@ -9,21 +9,24 @@ import './AuthPages.css';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const { login, googleLogin, isLoading, isAuthenticated, isAdminMaster } = useAuth();
+    const { login, googleLogin, isLoading, isAuthenticated, user } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     // Redirect authenticated users to their appropriate dashboard
     useEffect(() => {
-        if (isAuthenticated) {
-            if (isAdminMaster) {
+        if (isAuthenticated && user) {
+            if (user.role === 'admin_master') {
                 navigate('/admin/master', { replace: true });
-            } else {
+            } else if (user.role === 'store_owner') {
                 navigate('/app', { replace: true });
+            } else {
+                // client_user and other roles go to home page
+                navigate('/', { replace: true });
             }
         }
-    }, [isAuthenticated, isAdminMaster, navigate]);
+    }, [isAuthenticated, user, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

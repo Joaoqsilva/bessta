@@ -250,10 +250,14 @@ export const MasterUsersPage = () => {
                                     </td>
                                     <td>
                                         <div className="actions-cell">
-                                            <div className="dropdown">
+                                            <div className="dropdown" style={{ zIndex: showActionsMenu === user.id ? 100 : 1, position: 'relative' }}>
                                                 <button
                                                     className="action-btn"
-                                                    onClick={() => setShowActionsMenu(showActionsMenu === user.id ? null : user.id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setShowActionsMenu(showActionsMenu === user.id ? null : user.id);
+                                                    }}
                                                 >
                                                     <MoreVertical size={16} />
                                                 </button>

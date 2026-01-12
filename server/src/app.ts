@@ -14,11 +14,36 @@ import complaintRoutes from './routes/complaints';
 import supportRoutes from './routes/support';
 import reviewRoutes from './routes/reviews';
 import customerRoutes from './routes/customers';
+import notificationRoutes from './routes/notifications';
+import securityRoutes from './routes/security';
+
+// Security packages
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+// import mongoSanitize from 'express-mongo-sanitize'; // Replaced by safeMongoSanitize
+import hpp from 'hpp';
 
 const app = express();
 
 // Trust proxy (for Railway/Vercel)
 app.set('trust proxy', 1);
+
+import { honeypot } from './middleware/honeypot';
+
+import { safeMongoSanitize } from './middleware/security';
+
+// Security Middleware
+app.use(honeypot); // Active Defense (First line of defense)
+app.use(helmet());
+app.use(safeMongoSanitize); // NoSQL injection protection (Custom Express 5 compatible)
+// app.use(hpp()); // Prevent parameter pollution - TEMPORARILY DISABLED
+// Global Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: 'Muitas requisições deste IP, tente novamente mais tarde.'
+});
+app.use('/api', limiter); // Global rate limiting enabled
 
 // CORS configuration
 const corsOptions = {
@@ -29,7 +54,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging (development)
@@ -50,6 +75,10 @@ app.get('/health', (req, res) => {
     });
 });
 
+// CSRF Token endpoint
+import { getCsrfTokenEndpoint } from './middleware/csrf';
+app.get('/api/csrf-token', getCsrfTokenEndpoint);
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/domains', domainRoutes);
@@ -62,6 +91,8 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/security', securityRoutes);
 
 // 404 handler
 app.use((req, res) => {

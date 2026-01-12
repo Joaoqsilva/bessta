@@ -1,0 +1,341 @@
+/* LandingPageClinic.css */
+:root {
+    --clinic-primary: var(--store-primary, #8c6a5d);
+    /* Warm earth tone */
+    --clinic-secondary: var(--store-secondary, #e6ded9);
+    /* Light sandy beige */
+    --clinic-accent: var(--store-accent, #d4a373);
+    /* Golden/Warm accent */
+    --clinic-bg: #faf9f8;
+    /* Off-white warm background */
+    --clinic-text: #4a403a;
+    /* Dark warm gray/brown */
+    --clinic-heading: #2d2420;
+    /* Very dark brown */
+    --clinic-white: #ffffff;
+    --clinic-success: #708c69;
+    /* Sage green for positive elements */
+}
+
+.clinic-wrapper {
+    background-color: var(--clinic-bg);
+    color: var(--clinic-text);
+    font-family: 'Lato', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.clinic-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Typography */
+.clinic-heading {
+    font-family: 'Playfair Display', serif;
+    color: var(--clinic-heading);
+}
+
+.clinic-subtitle {
+    color: var(--clinic-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Button & Utilities */
+.clinic-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-family: 'Lato', sans-serif;
+}
+
+.clinic-btn-primary {
+    background-color: var(--clinic-primary);
+    color: white;
+}
+
+.clinic-btn-primary:hover {
+    background-color: #6d5247;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(140, 106, 93, 0.3);
+}
+
+.clinic-btn-outline {
+    background: transparent;
+    border: 1px solid var(--clinic-primary);
+    color: var(--clinic-primary);
+}
+
+.clinic-btn-outline:hover {
+    background: var(--clinic-primary);
+    color: white;
+}
+
+.clinic-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s ease;
+}
+
+.clinic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. Navbar */
+.clinic-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(250, 249, 248, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.25rem 0;
+}
+
+.clinic-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clinic-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--clinic-heading);
+}
+
+.clinic-nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.clinic-nav-link {
+    text-decoration: none;
+    color: var(--clinic-text);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.clinic-nav-link:hover {
+    color: var(--clinic-primary);
+}
+
+/* 2. Hero Section */
+.clinic-hero {
+    padding-top: 8rem;
+    padding-bottom: 6rem;
+    position: relative;
+    background: var(--clinic-secondary);
+    overflow: hidden;
+}
+
+.clinic-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.clinic-hero-img-box {
+    position: relative;
+    height: 600px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.clinic-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 3. Identification (Problem) */
+.clinic-ident {
+    padding: 6rem 0;
+    background: white;
+}
+
+.clinic-ident-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* 4. About */
+.clinic-about {
+    padding: 6rem 0;
+    background: var(--clinic-bg);
+}
+
+.clinic-stat {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+}
+
+/* 5. Team */
+.clinic-team {
+    padding: 6rem 0;
+    background: white;
+}
+
+.clinic-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.clinic-member-card {
+    text-align: center;
+}
+
+.clinic-member-photo {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: 4px;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+}
+
+/* 6. Services */
+.clinic-services {
+    padding: 6rem 0;
+    background: var(--clinic-heading);
+    color: var(--clinic-secondary);
+}
+
+.clinic-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.clinic-service-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.clinic-service-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 7. Gallery / Space */
+.clinic-gallery {
+    padding: 6rem 0;
+    background: white;
+}
+
+.clinic-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 300px);
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.clinic-gallery-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: zoom-in;
+    transition: opacity 0.3s;
+}
+
+.clinic-gallery-item:hover {
+    opacity: 0.9;
+}
+
+/* First item spans 2 rows and 2 cols */
+.clinic-gallery-grid img:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* 8. Testimonials */
+.clinic-reviews {
+    padding: 6rem 0;
+    background: var(--clinic-bg);
+}
+
+/* 9. FAQ */
+.clinic-faq {
+    padding: 6rem 0;
+    background: white;
+}
+
+.clinic-faq-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 0;
+}
+
+/* 10. Contact */
+.clinic-contact {
+    padding: 6rem 0;
+    background: var(--clinic-secondary);
+}
+
+.clinic-footer {
+    background: var(--clinic-heading);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 4rem 0 2rem;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .clinic-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clinic-nav-links {
+        display: none;
+    }
+
+    .clinic-gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+
+    .clinic-gallery-grid img:first-child {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
+
+/* Editor Mode Overrides */
+.is-editor .clinic-nav {
+    position: absolute !important;
+    top: 0;
+    width: 100%;
+}

@@ -79,7 +79,7 @@ export const MasterStoresPage = () => {
         switch (plan) {
             case 'free': return 'Grátis';
             case 'basic': return 'Profissional';
-            case 'pro': return 'Enterprise';
+            case 'pro': return 'Profissional';
             default: return plan;
         }
     };
@@ -197,15 +197,20 @@ export const MasterStoresPage = () => {
                                     </td>
                                     <td>
                                         <div className="actions-cell">
-                                            <Link to={`/store/${store.slug}`} target="_blank">
+                                            <Link to={`/${store.slug}`} target="_blank">
                                                 <button className="action-btn" title="Ver Loja">
                                                     <Eye size={16} />
                                                 </button>
                                             </Link>
-                                            <div className="dropdown">
+                                            <div className="dropdown" style={{ zIndex: showActionsMenu === store.id ? 100 : 1, position: 'relative' }}>
                                                 <button
                                                     className="action-btn"
-                                                    onClick={() => setShowActionsMenu(showActionsMenu === store.id ? null : store.id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        console.log('Action menu clicked for store in StoresPage:', store.id);
+                                                        setShowActionsMenu(showActionsMenu === store.id ? null : store.id);
+                                                    }}
                                                 >
                                                     <MoreVertical size={16} />
                                                 </button>

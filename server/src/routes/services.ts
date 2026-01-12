@@ -54,9 +54,19 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
             return res.status(403).json({ success: false, error: 'Sem permissão para editar este serviço' });
         }
 
+        // Security: Explicit field assignment to prevent mass assignment attacks
+        const { name, description, duration, price, currency, isActive } = req.body;
+        const allowedUpdates: any = {};
+        if (name !== undefined) allowedUpdates.name = name;
+        if (description !== undefined) allowedUpdates.description = description;
+        if (duration !== undefined) allowedUpdates.duration = duration;
+        if (price !== undefined) allowedUpdates.price = price;
+        if (currency !== undefined) allowedUpdates.currency = currency;
+        if (isActive !== undefined) allowedUpdates.isActive = isActive;
+
         const updatedService = await Service.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            allowedUpdates,
             { new: true }
         );
 

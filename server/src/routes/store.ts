@@ -37,6 +37,15 @@ router.get('/slug/:slug', async (req, res) => {
             return res.status(404).json({ success: false, error: 'Loja não encontrada' });
         }
 
+        // Check if store is suspended
+        if (store.status === 'suspended') {
+            return res.status(403).json({
+                success: false,
+                error: 'Esta loja está temporariamente suspensa pelo administrador.',
+                isSuspended: true
+            });
+        }
+
         res.json({ success: true, store });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -150,16 +159,31 @@ router.put('/:id/settings', authMiddleware, storeOwnerMiddleware('id'), async (r
 });
 
 
-// Update Store Status (Self-Deactivation)
-router.patch('/:id/status', authMiddleware, storeOwnerMiddleware('id'), async (req, res) => {
+// Update Store Status (Self-Deactivation or Admin Suspension)
+router.patch('/:id/status', authMiddleware, async (req: any, res) => {
     try {
+        const { id } = req.params;
         const { status } = req.body;
+        const user = req.user!;
 
+        // Check permission: Owner or Master Admin
+        const store = await Store.findById(id);
+        if (!store) {
+            return res.status(404).json({ success: false, error: 'Loja não encontrada' });
+        }
+
+        const isOwner = store.ownerId.toString() === user._id.toString();
+        const isMaster = user.role === 'admin_master';
+
+        if (!isOwner && !isMaster) {
+            return res.status(403).json({ success: false, error: 'Acesso negado' });
+        }
         if (!['active', 'suspended'].includes(status)) {
             return res.status(400).json({ success: false, error: 'Status inválido' });
         }
 
-        const store = await Store.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        store.status = status;
+        await store.save();
         res.json({ success: true, store });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -167,13 +191,21 @@ router.patch('/:id/status', authMiddleware, storeOwnerMiddleware('id'), async (r
 });
 
 // Delete Store (Account Deletion)
-router.delete('/:id', authMiddleware, storeOwnerMiddleware('id'), async (req, res) => {
+router.delete('/:id', authMiddleware, async (req: any, res) => {
     try {
         const { id } = req.params;
+        const user = req.user!;
         const store = await Store.findById(id);
 
         if (!store) {
             return res.status(404).json({ success: false, error: 'Loja não encontrada' });
+        }
+
+        const isOwner = store.ownerId.toString() === user._id.toString();
+        const isMaster = user.role === 'admin_master';
+
+        if (!isOwner && !isMaster) {
+            return res.status(403).json({ success: false, error: 'Acesso negado' });
         }
 
         // Cascading delete

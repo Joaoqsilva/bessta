@@ -5,8 +5,9 @@
 import express from 'express';
 import Stripe from 'stripe';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
-import { User } from '../models/User';
+import { User, IUser } from '../models/User';
 import { Store } from '../models/Store';
+import NotificationService from '../services/NotificationService';
 
 const router = express.Router();
 
@@ -237,15 +238,26 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     let event: Stripe.Event;
 
     try {
+        // Security: In production, ALWAYS verify webhook signature
+        const isProduction = process.env.NODE_ENV === 'production';
+
+        if (isProduction && !webhookSecret) {
+            console.error('CRITICAL: STRIPE_WEBHOOK_SECRET not configured in production!');
+            return res.status(500).send('Webhook Error: Missing webhook secret');
+        }
+
         if (webhookSecret && stripe) {
             event = stripe!.webhooks.constructEvent(req.body, sig, webhookSecret);
-        } else {
-            // For development without webhook secret or stripe not configured
+        } else if (!isProduction) {
+            // Only allow unverified events in development
+            console.warn('⚠️ DEV MODE: Accepting unverified webhook event');
             event = req.body as Stripe.Event;
+        } else {
+            return res.status(400).send('Webhook Error: Cannot verify signature');
         }
     } catch (err: any) {
         console.error('Webhook signature verification failed:', err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        return res.status(400).send('Webhook Error: Invalid signature');
     }
 
     // Handle the event
@@ -316,6 +328,27 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         }
 
         console.log(`User ${userId} upgraded to Pro plan`);
+
+        // Notify User
+        NotificationService.create(
+            userId,
+            'payment',
+            'Upgrade Concluído! 🎉',
+            'Sua assinatura Profissional foi ativada. Aproveite todos os recursos!',
+            '/app/settings?tab=plans'
+        );
+
+        // Notify Admins
+        const admins = await User.find({ role: 'admin_master' });
+        for (const admin of admins) {
+            NotificationService.create(
+                admin._id,
+                'payment',
+                'Nova Assinatura Pro',
+                `O usuário ${userId} acaba de assinar o plano Profissional.`,
+                '/admin/master/analytics'
+            );
+        }
     } catch (error) {
         console.error('Error updating user plan:', error);
     }
@@ -324,50 +357,122 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     console.log('Subscription updated:', subscription.id);
 
-    const userId = subscription.metadata?.userId;
-    if (!userId) return;
-
-    const status = subscription.status;
-    const plan = status === 'active' ? 'pro' : 'free';
+    const customerId = subscription.customer as string;
+    let userId: string | undefined = subscription.metadata?.userId;
 
     try {
-        await User.findByIdAndUpdate(userId, { plan });
+        // If userId is missing in metadata, find user by customerId
+        let user: IUser | null = null;
+        if (userId) {
+            user = await User.findById(userId);
+        } else if (customerId) {
+            user = await User.findOne({ stripeCustomerId: customerId });
+            userId = user?._id?.toString();
+        }
 
-        const user = await User.findById(userId);
-        if (user?.storeId) {
+        if (!user) {
+            console.warn(`⚠️ User not found for subscription ${subscription.id} (Customer: ${customerId})`);
+            return;
+        }
+
+        const status = subscription.status;
+        const isCancelling = subscription.cancel_at_period_end;
+
+        // If status is active but user chose to cancel (cancel_at_period_end), 
+        // we downgrade immediately per user request.
+        const plan = (status === 'active' || status === 'trialing') && !isCancelling ? 'pro' : 'free';
+
+        // Update user
+        console.log(`Updating user ${user._id} plan to ${plan}...`);
+        await User.findByIdAndUpdate(user._id, { plan });
+
+        // Update store
+        if (user.storeId) {
+            console.log(`Updating store ${user.storeId} plan to ${plan}...`);
             await Store.findByIdAndUpdate(user.storeId, { plan });
         }
+
+        console.log(`✅ User ${user._id} plan updated to ${plan} (Status: ${status})`);
+
+        if (plan === 'free') {
+            NotificationService.create(
+                user._id,
+                'payment',
+                'Plano Alterado',
+                'Sua assinatura foi alterada para o plano Starter.',
+                '/app/settings?tab=plans'
+            );
+        }
     } catch (error) {
-        console.error('Error updating subscription:', error);
+        console.error('❌ Error updating subscription:', error);
     }
 }
 
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     console.log('Subscription cancelled:', subscription.id);
 
-    const userId = subscription.metadata?.userId;
-    if (!userId) return;
+    const customerId = subscription.customer as string;
+    let userId: string | undefined = subscription.metadata?.userId;
 
     try {
-        await User.findByIdAndUpdate(userId, {
+        // Find user
+        let user: IUser | null = null;
+        if (userId) {
+            user = await User.findById(userId);
+        } else if (customerId) {
+            user = await User.findOne({ stripeCustomerId: customerId });
+            userId = user?._id?.toString();
+        }
+
+        if (!user) {
+            console.warn(`⚠️ User not found for cancelled subscription ${subscription.id}`);
+            return;
+        }
+
+        // Update user
+        console.log(`Downgrading user ${user._id} to Free plan...`);
+        await User.findByIdAndUpdate(user._id, {
             plan: 'free',
             stripeSubscriptionId: null,
+            planExpiresAt: null
         });
 
-        const user = await User.findById(userId);
-        if (user?.storeId) {
+        // Update store
+        if (user.storeId) {
+            console.log(`Downgrading store ${user.storeId} to Free plan...`);
             await Store.findByIdAndUpdate(user.storeId, { plan: 'free' });
         }
 
-        console.log(`User ${userId} downgraded to Free plan`);
+        console.log(`✅ User ${user._id} downgraded successfully`);
+
+        NotificationService.create(
+            user._id,
+            'payment',
+            'Assinatura Cancelada',
+            'Sua assinatura Profissional foi encerrada e você retornou ao plano Starter.',
+            '/app/settings?tab=plans'
+        );
     } catch (error) {
-        console.error('Error handling subscription cancellation:', error);
+        console.error('❌ Error handling subscription cancellation:', error);
     }
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
     console.log('Payment failed for invoice:', invoice.id);
-    // Could send email notification here
+
+    // Find user by customer ID to notify
+    if (invoice.customer) {
+        const user = await User.findOne({ stripeCustomerId: invoice.customer as string });
+        if (user) {
+            NotificationService.create(
+                user._id,
+                'payment',
+                'Falha no Pagamento',
+                'Houve um problema com a cobrança da sua assinatura. Verifique seus dados de pagamento.',
+                '/app/settings?tab=plans'
+            );
+        }
+    }
 }
 
 // ========================================
@@ -386,17 +491,62 @@ router.get('/subscription-status', authMiddleware, async (req: AuthRequest, res)
         }
 
         let subscription: Stripe.Subscription | null = null;
+        let activePlan = user.plan || 'free';
+
+        // If user has a subscription ID, verify with Stripe to ensure data consistency
         if (user.stripeSubscriptionId && stripe) {
             try {
                 subscription = await stripe!.subscriptions.retrieve(user.stripeSubscriptionId) as Stripe.Subscription;
-            } catch (e) {
-                // Subscription may have been deleted
+
+                // LOGIC: Self-correct database if Stripe status differs from DB plan
+                // This fixes issues where webhooks might have failed
+                const isStripeActive = (subscription.status === 'active' || subscription.status === 'trialing') && !subscription.cancel_at_period_end;
+
+                if (isStripeActive && activePlan !== 'pro') {
+                    // Stripe says active, but DB says free -> Upgrade DB
+                    console.log(`🔄 Self-correcting plan for user ${userId}: FREE -> PRO`);
+                    activePlan = 'pro';
+                    await User.findByIdAndUpdate(userId, { plan: 'pro' });
+                    if (user.storeId) {
+                        await Store.findByIdAndUpdate(user.storeId, { plan: 'pro' });
+                    }
+                } else if (!isStripeActive && activePlan === 'pro') {
+                    // Stripe says NOT active/trialing (e.g. canceled/incomplete_expired), but DB says pro
+                    console.log(`🔄 Self-correcting plan for user ${userId}: PRO -> FREE (Stripe status: ${subscription.status})`);
+                    activePlan = 'free';
+                    await User.findByIdAndUpdate(userId, {
+                        plan: 'free',
+                        stripeSubscriptionId: null,
+                        planExpiresAt: null
+                    });
+                    if (user.storeId) {
+                        await Store.findByIdAndUpdate(user.storeId, { plan: 'free' });
+                    }
+                }
+
+                console.log(`Subscription status for ${userId}: ${subscription.status}, cancelAtPeriodEnd: ${subscription.cancel_at_period_end}`);
+
+            } catch (e: any) {
+                console.error('Error fetching subscription from Stripe:', e);
+                // If subscription not found (deleted in Stripe), downgrade
+                if (e.code === 'resource_missing') {
+                    console.log(`🔄 Subscription missing in Stripe. Downgrading user ${userId} to FREE`);
+                    activePlan = 'free';
+                    await User.findByIdAndUpdate(userId, {
+                        plan: 'free',
+                        stripeSubscriptionId: null
+                    });
+                    if (user.storeId) {
+                        await Store.findByIdAndUpdate(user.storeId, { plan: 'free' });
+                    }
+                    subscription = null;
+                }
             }
         }
 
         res.json({
             success: true,
-            plan: user.plan || 'free',
+            plan: activePlan,
             subscription: subscription ? {
                 id: subscription.id,
                 status: subscription.status,

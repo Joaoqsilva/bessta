@@ -6,8 +6,12 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'bookme-super-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+if (!JWT_SECRET) {
+    throw new Error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
+}
 
 // Extended Request with user
 export interface AuthRequest extends Request {
@@ -21,7 +25,6 @@ interface JWTPayload {
     email: string;
     role: string;
     iat: number;
-    exp: number;
 }
 
 /**

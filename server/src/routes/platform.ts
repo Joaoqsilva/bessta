@@ -38,13 +38,35 @@ router.get('/settings', async (req, res) => {
  */
 router.put('/settings', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const updates = req.body;
+        // Security: Explicit field assignment to prevent mass assignment attacks
+        const {
+            platformName,
+            platformLogo,
+            primaryColor,
+            supportEmail,
+            supportPhone,
+            maintenanceMode,
+            registrationEnabled,
+            defaultPlan,
+            maxStoresPerUser
+        } = req.body;
+
+        const allowedUpdates: any = {};
+        if (platformName !== undefined) allowedUpdates.platformName = platformName;
+        if (platformLogo !== undefined) allowedUpdates.platformLogo = platformLogo;
+        if (primaryColor !== undefined) allowedUpdates.primaryColor = primaryColor;
+        if (supportEmail !== undefined) allowedUpdates.supportEmail = supportEmail;
+        if (supportPhone !== undefined) allowedUpdates.supportPhone = supportPhone;
+        if (maintenanceMode !== undefined) allowedUpdates.maintenanceMode = maintenanceMode;
+        if (registrationEnabled !== undefined) allowedUpdates.registrationEnabled = registrationEnabled;
+        if (defaultPlan !== undefined) allowedUpdates.defaultPlan = defaultPlan;
+        if (maxStoresPerUser !== undefined) allowedUpdates.maxStoresPerUser = maxStoresPerUser;
 
         let settings = await PlatformSettings.findOne();
         if (!settings) {
-            settings = await PlatformSettings.create(updates);
+            settings = await PlatformSettings.create(allowedUpdates);
         } else {
-            Object.assign(settings, updates);
+            Object.assign(settings, allowedUpdates);
             settings.updatedAt = new Date();
             await settings.save();
         }
@@ -95,6 +117,19 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
         const activeStoresThisMonth = await Store.countDocuments({
             status: 'active',
             createdAt: { $gte: startOfMonth }
+        });
+
+        // Calculate plan distribution across Users
+        const planDistribution = await User.aggregate([
+            { $match: { role: 'store_owner' } },
+            { $group: { _id: "$plan", count: { $sum: 1 } } }
+        ]);
+
+        const distributionMap = { free: 0, basic: 0, pro: 0 };
+        planDistribution.forEach(item => {
+            if (item._id in distributionMap) {
+                (distributionMap as any)[item._id] = item.count;
+            }
         });
 
         // Calculate average rating across all stores
@@ -186,7 +221,8 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
             pendingSupport: openSupportTickets,
             openSupportTickets,
             averagePlatformRating: Number(avgRating.toFixed(1)),
-            monthlyData: months
+            monthlyData: months,
+            planDistribution: distributionMap
         });
     } catch (error) {
         console.error('Error fetching platform stats:', error);
@@ -203,11 +239,17 @@ router.get('/stores', authMiddleware, adminMiddleware, async (req, res) => {
         // Todo: Add pagination
         const stores = await Store.find().sort({ createdAt: -1 });
 
-        // Enrich with some stats if needed, or keeping it lightweight
-        // For AdminMasterService compatibility we need extended data, but let's send basic first
-        // Or aggregations.
+        // Enrich stores with appointment count
+        const storesWithExtraInfo = await Promise.all(stores.map(async (s: any) => {
+            const appointmentCount = await Appointment.countDocuments({ storeId: s._id });
+            return {
+                ...s.toObject(),
+                id: s._id,
+                totalAppointments: appointmentCount
+            };
+        }));
 
-        res.json(stores);
+        res.json(storesWithExtraInfo);
     } catch (error) {
         console.error('Error listing stores:', error);
         res.status(500).json({ error: 'Erro ao listar lojas' });

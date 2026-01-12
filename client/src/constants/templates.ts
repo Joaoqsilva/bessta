@@ -22,7 +22,7 @@ export const STORE_TEMPLATES: Record<StoreCategory, StoreTemplate> = {
             buttonStyle: 'rounded',
             bannerEnabled: true,
             bannerText: '✂️ Agende seu corte e ganhe pontos fidelidade!',
-            layout: 'beauty-salon'
+            layout: 'vibrant-new'
         }
     },
     health: {
@@ -64,7 +64,7 @@ export const STORE_TEMPLATES: Record<StoreCategory, StoreTemplate> = {
             daysLayout: 'list',
             buttonStyle: 'rounded',
             bannerEnabled: false,
-            layout: 'psychology-office'
+            layout: 'therapy-new'
         }
     }
 };

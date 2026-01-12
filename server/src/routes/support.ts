@@ -4,10 +4,20 @@
 // ========================================
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { SupportTicket } from '../models/SupportTicket';
 import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth';
+import NotificationService from '../services/NotificationService';
+import { User } from '../models/User';
 
 const router = express.Router();
+
+// Rate limiter for public support ticket creation (prevent spam)
+const supportLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // Max 5 tickets per hour per IP
+    message: 'Muitos tickets enviados. Tente novamente mais tarde.'
+});
 
 /**
  * GET /api/support
@@ -78,6 +88,18 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
         });
 
         res.status(201).json(ticket);
+
+        // Notify Admins about new ticket
+        const admins = await User.find({ role: 'admin_master' });
+        for (const admin of admins) {
+            NotificationService.create(
+                admin._id,
+                'support',
+                'Novo Ticket de Suporte',
+                `O usuário ${user.ownerName || user.email} abriu um novo ticket: ${subject}`,
+                `/admin/master/support`
+            );
+        }
     } catch (error: any) {
         console.error('Error creating support ticket:', error);
         res.status(500).json({ error: 'Erro ao criar ticket de suporte' });
@@ -88,7 +110,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
  * POST /api/support/public
  * Create a new support ticket (Guest)
  */
-router.post('/public', async (req, res) => {
+router.post('/public', supportLimiter, async (req, res) => {
     try {
         const { subject, message, name, email, category, storeId } = req.body;
 
@@ -109,6 +131,18 @@ router.post('/public', async (req, res) => {
         });
 
         res.status(201).json(ticket);
+
+        // Notify Admins about new public ticket
+        const admins = await User.find({ role: 'admin_master' });
+        for (const admin of admins) {
+            NotificationService.create(
+                admin._id,
+                'support',
+                'Novo Ticket (Público)',
+                `Visitante ${name} abriu um ticket: ${subject}`,
+                `/admin/master/support`
+            );
+        }
     } catch (error: any) {
         console.error('Error creating public ticket:', error);
         res.status(500).json({ error: 'Erro ao criar ticket de suporte' });
@@ -195,6 +229,33 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
         }
 
         await ticket.save();
+
+        // Notify recipient about new response
+        if (response) {
+            if (user.role === 'admin_master' && ticket.userId) {
+                // Admin responded -> Notify User
+                NotificationService.create(
+                    ticket.userId,
+                    'support',
+                    'Nova Resposta de Suporte',
+                    `A equipe de suporte respondeu ao seu ticket: ${ticket.subject}`,
+                    `/app/settings?tab=support` // Assuming user support area
+                );
+            } else if (user.role !== 'admin_master') {
+                // User responded -> Notify Admins
+                const admins = await User.find({ role: 'admin_master' });
+                for (const admin of admins) {
+                    NotificationService.create(
+                        admin._id,
+                        'support',
+                        'Nova Resposta em Ticket',
+                        `Usuário respondeu ao ticket: ${ticket.subject}`,
+                        `/admin/master/support`
+                    );
+                }
+            }
+        }
+
         res.json(ticket);
     } catch (error: any) {
         console.error('Error updating ticket:', error);

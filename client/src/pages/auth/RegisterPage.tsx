@@ -5,6 +5,7 @@ import { Input } from '../../components/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, Store, ArrowRight, Calendar, AlertCircle, CheckCircle, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { formatPhone } from '../../utils/formatters';
 import './AuthPages.css';
 
 export const RegisterPage = () => {
@@ -40,14 +41,8 @@ export const RegisterPage = () => {
     // Validation errors
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Função para formatar telefone brasileiro
-    const formatPhone = (value: string): string => {
-        const digits = value.replace(/\D/g, '').slice(0, 11);
-        if (digits.length <= 2) return digits;
-        if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-        if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-        return value;
-    };
+
+    // Função para formatar telefone brasileiro (moved to utils/formatters)
 
     const updateField = (field: string, value: string) => {
         // Aplicar formatação específica por campo

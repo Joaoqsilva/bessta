@@ -8,3 +8,4 @@ export * from './Complaint';
 export * from './SupportTicket';
 export * from './Review';
 export * from './Customer';
+export * from './Notification';

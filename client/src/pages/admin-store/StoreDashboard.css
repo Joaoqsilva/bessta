@@ -5,6 +5,11 @@
 .store-dashboard {
     max-width: 1400px;
     margin: 0 auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.store-dashboard * {
+    font-family: inherit;
 }
 
 /* Header */

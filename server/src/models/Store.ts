@@ -79,7 +79,13 @@ const customizationSchema = new Schema({
     instagram: { type: String, default: '' },
     whatsapp: { type: String, default: '' },
     facebook: { type: String, default: '' },
-}, { _id: false });
+    // Dynamic Arrays (Mixed type for flexibility)
+    visibleSections: { type: Map, of: Boolean, default: {} },
+    servicesList: { type: [Schema.Types.Mixed], default: [] },
+    testimonials: { type: [Schema.Types.Mixed], default: [] },
+    team: { type: [Schema.Types.Mixed], default: [] },
+    faq: { type: [Schema.Types.Mixed], default: [] },
+}, { _id: false, strict: false });
 
 const storeSchema = new Schema<IStore>({
     slug: {

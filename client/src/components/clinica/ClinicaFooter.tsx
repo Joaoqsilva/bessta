@@ -2,6 +2,7 @@ import { Instagram, Linkedin, MessageCircle, MapPin, Mail, Phone } from 'lucide-
 import { type ClinicaContent } from '../../data/clinicaContent';
 import { EditableText } from '../EditableText';
 import { type StoreCustomization } from '../../context/StoreCustomizationService';
+import { StoreFooterRating } from '../StoreFooterRating';
 
 interface ClinicaFooterProps {
     content: ClinicaContent['footer'];
@@ -9,9 +10,12 @@ interface ClinicaFooterProps {
     isEditorMode?: boolean;
     onEditAction?: (section: string, defaultValue?: string) => void;
     customization?: StoreCustomization;
+    storeId?: string;
+    storeRating?: number;
+    storeTotalReviews?: number;
 }
 
-export const ClinicaFooter = ({ content, navItems, isEditorMode, onEditAction, customization }: ClinicaFooterProps) => {
+export const ClinicaFooter = ({ content, navItems, isEditorMode, onEditAction, customization, storeId, storeRating, storeTotalReviews }: ClinicaFooterProps) => {
     const editProps = { isEditorMode, onEditAction, customization };
 
     // In a full implementation, social links and contact info would also come from customization store settings.
@@ -62,11 +66,23 @@ export const ClinicaFooter = ({ content, navItems, isEditorMode, onEditAction, c
                                 </a>
                             ))}
                         </div>
+                        {storeId && (
+                            <div className="mt-4">
+                                <StoreFooterRating
+                                    storeId={storeId}
+                                    rating={storeRating}
+                                    totalReviews={storeTotalReviews}
+                                    isEditorMode={isEditorMode}
+                                    color="var(--clinica-secondary)"
+                                    textColor="white"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Links */}
                     <div>
-                        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '1.5rem' }}>Navegação</h3>
+                        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '1.5rem' }}><EditableText id="clinica_foot_nav_title" defaultText="Navegação" tagName="span" {...editProps} /></h3>
                         <ul style={{ listStyle: 'none', padding: 0, opacity: 0.9 }}>
                             {navItems.map((item, idx) => (
                                 <li key={idx} style={{ marginBottom: '0.8rem' }}>
@@ -85,22 +101,22 @@ export const ClinicaFooter = ({ content, navItems, isEditorMode, onEditAction, c
 
                     {/* Contact */}
                     <div style={{ gridColumn: 'span 2' }}>
-                        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '1.5rem' }}>Contato</h3>
+                        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '1.5rem' }}><EditableText id="clinica_foot_contact_title" defaultText="Contato" tagName="span" {...editProps} /></h3>
                         <ul style={{ listStyle: 'none', padding: 0, opacity: 0.9 }}>
                             <li style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'flex-start' }}>
                                 <MapPin size={20} style={{ color: 'var(--clinica-accent)', flexShrink: 0 }} />
-                                <span>{content.contact.address}</span>
+                                <EditableText id="clinica_foot_address" defaultText={content.contact.address} tagName="span" {...editProps} />
                             </li>
                             <li style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
                                 <Phone size={20} style={{ color: 'var(--clinica-accent)', flexShrink: 0 }} />
-                                <span>{content.contact.phone}</span>
+                                <EditableText id="clinica_foot_phone" defaultText={content.contact.phone} tagName="span" {...editProps} />
                             </li>
                             <li style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
                                 <Mail size={20} style={{ color: 'var(--clinica-accent)', flexShrink: 0 }} />
-                                <span>{content.contact.email}</span>
+                                <EditableText id="clinica_foot_email" defaultText={content.contact.email} tagName="span" {...editProps} />
                             </li>
                             <li style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                                <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--clinica-accent)', marginBottom: '0.2rem' }}>Horário de Atendimento</span>
+                                <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--clinica-accent)', marginBottom: '0.2rem' }}><EditableText id="clinica_foot_hours_label" defaultText="Horário de Atendimento" tagName="span" {...editProps} /></span>
                                 <EditableText
                                     id="clinica_foot_hours"
                                     defaultText={content.hours}

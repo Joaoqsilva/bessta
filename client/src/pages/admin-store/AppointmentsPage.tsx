@@ -69,7 +69,6 @@ export const AppointmentsPage = () => {
             pending: 'bg-yellow-100 text-yellow-700',
             cancelled: 'bg-red-100 text-red-700',
             completed: 'bg-gray-100 text-gray-700',
-            in_progress: 'bg-blue-100 text-blue-700',
         };
 
         const labels: Record<string, string> = {
@@ -77,7 +76,6 @@ export const AppointmentsPage = () => {
             pending: 'Pendente',
             cancelled: 'Cancelado',
             completed: 'Concluído',
-            in_progress: 'Em Andamento',
         };
 
         return (

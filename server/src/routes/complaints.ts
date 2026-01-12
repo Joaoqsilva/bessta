@@ -4,10 +4,21 @@
 // ========================================
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { Complaint } from '../models/Complaint';
 import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth';
+import NotificationService from '../services/NotificationService';
+import { User } from '../models/User';
+import { Store } from '../models/Store';
 
 const router = express.Router();
+
+// Rate limiter for public complaint creation (prevent spam)
+const complaintLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // Max 5 complaints per hour per IP
+    message: 'Muitas reclamações enviadas. Tente novamente mais tarde.'
+});
 
 /**
  * GET /api/complaints
@@ -47,7 +58,7 @@ router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
  * POST /api/complaints
  * Create a new complaint
  */
-router.post('/', async (req, res) => {
+router.post('/', complaintLimiter, async (req, res) => {
     try {
         const {
             title,
@@ -77,6 +88,32 @@ router.post('/', async (req, res) => {
         });
 
         res.status(201).json(complaint);
+
+        // Notify Admins about new complaint
+        const admins = await User.find({ role: 'admin_master' });
+        for (const admin of admins) {
+            NotificationService.create(
+                admin._id,
+                'complaint',
+                'Nova Reclamação Recebida',
+                `Uma nova reclamação foi registrada contra ${targetStoreName || 'uma loja'}: ${title}`,
+                `/admin/master/complaints`
+            );
+        }
+
+        // Notify Store Owner if applicable
+        if (targetStoreId) {
+            const store = await Store.findById(targetStoreId);
+            if (store && store.ownerId) {
+                NotificationService.create(
+                    store.ownerId,
+                    'complaint',
+                    'Nova Reclamação Recebida',
+                    `Sua loja recebeu uma nova reclamação: ${title}. Por favor, verifique os detalhes.`,
+                    `/app/settings?tab=complaints` // Assuming store owner has a complaints view or settings
+                );
+            }
+        }
     } catch (error: any) {
         console.error('Error creating complaint:', error);
         res.status(500).json({ error: 'Erro ao criar reclamação' });

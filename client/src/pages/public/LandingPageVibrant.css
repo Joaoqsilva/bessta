@@ -1,0 +1,344 @@
+/* LandingPageVibrant.css */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;700;800&display=swap');
+
+:root {
+    --vib-primary: var(--store-primary, #4361ee);
+    /* Electric Blue */
+    --vib-secondary: var(--store-secondary, #7209b7);
+    /* Deep Violet */
+    --vib-accent: var(--store-accent, #f72585);
+    /* Neon Coral/Pink */
+    --vib-success: #4cc9f0;
+    /* Cyan */
+    --vib-wht: #ffffff;
+    --vib-dark: #0b0c15;
+    /* Almost black */
+    --vib-bg: #0f101a;
+    /* Dark background */
+    --vib-glass: rgba(255, 255, 255, 0.05);
+    --vib-glass-border: rgba(255, 255, 255, 0.1);
+    --vib-glass-high: rgba(255, 255, 255, 0.1);
+}
+
+.vib-wrapper {
+    background-color: var(--vib-bg);
+    color: var(--vib-wht);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.vib-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Typography */
+.vib-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.vib-gradient-text {
+    background: linear-gradient(135deg, var(--vib-success), var(--vib-primary), var(--vib-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Buttons */
+.vib-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.vib-btn-primary {
+    background: linear-gradient(90deg, var(--vib-primary), var(--vib-secondary));
+    color: white;
+    box-shadow: 0 10px 30px -10px var(--vib-primary);
+}
+
+.vib-btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 40px -10px var(--vib-secondary);
+}
+
+.vib-btn-glow {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.vib-btn-glow:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--vib-success);
+}
+
+/* Cards & Bento Grid */
+.vib-bento-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.vib-card {
+    background: var(--vib-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--vib-glass-border);
+    border-radius: 24px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.vib-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.vib-card:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--vib-glass-high);
+    transform: translateY(-5px);
+}
+
+/* 1. Navbar */
+.vib-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
+    z-index: 1000;
+    background: rgba(15, 16, 26, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    padding: 0.8rem 2rem;
+}
+
+.vib-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vib-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.05em;
+}
+
+.vib-nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.vib-nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.vib-nav-link:hover {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 2. Hero */
+.vib-hero {
+    padding-top: 10rem;
+    padding-bottom: 8rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.vib-bg-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--vib-primary) 0%, transparent 70%);
+    opacity: 0.2;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+.vib-bg-glow-2 {
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--vib-accent) 0%, transparent 70%);
+    opacity: 0.15;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+/* 3. Problem (Impact) */
+.vib-impact {
+    padding: 6rem 0;
+}
+
+/* 4. Methodology */
+.vib-method {
+    padding: 6rem 0;
+}
+
+/* 5. Services */
+.vib-services {
+    padding: 6rem 0;
+}
+
+.vib-service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* 6. Stats */
+.vib-stats {
+    padding: 4rem 0;
+}
+
+/* 7. Team */
+.vib-team {
+    padding: 6rem 0;
+}
+
+.vib-team-card {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.vib-team-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 35% 65% 60% 40% / 30% 30% 70% 70%;
+    object-fit: cover;
+    margin: 0 auto 1.5rem;
+    border: 2px solid var(--vib-success);
+    transition: all 0.5s ease;
+}
+
+.vib-team-card:hover .vib-team-img {
+    border-radius: 50%;
+    transform: rotate(5deg) scale(1.1);
+}
+
+/* 8. Experience (Gallery) */
+.vib-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    height: 600px;
+}
+
+.vib-gallery-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: opacity 0.3s;
+}
+
+.vib-gallery-item:hover {
+    opacity: 0.8;
+}
+
+.vib-gal-large {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.vib-gal-tall {
+    grid-row: span 2;
+}
+
+.vib-gal-wide {
+    grid-column: span 2;
+}
+
+/* 9. Contact */
+.vib-footer {
+    padding: 8rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(0deg, #050508 0%, var(--vib-bg) 100%);
+}
+
+.vib-bot-cta {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    padding: 5rem 2rem;
+    margin-bottom: 5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .vib-gallery-grid {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+    }
+
+    .vib-gallery-item {
+        height: 300px;
+    }
+
+    .vib-nav {
+        top: 0;
+        width: 100%;
+        border-radius: 0;
+        padding: 1rem;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+    }
+
+    .vib-nav-links {
+        display: none;
+    }
+}
+
+/* Editor Mode Overrides */
+.is-editor .vib-nav {
+    position: absolute !important;
+    top: 20px;
+    /* Preserve the top offset design */
+    width: 90%;
+    transform: translateX(-50%);
+    left: 50%;
+}

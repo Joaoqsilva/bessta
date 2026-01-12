@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Star, Trash2, Plus, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './LandingPagePsychology.css';
 import { EditOverlay } from '../../components/EditOverlay';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
+import { EditableImage } from '../../components/EditableImage';
 import { StarRating } from '../../components/StarRating';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 
@@ -59,7 +61,29 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+        if (isEditorMode && onEditAction) {
+            if (!customization?.testimonials || customization.testimonials.length === 0) {
+                const defaultTestimonials = {
+                    testimonials: [
+                        { id: '1', text: 'A terapia mudou minha forma de ver o mundo.', author: 'Julia M.', role: 'Paciente', rating: 5 },
+                        { id: '2', text: 'Ana Clara é uma profissional excepcional.', author: 'Ricardo S.', role: 'Paciente', rating: 5 },
+                        { id: '3', text: 'Sinto-me muito mais leve após cada sessão.', author: 'Beatriz L.', role: 'Paciente', rating: 5 }
+                    ],
+                    images: ["", "", ""]
+                };
+                onEditAction('init-testimonials__', JSON.stringify(defaultTestimonials));
+            }
+            if (!customization?.team || customization.team.length === 0) {
+                const defaultTeam = {
+                    team: [
+                        { id: '1', name: 'Ana Clara', role: 'Psicóloga Clínica', bio: 'Especialista em TCC e Neuropsicologia.' }
+                    ],
+                    images: ["", "", ""]
+                };
+                onEditAction('init-team__', JSON.stringify(defaultTeam));
+            }
+        }
+    }, [isEditorMode]);
 
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -95,9 +119,12 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                         <EditableText id="psy_nav_faq" defaultText="Dúvidas" tagName="span" {...editProps} />
                     </a>
                 </div>
-                <button type="button" onClick={onBook} className="psy-btn psy-btn-outline px-5 py-2 text-sm z-20">
-                    <EditableText id="psy_nav_cta" defaultText="Agendar Sessão" tagName="span" {...editProps} />
-                </button>
+                <div className="hidden md:flex items-center gap-4 z-20">
+
+                    <button type="button" onClick={onBook} className="psy-btn psy-btn-outline px-5 py-2 text-sm">
+                        <EditableText id="psy_nav_cta" defaultText="Agendar Sessão" tagName="span" {...editProps} />
+                    </button>
+                </div>
             </nav>
 
             <header className="psy-hero">
@@ -258,6 +285,58 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                 </div>
             </section>
 
+            {/* Team Section (Optional/Expandable) */}
+            <section className="psy-container py-16" id="team">
+                <div className="text-center mb-12">
+                    <EditableText id="psy_team_title" defaultText="Nossa Equipe" className="psy-section-title" tagName="h2" {...editProps} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {(customization?.team && customization.team.length > 0 ? customization.team : customization?.teamImages?.length ? [] : [
+                        { name: 'Ana Clara', role: 'Psicóloga Clínica', bio: 'Especialista em TCC.' }
+                    ]).map((member: any, i: number) => (
+                        <div key={i} className="psy-card group relative overflow-hidden">
+                            <div className="h-64 bg-[#f0ece9] relative rounded-xl overflow-hidden mb-4">
+                                <EditableImage
+                                    editKey={`teamImages__${i}`}
+                                    currentSrc={customization?.teamImages?.[i]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    alt={member.name}
+                                    renderPlaceholder={() => (
+                                        <div className="w-full h-full flex items-center justify-center text-[#d6cfc7]">
+                                            <EditableIcon id={`psy_team_ph_${i}`} defaultIcon="User" size={48} {...editProps} />
+                                        </div>
+                                    )}
+                                />
+                            </div>
+                            <div className="text-center">
+                                <EditableText id={`psy_team_n${i}`} defaultText={member.name || 'Nome'} className="font-bold text-xl mb-1 block text-[#4a4a4a]" tagName="h3" {...editProps} />
+                                <EditableText id={`psy_team_r${i}`} defaultText={member.role || 'Cargo'} className="text-[var(--psy-primary)] text-sm mb-2 block font-medium uppercase tracking-wider" tagName="span" {...editProps} />
+                                <EditableText id={`psy_team_b${i}`} defaultText={member.bio || 'Bio'} className="text-gray-500 text-sm leading-relaxed" tagName="p" {...editProps} />
+                            </div>
+                            {isEditorMode && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onEditAction?.('team-remove__' + i); }}
+                                    className="absolute top-2 right-2 bg-white/80 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                    {isEditorMode && (
+                        <button
+                            onClick={() => onEditAction?.('team-add')}
+                            className="psy-card flex flex-col items-center justify-center cursor-pointer hover:bg-[#f0ece9] transition-colors border-2 border-dashed border-[#d6cfc7] min-h-[300px]"
+                        >
+                            <Plus size={24} className="text-[#a8a4a0] mb-2" />
+                            <span className="font-bold text-[#a8a4a0]">Adicionar Membro</span>
+                        </button>
+                    )}
+                </div>
+            </section>
+
             <section className="psy-container py-16 relative group">
                 <EditOverlay label="Editar Galeria" action="gallery" isEditorMode={isEditorMode} onEditAction={onEditAction} />
                 {(isEditorMode || (customization?.galleryImages && customization.galleryImages.length > 0)) && (
@@ -274,12 +353,84 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {customization.galleryImages.map((img, idx) => (
                                     <div key={idx} className="aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
-                                        <img src={img} alt={`Ambiente ${idx}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                                        <img src={img} alt={`Ambiente ${idx} `} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                                     </div>
                                 ))}
                             </div>
                         )}
                     </>
+                )}
+            </section>
+
+            {/* Testimonials Section */}
+            <section className="psy-container py-20 bg-[#f9f9f9] rounded-3xl my-12" id="testimonials">
+                <div className="text-center mb-12">
+                    <EditableText id="psy_test_title" defaultText="Depoimentos" className="psy-section-title" tagName="h2" {...editProps} />
+                    <EditableText id="psy_test_sub" defaultText="Histórias de transformação" className="text-gray-500" tagName="p" {...editProps} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {(customization?.testimonials && customization.testimonials.length > 0 ? customization.testimonials : [
+                        { id: '1', text: 'A terapia mudou minha forma de ver o mundo.', author: 'Julia M.', role: 'Paciente', rating: 5 },
+                        { id: '2', text: 'Ana Clara é uma profissional excepcional.', author: 'Ricardo S.', role: 'Paciente', rating: 5 },
+                        { id: '3', text: 'Sinto-me muito mais leve após cada sessão.', author: 'Beatriz L.', role: 'Paciente', rating: 5 }
+                    ]).map((testim: any, i: number) => (
+                        <div key={i} className="bg-white p-8 rounded-2xl shadow-sm relative group">
+                            <div className="flex gap-1 mb-4 text-[#fcd34d]" title={isEditorMode ? "Alterar avaliação" : ""}>
+                                {[1, 2, 3, 4, 5].map(s => (
+                                    <Star
+                                        key={s}
+                                        size={16}
+                                        fill={s <= (testim.rating || 5) ? "currentColor" : "none"}
+                                        className={`cursor-pointer ${s <= (testim.rating || 5) ? '' : 'text-gray-200'}`}
+                                        onClick={isEditorMode ? (e) => { e.stopPropagation(); onEditAction?.(`testimonial-rating__${i}__${s}`); } : undefined}
+                                    />
+                                ))}
+                            </div>
+                            <div className="mb-6 flex gap-1 text-gray-600 italic leading-relaxed">
+                                "
+                                <EditableText id={`psy_test_t${i}`} defaultText={testim.text} tagName="span" {...editProps} />
+                                "
+                            </div>
+                            <div className="flex items-center gap-4 border-t border-gray-100 pt-4">
+                                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 relative shrink-0">
+                                    <EditableImage
+                                        editKey={`testimonialImages__${i}`}
+                                        currentSrc={customization?.testimonialImages?.[i]}
+                                        isEditorMode={isEditorMode}
+                                        onEditAction={onEditAction}
+                                        className="w-full h-full object-cover"
+                                        alt={testim.author}
+                                        renderPlaceholder={() => (
+                                            <div className="w-full h-full bg-[var(--psy-primary)] text-white flex items-center justify-center font-bold text-xs">
+                                                {testim.author.charAt(0)}
+                                            </div>
+                                        )}
+                                    />
+                                </div>
+                                <div>
+                                    <EditableText id={`psy_test_a${i}`} defaultText={testim.author} className="font-bold text-sm block text-gray-900" tagName="span" {...editProps} />
+                                    <EditableText id={`psy_test_r${i}`} defaultText={testim.role || 'Paciente'} className="text-xs text-gray-500 block" tagName="span" {...editProps} />
+                                </div>
+                            </div>
+                            {isEditorMode && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onEditAction?.('testimonial-remove__' + i); }}
+                                    className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                {isEditorMode && (
+                    <button
+                        onClick={() => onEditAction?.('testimonial-add')}
+                        className="w-full mt-8 py-6 border-2 border-dashed border-[var(--psy-primary)]/30 hover:bg-[var(--psy-primary)]/5 flex flex-col items-center justify-center cursor-pointer transition-colors group rounded-xl"
+                    >
+                        <Plus size={24} className="text-[var(--psy-primary)] mb-2" />
+                        <span className="font-bold text-[var(--psy-primary)] text-lg">Adicionar Depoimento</span>
+                    </button>
                 )}
             </section>
 
@@ -322,9 +473,9 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                     <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 border-t border-gray-50 pt-8">
                         <div>&copy; {new Date().getFullYear()} <EditableText id="psy_footer_copy" defaultText={d.name} tagName="span" {...editProps} /></div>
                         <div className="flex gap-6 mt-4 md:mt-0">
-                            <a href="#" className="hover:text-gray-600">Instagram</a>
-                            <a href="#" className="hover:text-gray-600">LinkedIn</a>
-                            <a href="#" className="hover:text-gray-600">WhatsApp</a>
+                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link1" defaultText="Instagram" tagName="span" {...editProps} /></a>
+                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link2" defaultText="LinkedIn" tagName="span" {...editProps} /></a>
+                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link3" defaultText="WhatsApp" tagName="span" {...editProps} /></a>
                         </div>
                     </div>
                 </div>

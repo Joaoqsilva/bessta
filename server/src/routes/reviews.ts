@@ -4,12 +4,20 @@
 // ========================================
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { Review } from '../models/Review';
 import { Store } from '../models/Store';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import mongoose from 'mongoose';
 
 const router = express.Router();
+
+// Rate limiter for public review creation (prevent spam and rating manipulation)
+const reviewLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    max: 3, // Max 3 reviews per day per IP
+    message: 'Muitas avaliações enviadas. Tente novamente amanhã.'
+});
 
 /**
  * GET /api/reviews/store/:storeId
@@ -70,7 +78,7 @@ router.get('/store/:storeId', async (req, res) => {
  * POST /api/reviews/store/:storeId
  * Create a review for a store (public, no auth required)
  */
-router.post('/store/:storeId', async (req, res) => {
+router.post('/store/:storeId', reviewLimiter, async (req, res) => {
     try {
         const { storeId } = req.params;
         const { customerName, customerEmail, rating, comment } = req.body;

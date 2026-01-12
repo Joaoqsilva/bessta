@@ -1,0 +1,321 @@
+/* LandingPageSunny.css */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap');
+
+:root {
+    --sunny-primary: var(--store-primary, #ff7e5f);
+    /* Vibrant Orange */
+    --sunny-secondary: var(--store-secondary, #feb47b);
+    /* Softer Orange/Peach */
+    --sunny-accent: var(--store-accent, #ffb347);
+    /* Yellow-Orange */
+    --sunny-bg: #ffffff;
+    /* Pure White */
+    --sunny-bg-alt: #fff9f5;
+    /* Very light orange tint */
+    --sunny-text: #4a4a4a;
+    /* Dark Grey */
+    --sunny-heading: #2d2d2d;
+    /* Almost Black */
+    --sunny-white: #ffffff;
+}
+
+.sunny-wrapper {
+    background-color: var(--sunny-bg);
+    color: var(--sunny-text);
+    font-family: 'Open Sans', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.sunny-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Typography */
+.sunny-heading {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    color: var(--sunny-heading);
+    line-height: 1.2;
+}
+
+.sunny-highlight {
+    color: var(--sunny-primary);
+}
+
+/* Buttons */
+.sunny-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sunny-btn-primary {
+    background: var(--sunny-primary);
+    color: white;
+}
+
+.sunny-btn-primary:hover {
+    background: #ff6b4a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 126, 95, 0.3);
+}
+
+.sunny-btn-outline {
+    background: white;
+    border: 2px solid var(--sunny-primary);
+    color: var(--sunny-primary);
+}
+
+.sunny-btn-outline:hover {
+    background: var(--sunny-primary);
+    color: white;
+}
+
+/* Cards */
+.sunny-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.sunny-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--sunny-secondary);
+}
+
+/* 1. Navbar */
+.sunny-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.sunny-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sunny-logo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--sunny-primary);
+}
+
+.sunny-nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.sunny-nav-link {
+    text-decoration: none;
+    color: var(--sunny-text);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.sunny-nav-link:hover {
+    color: var(--sunny-primary);
+}
+
+/* 2. Hero */
+.sunny-hero {
+    padding-top: 8rem;
+    padding-bottom: 6rem;
+    background: radial-gradient(circle at top right, var(--sunny-bg-alt) 0%, white 50%);
+}
+
+.sunny-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.sunny-hero-img-blob {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    overflow: hidden;
+    box-shadow: 20px 20px 0 var(--sunny-secondary);
+    height: 500px;
+    width: 100%;
+    position: relative;
+}
+
+.sunny-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 3. Focus (Problem) */
+.sunny-focus {
+    padding: 6rem 0;
+    background: white;
+    text-align: center;
+}
+
+.sunny-focus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* 4. About */
+.sunny-about {
+    padding: 6rem 0;
+    background: var(--sunny-bg-alt);
+}
+
+.sunny-about-img {
+    border-radius: 20px;
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 5. Services */
+.sunny-services {
+    padding: 6rem 0;
+}
+
+.sunny-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* 6. Methodology */
+.sunny-method {
+    padding: 6rem 0;
+    background: var(--sunny-primary);
+    color: white;
+    text-align: center;
+}
+
+.sunny-timeline {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 4rem;
+    flex-wrap: wrap;
+}
+
+.sunny-step {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 16px;
+    flex: 1;
+    min-width: 250px;
+}
+
+/* 7. Benefits */
+.sunny-benefits {
+    padding: 6rem 0;
+    background: white;
+}
+
+.sunny-benefits-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 3rem auto 0;
+}
+
+.sunny-benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    color: var(--sunny-heading);
+}
+
+/* 8. Testimonials */
+.sunny-reviews {
+    padding: 6rem 0;
+    background: var(--sunny-bg-alt);
+}
+
+/* 9. FAQ */
+.sunny-faq {
+    padding: 6rem 0;
+    background: white;
+}
+
+.sunny-faq-item {
+    background: var(--sunny-bg-alt);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+}
+
+/* 10. Contact */
+.sunny-contact {
+    padding: 6rem 0;
+    background: white;
+}
+
+.sunny-footer {
+    background: var(--sunny-secondary);
+    color: var(--sunny-heading);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .sunny-hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .sunny-hero-img-blob {
+        height: 350px;
+        width: 350px;
+        margin: 0 auto;
+        box-shadow: 10px 10px 0 var(--sunny-secondary);
+    }
+
+    .sunny-nav-links {
+        display: none;
+    }
+
+    .sunny-benefits-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Editor Mode Overrides */
+.is-editor .sunny-nav {
+    position: absolute !important;
+    top: 0;
+    width: 100%;
+}

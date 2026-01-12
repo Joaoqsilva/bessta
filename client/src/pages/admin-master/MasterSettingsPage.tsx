@@ -283,18 +283,6 @@ export const MasterSettingsPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="plan-card pro">
-                                    <h3>Plano Enterprise</h3>
-                                    <div className="form-group">
-                                        <label>Preço Mensal (R$)</label>
-                                        <Input
-                                            type="number"
-                                            value={settings.proPlanPrice}
-                                            onChange={(e) => updateSetting('proPlanPrice', parseInt(e.target.value))}
-                                            leftIcon={<DollarSign size={18} />}
-                                        />
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     )}
