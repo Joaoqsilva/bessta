@@ -45,8 +45,43 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter); // Global rate limiting enabled
 
-// CORS - Allow all origins (no restrictions)
-app.use(cors());
+// CORS Configuration - Secure but flexible
+const allowedOrigins = [
+    // Development
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    // Production (Vercel)
+    'https://bessta-booking.vercel.app',
+    'https://bessta-app.vercel.app',
+    // Add custom domains from environment if needed
+    ...(process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || [])
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, server-to-server)
+        if (!origin) return callback(null, true);
+
+        // Check if origin is in allowed list
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        // Allow any *.vercel.app subdomain (for preview deployments)
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+
+        // Block other origins
+        console.warn(`CORS blocked origin: ${origin}`);
+        return callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    maxAge: 86400 // Cache preflight for 24 hours
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
