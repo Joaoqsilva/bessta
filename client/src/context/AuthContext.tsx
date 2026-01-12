@@ -21,6 +21,7 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     googleLogin: (credential: string) => Promise<boolean>;
+    demoLogin: () => boolean;
     register: (data: RegisterData) => Promise<boolean>;
     logout: () => void;
     updateStore: (updates: Partial<UserStore>) => void;
@@ -40,6 +41,51 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Storage keys
 const STORAGE_KEYS = {
     TOKEN: 'bookme_token',
+    DEMO_MODE: 'bookme_demo_mode',
+    DEMO_USER: 'bookme_demo_user',
+    DEMO_STORE: 'bookme_demo_store',
+};
+
+// Demo data that simulates a real account
+const DEMO_USER_DATA: User = {
+    id: 'demo-user-001',
+    email: 'demo@bookme.com',
+    ownerName: 'Usuário Demo',
+    phone: '11999999999',
+    role: 'store_owner',
+    storeId: 'demo-store-001',
+    plan: 'professional',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+};
+
+const DEMO_STORE_DATA: UserStore = {
+    id: 'demo-store-001',
+    slug: 'demo-store',
+    name: 'Loja Demo',
+    plan: 'professional',
+    description: 'Loja de demonstração para desenvolvimento local',
+    category: 'health',
+    address: 'Rua Demo, 123 - São Paulo, SP',
+    phone: '11999999999',
+    email: 'demo@bookme.com',
+    rating: 5.0,
+    totalReviews: 10,
+    status: 'active',
+    ownerId: 'demo-user-001',
+    ownerName: 'Usuário Demo',
+    workingHours: [
+        { dayOfWeek: 0, isOpen: false, openTime: '', closeTime: '' },
+        { dayOfWeek: 1, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 2, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 3, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 4, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 5, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 6, isOpen: true, openTime: '09:00', closeTime: '14:00' },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -47,9 +93,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [store, setStore] = useState<UserStore | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Load user from API on mount if token exists
+    // Load user from API on mount if token exists, or from localStorage if in demo mode
     useEffect(() => {
         const checkAuth = async () => {
+            // Check if in demo mode first
+            const isDemoMode = localStorage.getItem(STORAGE_KEYS.DEMO_MODE) === 'true';
+            if (isDemoMode) {
+                const demoUser = localStorage.getItem(STORAGE_KEYS.DEMO_USER);
+                const demoStore = localStorage.getItem(STORAGE_KEYS.DEMO_STORE);
+                if (demoUser && demoStore) {
+                    setUser(JSON.parse(demoUser));
+                    setStore(JSON.parse(demoStore));
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
             if (!token) {
                 setIsLoading(false);
@@ -70,8 +129,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
             } catch (error) {
                 console.error('Error verifying session:', error);
-                logout();
-            } finally {
+                // If in development and API fails, don't logout - just show login
                 setIsLoading(false);
             }
         };
@@ -182,7 +240,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(null);
         setStore(null);
         localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        // Optional: clear other local data if desired
+        localStorage.removeItem(STORAGE_KEYS.DEMO_MODE);
+        localStorage.removeItem(STORAGE_KEYS.DEMO_USER);
+        localStorage.removeItem(STORAGE_KEYS.DEMO_STORE);
+    };
+
+    // Demo login function - works without backend
+    const demoLogin = (): boolean => {
+        localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'true');
+        localStorage.setItem(STORAGE_KEYS.DEMO_USER, JSON.stringify(DEMO_USER_DATA));
+        localStorage.setItem(STORAGE_KEYS.DEMO_STORE, JSON.stringify(DEMO_STORE_DATA));
+        setUser(DEMO_USER_DATA);
+        setStore(DEMO_STORE_DATA);
+        return true;
     };
 
     const updateStore = (updates: Partial<UserStore>) => {
@@ -201,6 +271,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 isLoading,
                 login,
                 googleLogin,
+                demoLogin,
                 register,
                 logout,
                 updateStore,

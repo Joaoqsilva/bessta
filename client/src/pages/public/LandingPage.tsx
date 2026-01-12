@@ -79,7 +79,7 @@ const plans = [
             'Lembretes via WhatsApp',
             'Relatórios avançados',
             'Página personalizada',
-            'Domínio personalizado',
+            // 'Domínio personalizado', // Disabled temporarily
             'Múltiplos colaboradores',
             'Suporte prioritário',
         ],

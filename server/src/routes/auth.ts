@@ -213,6 +213,71 @@ router.post('/register', validate(registerSchema), async (req: AuthRequest, res:
 });
 
 /**
+ * POST /api/auth/demo-login
+ * Demo login for local development (no database required)
+ */
+router.post('/demo-login', async (req: AuthRequest, res: Response) => {
+    try {
+        const { email } = req.body;
+
+        // Demo user data
+        const demoUserId = 'demo-user-' + Date.now();
+        const demoStoreId = 'demo-store-' + Date.now();
+
+        // Create a mock JWT token
+        const jwt = require('jsonwebtoken');
+        const token = jwt.sign(
+            { userId: demoUserId, email: email || 'demo@bookme.com' },
+            process.env.JWT_SECRET || 'demo-secret-key-for-local-development',
+            { expiresIn: '7d' }
+        );
+
+        return res.json({
+            success: true,
+            token,
+            user: {
+                id: demoUserId,
+                email: email || 'demo@bookme.com',
+                ownerName: 'Usuário Demo',
+                phone: '11999999999',
+                role: 'store_owner',
+                storeId: demoStoreId,
+                plan: 'professional',
+            },
+            store: {
+                id: demoStoreId,
+                slug: 'demo-store',
+                name: 'Loja Demo',
+                plan: 'professional',
+                description: 'Loja de demonstração para desenvolvimento local',
+                category: 'health',
+                address: 'Rua Demo, 123',
+                phone: '11999999999',
+                email: email || 'demo@bookme.com',
+                rating: 5.0,
+                totalReviews: 10,
+                status: 'active',
+                workingHours: [
+                    { dayOfWeek: 0, isOpen: false, openTime: '', closeTime: '' },
+                    { dayOfWeek: 1, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+                    { dayOfWeek: 2, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+                    { dayOfWeek: 3, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+                    { dayOfWeek: 4, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+                    { dayOfWeek: 5, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+                    { dayOfWeek: 6, isOpen: true, openTime: '09:00', closeTime: '14:00' },
+                ],
+            }
+        });
+    } catch (error: any) {
+        console.error('Demo login error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro no login demo'
+        });
+    }
+});
+
+/**
  * POST /api/auth/login
  * Login with email and password
  */

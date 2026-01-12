@@ -71,7 +71,7 @@ const PLANS = [
             'Lembretes via WhatsApp',
             'Relatórios avançados',
             'Página personalizada',
-            'Domínio personalizado',
+            // 'Domínio personalizado', // TODO: Feature disabled temporarily
             'Múltiplos colaboradores',
             'Suporte prioritário',
         ],
@@ -557,7 +557,7 @@ export const SettingsPage = () => {
 
     const tabs = [
         { id: 'profile', label: 'Perfil', icon: User },
-        { id: 'domain', label: 'Domínio', icon: Globe },
+        // { id: 'domain', label: 'Domínio', icon: Globe }, // TODO: Feature disabled temporarily
         { id: 'appearance', label: 'Aparência', icon: Palette },
         { id: 'notifications', label: 'Notificações', icon: Bell },
         { id: 'plans', label: 'Planos', icon: CreditCard },
@@ -761,8 +761,9 @@ export const SettingsPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Premium - Custom Domain */}
+                                    {/* Premium - Custom Domain (HIDDEN) */}
                                     <div className="domain-card" style={{
+                                        display: 'none',
                                         background: store?.plan === 'free'
                                             ? 'linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%)'
                                             : 'linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%)',
