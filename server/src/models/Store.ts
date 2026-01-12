@@ -19,7 +19,7 @@ export interface IStore extends Document {
     rating: number;
     totalReviews: number;
     status: 'active' | 'pending' | 'suspended';
-    plan: 'free' | 'basic' | 'pro';
+    plan: 'free' | 'basic' | 'pro' | 'start' | 'professional' | 'business';
     // Custom domain fields
     customDomain?: string;
     domainVerified: boolean;
@@ -147,8 +147,8 @@ const storeSchema = new Schema<IStore>({
     },
     plan: {
         type: String,
-        enum: ['free', 'basic', 'pro'],
-        default: 'free',
+        enum: ['free', 'basic', 'pro', 'start', 'professional', 'business'],
+        default: 'start',
     },
     // Custom domain
     customDomain: {

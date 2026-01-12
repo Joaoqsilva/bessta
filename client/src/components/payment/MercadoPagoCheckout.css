@@ -1,0 +1,381 @@
+/* ========================================
+   MERCADO PAGO CHECKOUT STYLES
+   Premium checkout experience
+   ======================================== */
+
+.mp-checkout-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.mp-checkout-modal {
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mp-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mp-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Header */
+.mp-checkout-header {
+    text-align: center;
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mp-checkout-header h2 {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+}
+
+.mp-plan-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #00d4aa;
+    margin: 0;
+}
+
+.mp-plan-price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Payment Methods Selection */
+.mp-payment-methods {
+    padding: 2rem;
+}
+
+.mp-payment-methods h3 {
+    color: white;
+    font-size: 1.1rem;
+    margin: 0 0 1.5rem;
+    text-align: center;
+}
+
+.mp-method-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mp-method-btn:hover {
+    border-color: #00d4aa;
+    background: rgba(0, 212, 170, 0.1);
+    transform: translateY(-2px);
+}
+
+.mp-method-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.mp-method-text {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.mp-method-text strong {
+    color: white;
+    font-size: 1.1rem;
+}
+
+.mp-method-text small {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+/* Back Button */
+.mp-back-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+    transition: color 0.2s;
+}
+
+.mp-back-btn:hover {
+    color: white;
+}
+
+/* Card Form Container */
+.mp-card-form {
+    padding: 1.5rem;
+}
+
+/* PIX Container */
+.mp-pix-container {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.mp-pix-qr {
+    margin-bottom: 1.5rem;
+}
+
+.mp-pix-qr h3 {
+    color: white;
+    margin: 0 0 1rem;
+}
+
+.mp-pix-qr img {
+    max-width: 200px;
+    border-radius: 12px;
+    background: white;
+    padding: 1rem;
+}
+
+.mp-pix-code {
+    margin-bottom: 1.5rem;
+}
+
+.mp-pix-code p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+}
+
+.mp-pix-code-box {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.mp-pix-code-box code {
+    flex: 1;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mp-pix-code-box button {
+    background: #00d4aa;
+    border: none;
+    color: #1a1a2e;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mp-pix-code-box button:hover {
+    background: #00e5bb;
+}
+
+.mp-pix-waiting {
+    color: #ffd700;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Processing State */
+.mp-processing {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.mp-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #00d4aa;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.mp-processing p {
+    color: white;
+    font-size: 1.1rem;
+}
+
+/* Success State */
+.mp-success {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.mp-success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.mp-success h2 {
+    color: #00d4aa;
+    margin: 0 0 0.5rem;
+}
+
+.mp-success p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 2rem;
+}
+
+.mp-success-btn {
+    background: linear-gradient(135deg, #00d4aa 0%, #00a88a 100%);
+    border: none;
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mp-success-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+}
+
+/* Error State */
+.mp-error {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.mp-error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.mp-error h2 {
+    color: #ff6b6b;
+    margin: 0 0 0.5rem;
+}
+
+.mp-error p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 2rem;
+}
+
+.mp-retry-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mp-retry-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Security Badge */
+.mp-security-badge {
+    text-align: center;
+    padding: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .mp-checkout-modal {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .mp-checkout-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .mp-plan-price {
+        font-size: 2rem;
+    }
+
+    .mp-payment-methods,
+    .mp-card-form,
+    .mp-pix-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Override Mercado Pago Bricks default styles */
+.mp-card-form [class*="container"] {
+    background: transparent !important;
+}

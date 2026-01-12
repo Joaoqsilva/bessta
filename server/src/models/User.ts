@@ -13,14 +13,19 @@ export interface IUser {
     email: string;
     password: string;
     ownerName: string;
+    name?: string;
     phone: string;
     role: 'store_owner' | 'admin_master' | 'client_user';
     storeId?: mongoose.Types.ObjectId;
     isActive: boolean;
-    plan: 'free' | 'basic' | 'pro';
+    plan: 'free' | 'basic' | 'pro' | 'start' | 'professional' | 'business';
     planExpiresAt?: Date | null;
-    stripeCustomerId?: string;
-    stripeSubscriptionId?: string;
+    // Mercado Pago subscription fields
+    subscriptionPlan?: string;
+    subscriptionStatus?: 'active' | 'cancelled' | 'pending' | 'expired';
+    subscriptionStartDate?: Date;
+    subscriptionEndDate?: Date;
+    mpPaymentId?: string;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
@@ -67,18 +72,32 @@ const userSchema = new mongoose.Schema({
     },
     plan: {
         type: String,
-        enum: ['free', 'basic', 'pro'],
-        default: 'free',
+        enum: ['free', 'basic', 'pro', 'start', 'professional', 'business'],
+        default: 'start',
     },
     planExpiresAt: {
         type: Date,
         default: null,
     },
-    stripeCustomerId: {
+    // Mercado Pago subscription fields
+    subscriptionPlan: {
         type: String,
+        default: 'start',
+    },
+    subscriptionStatus: {
+        type: String,
+        enum: ['active', 'cancelled', 'pending', 'expired'],
+        default: 'active',
+    },
+    subscriptionStartDate: {
+        type: Date,
         default: null,
     },
-    stripeSubscriptionId: {
+    subscriptionEndDate: {
+        type: Date,
+        default: null,
+    },
+    mpPaymentId: {
         type: String,
         default: null,
     },
