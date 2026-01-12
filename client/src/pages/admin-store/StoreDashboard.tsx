@@ -391,38 +391,47 @@ export const StoreDashboard = () => {
                     {/* Performance Card */}
                     <div className="performance-card">
                         <h3 className="sidebar-title">Desempenho</h3>
-                        <div className="performance-list">
-                            <div className="performance-item">
-                                <div className="performance-header">
-                                    <span className="performance-label">Meta Semanal</span>
-                                    <span className="performance-value">75%</span>
+                        {['professional', 'business', 'pro'].includes(store?.plan || '') ? (
+                            <div className="performance-list">
+                                <div className="performance-item">
+                                    <div className="performance-header">
+                                        <span className="performance-label">Meta Semanal</span>
+                                        <span className="performance-value">75%</span>
+                                    </div>
+                                    <div className="progress">
+                                        <div className="progress-bar" style={{ width: '75%' }} />
+                                    </div>
                                 </div>
-                                <div className="progress">
-                                    <div className="progress-bar" style={{ width: '75%' }} />
+                                <div className="performance-item">
+                                    <div className="performance-header">
+                                        <span className="performance-label">Satisfação</span>
+                                        <span className="performance-value">
+                                            <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                                            {stats.averageRating}
+                                        </span>
+                                    </div>
+                                    <div className="progress">
+                                        <div className="progress-bar success" style={{ width: '98%' }} />
+                                    </div>
+                                </div>
+                                <div className="performance-item">
+                                    <div className="performance-header">
+                                        <span className="performance-label">Taxa de Conclusão</span>
+                                        <span className="performance-value">{stats.completionRate}%</span>
+                                    </div>
+                                    <div className="progress">
+                                        <div className="progress-bar" style={{ width: `${stats.completionRate}%` }} />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="performance-item">
-                                <div className="performance-header">
-                                    <span className="performance-label">Satisfação</span>
-                                    <span className="performance-value">
-                                        <Star size={14} fill="#f59e0b" color="#f59e0b" />
-                                        {stats.averageRating}
-                                    </span>
-                                </div>
-                                <div className="progress">
-                                    <div className="progress-bar success" style={{ width: '98%' }} />
-                                </div>
+                        ) : (
+                            <div style={{ padding: '24px', textAlign: 'center', background: 'var(--surface-50)', borderRadius: '12px' }}>
+                                <TrendingUp size={32} style={{ color: 'var(--text-tertiary)', marginBottom: '12px', opacity: 0.5 }} />
+                                <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>Relatórios Avançados</h4>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '16px' }}>Atualize para ver métricas de desempenho.</p>
+                                <Button size="sm" variant="outline" onClick={() => navigate('/app/settings?tab=plans')}>Ver Planos</Button>
                             </div>
-                            <div className="performance-item">
-                                <div className="performance-header">
-                                    <span className="performance-label">Taxa de Conclusão</span>
-                                    <span className="performance-value">{stats.completionRate}%</span>
-                                </div>
-                                <div className="progress">
-                                    <div className="progress-bar" style={{ width: `${stats.completionRate}%` }} />
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Revenue Summary */}
@@ -431,20 +440,29 @@ export const StoreDashboard = () => {
                             <TrendingUp size={20} />
                             Resumo de Receita
                         </h3>
-                        <div className="revenue-list">
-                            <div className="revenue-item">
-                                <span className="revenue-label">Total</span>
-                                <span className="revenue-value">R$ {stats.totalRevenue.toLocaleString('pt-BR')}</span>
+                        {['professional', 'business', 'pro'].includes(store?.plan || '') ? (
+                            <div className="revenue-list">
+                                <div className="revenue-item">
+                                    <span className="revenue-label">Total</span>
+                                    <span className="revenue-value">R$ {stats.totalRevenue.toLocaleString('pt-BR')}</span>
+                                </div>
+                                <div className="revenue-item">
+                                    <span className="revenue-label">Esta Semana</span>
+                                    <span className="revenue-value">R$ {stats.revenueWeek.toLocaleString('pt-BR')}</span>
+                                </div>
+                                <div className="revenue-item">
+                                    <span className="revenue-label">Este Mês</span>
+                                    <span className="revenue-value highlight">R$ {stats.revenueMonth.toLocaleString('pt-BR')}</span>
+                                </div>
                             </div>
-                            <div className="revenue-item">
-                                <span className="revenue-label">Esta Semana</span>
-                                <span className="revenue-value">R$ {stats.revenueWeek.toLocaleString('pt-BR')}</span>
+                        ) : (
+                            <div style={{ padding: '24px', textAlign: 'center', background: 'var(--surface-50)', borderRadius: '12px' }}>
+                                <DollarSign size={32} style={{ color: 'var(--text-tertiary)', marginBottom: '12px', opacity: 0.5 }} />
+                                <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>Controle Financeiro</h4>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '16px' }}>Atualize para ver seus ganhos.</p>
+                                <Button size="sm" variant="outline" onClick={() => navigate('/app/settings?tab=plans')}>Ver Planos</Button>
                             </div>
-                            <div className="revenue-item">
-                                <span className="revenue-label">Este Mês</span>
-                                <span className="revenue-value highlight">R$ {stats.revenueMonth.toLocaleString('pt-BR')}</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Recent Reviews */}

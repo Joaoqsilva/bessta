@@ -240,6 +240,30 @@ export const platformManagementApi = {
         return {
             success: true
         };
+    },
+
+    getUsers: async () => {
+        const response = await api.get('/platform/users');
+        return {
+            success: true,
+            users: response.data
+        };
+    },
+
+    updateUser: async (userId: string, data: { name?: string; storeName?: string }) => {
+        const response = await api.put(`/platform/users/${userId}`, data);
+        return {
+            success: true,
+            message: response.data.message
+        };
+    },
+
+    resetUserPassword: async (userId: string, password: string) => {
+        const response = await api.put(`/platform/users/${userId}/password`, { password });
+        return {
+            success: true,
+            message: response.data.message
+        };
     }
 };
 

@@ -313,4 +313,82 @@ router.delete('/stores/:id', authMiddleware, adminMiddleware, async (req, res) =
     }
 });
 
+/**
+ * GET /api/platform/users
+ * List all users with store info
+ */
+router.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const users = await User.find({ role: 'store_owner' }).lean();
+
+        // Populate store names
+        const usersWithStore = await Promise.all(users.map(async (u: any) => {
+            let storeName = '';
+            if (u.storeId) {
+                const store = await Store.findById(u.storeId).select('name').lean();
+                if (store) storeName = store.name;
+            }
+            return {
+                ...u,
+                id: u._id,
+                storeName
+            };
+        }));
+
+        res.json(usersWithStore);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * PUT /api/platform/users/:id
+ * Update user info (Name, Store Name)
+ */
+router.put('/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, storeName } = req.body;
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+        if (name) user.ownerName = name;
+        await user.save();
+
+        if (storeName && user.storeId) {
+            await Store.findByIdAndUpdate(user.storeId, { name: storeName });
+        }
+
+        res.json({ success: true, message: 'Dados atualizados com sucesso' });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * PUT /api/platform/users/:id/password
+ * Admin Master Reset Password
+ */
+router.put('/users/:id/password', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { password } = req.body;
+
+        if (!password || password.length < 6) {
+            return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres' });
+        }
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+        user.password = password;
+        await user.save();
+
+        res.json({ success: true, message: 'Senha redefinida com sucesso' });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router;

@@ -25,6 +25,19 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
             return res.status(403).json({ success: false, error: 'Sem permissão para criar serviço nesta loja' });
         }
 
+        // Check Plan Limits (1 Service for Free/Start plan)
+        const store = await Store.findById(storeId);
+        if (store && (store.plan === 'start' || store.plan === 'free')) {
+            const serviceCount = await Service.countDocuments({ storeId });
+            if (serviceCount >= 1) {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Seu plano atual permite apenas 1 serviço. Faça upgrade para o plano Profissional para criar serviços ilimitados.',
+                    code: 'PLAN_LIMIT_REACHED'
+                });
+            }
+        }
+
         const newService = await Service.create({
             storeId,
             name,

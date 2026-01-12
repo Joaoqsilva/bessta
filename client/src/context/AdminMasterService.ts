@@ -133,3 +133,39 @@ export const deleteStore = async (storeId: string): Promise<boolean> => {
         return false;
     }
 };
+
+// Get all users
+export const getAllUsers = async (): Promise<any[]> => {
+    try {
+        const result = await platformManagementApi.getUsers();
+        if (result.success) {
+            return result.users;
+        }
+        return [];
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return [];
+    }
+};
+
+// Update user details
+export const updatePlatformUser = async (userId: string, data: { name?: string; storeName?: string }): Promise<boolean> => {
+    try {
+        const result = await platformManagementApi.updateUser(userId, data);
+        return result.success;
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return false;
+    }
+};
+
+// Reset user password
+export const resetUserPassword = async (userId: string, password: string): Promise<boolean> => {
+    try {
+        const result = await platformManagementApi.resetUserPassword(userId, password);
+        return result.success;
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        return false;
+    }
+};

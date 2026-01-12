@@ -56,7 +56,7 @@ const PLANS = [
         features: [
             'Agendamentos ilimitados',
             'Serviços ilimitados',
-            'Lembretes via WhatsApp',
+            // 'Lembretes via WhatsApp',
             'Relatórios avançados',
             'Página personalizada',
             // 'Domínio personalizado', // TODO: Feature disabled temporarily
@@ -1015,6 +1015,7 @@ export const SettingsPage = () => {
                                     <h2 className="section-title">Preferências de Notificação</h2>
                                     <p className="section-subtitle">Configure como você deseja receber notificações</p>
 
+                                    {/* Channels Section - HIDDEN
                                     <div className="notification-group">
                                         <h3 className="notification-group-title">Canais</h3>
                                         <div className="notification-options">
@@ -1046,6 +1047,7 @@ export const SettingsPage = () => {
                                             </label>
                                         </div>
                                     </div>
+                                    */}
 
                                     <div className="notification-group">
                                         <h3 className="notification-group-title">Eventos</h3>

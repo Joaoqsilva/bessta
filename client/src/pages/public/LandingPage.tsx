@@ -76,7 +76,7 @@ const plans = [
         features: [
             'Agendamentos ilimitados',
             'Serviços ilimitados',
-            'Lembretes via WhatsApp',
+            // 'Lembretes via WhatsApp',
             'Relatórios avançados',
             'Página personalizada',
             // 'Domínio personalizado', // Disabled temporarily

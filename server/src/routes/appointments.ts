@@ -100,6 +100,29 @@ router.post('/', appointmentLimiter, async (req, res) => {
         const store = await Store.findById(storeId);
         if (!store) return res.status(404).json({ success: false, error: 'Loja não encontrada' });
 
+        // Check Plan Limits (30 Appointments/month for Free/Start plan)
+        if (store.plan === 'start' || store.plan === 'free') {
+            const startOfMonth = new Date();
+            startOfMonth.setDate(1);
+            startOfMonth.setHours(0, 0, 0, 0);
+
+            const nextMonth = new Date(startOfMonth);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+            const aptCount = await Appointment.countDocuments({
+                storeId,
+                date: { $gte: startOfMonth, $lt: nextMonth }
+            });
+
+            if (aptCount >= 30) {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Esta loja atingiu o limite mensal de agendamentos do plano Grátis (30/mês). Tente agendar para o próximo mês ou entre em contato com o estabelecimento.',
+                    code: 'PLAN_LIMIT_REACHED'
+                });
+            }
+        }
+
         const service = await Service.findById(serviceId);
         if (!service) return res.status(404).json({ success: false, error: 'Serviço não encontrado' });
 

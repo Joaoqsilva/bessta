@@ -9,7 +9,7 @@ import './AuthPages.css';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const { login, googleLogin, demoLogin, isLoading, isAuthenticated, user } = useAuth();
+    const { login, googleLogin, isLoading, isAuthenticated, user } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -142,26 +142,6 @@ export const LoginPage = () => {
                                 Não tem uma conta?{' '}
                                 <Link to="/register" className="auth-link">Criar conta grátis</Link>
                             </p>
-
-                            {/* Demo Login Button */}
-                            <div className="auth-demo-hint">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="lg"
-                                    fullWidth
-                                    onClick={() => {
-                                        const success = demoLogin();
-                                        if (success) {
-                                            navigate('/app');
-                                        } else {
-                                            setError('Erro ao entrar no modo demo');
-                                        }
-                                    }}
-                                >
-                                    🧪 Modo Demo (sem banco de dados)
-                                </Button>
-                            </div>
                         </div>
                     </div>
                 </div>

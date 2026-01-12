@@ -37,7 +37,7 @@ const PLANS = {
     business: {
         name: 'Business',
         price: 99.90,
-        features: ['Profissionais ilimitados', 'Lembretes por WhatsApp', 'Relatórios avançados', 'API access', 'Suporte 24/7']
+        features: ['Agendamentos ilimitados', 'Serviços ilimitados', 'Relatórios avançados', 'Página personalizada', 'Múltiplos colaboradores']
     }
 };
 

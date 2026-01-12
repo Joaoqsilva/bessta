@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
     Users, Search, Mail, Phone, Store, Calendar,
-    MoreVertical, Shield, ShieldOff, Trash2, Eye
+    MoreVertical, Shield, ShieldOff, Trash2, Eye, Edit, Key
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Modal } from '../../components/Modal';
-import { getAllRegisteredStores, type RegisteredStore } from '../../context/AdminMasterService';
+import { Input } from '../../components/Input';
+import { getAllUsers, updatePlatformUser, resetUserPassword } from '../../context/AdminMasterService';
 import './MasterUsersPage.css';
 
 interface PlatformUser {
@@ -25,9 +26,20 @@ export const MasterUsersPage = () => {
     const [filteredUsers, setFilteredUsers] = useState<PlatformUser[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState<'all' | 'owner' | 'customer'>('all');
+
+    // Actions State
     const [selectedUser, setSelectedUser] = useState<PlatformUser | null>(null);
     const [showActionsMenu, setShowActionsMenu] = useState<string | null>(null);
+
+    // Modals State
     const [showBlockModal, setShowBlockModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+    // Form State
+    const [editForm, setEditForm] = useState({ name: '', storeName: '' });
+    const [passwordForm, setPasswordForm] = useState({ newPassword: '' });
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -38,52 +50,29 @@ export const MasterUsersPage = () => {
     }, [users, searchQuery, typeFilter]);
 
     const loadUsers = async () => {
-        const allUsers: PlatformUser[] = [];
-        const stores = await getAllRegisteredStores();
+        try {
+            const apiUsers = await getAllUsers();
 
-        // Get store owners from registered stores
-        stores.forEach(store => {
-            allUsers.push({
-                id: `owner_${store.id}`,
-                name: store.ownerName,
-                email: store.ownerEmail,
-                phone: store.phone,
-                type: 'owner',
-                storeId: store.id,
-                storeName: store.name,
-                createdAt: store.createdAt,
-                status: 'active',
-            });
-        });
+            // Map API users to PlatformUser interface
+            const mappedUsers: PlatformUser[] = apiUsers.map(u => ({
+                id: u.id || u._id,
+                name: u.ownerName || u.name,
+                email: u.email,
+                phone: u.phone,
+                type: u.role === 'store_owner' ? 'owner' : 'customer',
+                storeId: u.storeId,
+                storeName: u.storeName,
+                createdAt: u.createdAt,
+                status: u.isActive === false ? 'blocked' : 'active', // Assuming isActive field exists or default active
+            }));
 
-        // Get customers from localStorage
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key?.startsWith('customer_') && !key.includes('_')) {
-                try {
-                    const customer = JSON.parse(localStorage.getItem(key) || '{}');
-                    if (customer.id && customer.name) {
-                        const storeSlug = key.replace('customer_', '');
-                        const store = stores.find(s => s.slug === storeSlug);
-                        allUsers.push({
-                            id: `customer_${customer.id}`,
-                            name: customer.name,
-                            email: customer.email,
-                            phone: customer.phone,
-                            type: 'customer',
-                            storeId: store?.id,
-                            storeName: store?.name,
-                            createdAt: new Date().toISOString(),
-                            status: 'active',
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error parsing customer:', e);
-                }
-            }
+            // TODO: If you still need mocked customers from localStorage, merge them here
+            // For now focusing on API users (Owners) as requested for editing features
+
+            setUsers(mappedUsers);
+        } catch (error) {
+            console.error('Error loading users:', error);
         }
-
-        setUsers(allUsers);
     };
 
     const filterUsers = () => {
@@ -105,17 +94,61 @@ export const MasterUsersPage = () => {
         setFilteredUsers(result);
     };
 
-    const handleBlockUser = () => {
-        if (selectedUser) {
-            // Toggle block status
-            setUsers(prev => prev.map(u =>
-                u.id === selectedUser.id
-                    ? { ...u, status: u.status === 'active' ? 'blocked' : 'active' }
-                    : u
-            ));
-            setShowBlockModal(false);
-            setSelectedUser(null);
+    // --- Actions ---
+
+    const handleEditClick = (user: PlatformUser) => {
+        setSelectedUser(user);
+        setEditForm({
+            name: user.name,
+            storeName: user.storeName || ''
+        });
+        setShowEditModal(true);
+        setShowActionsMenu(null);
+    };
+
+    const handlePasswordClick = (user: PlatformUser) => {
+        setSelectedUser(user);
+        setPasswordForm({ newPassword: '' });
+        setShowPasswordModal(true);
+        setShowActionsMenu(null);
+    };
+
+    const handleUpdateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+
+        setIsLoading(true);
+        const success = await updatePlatformUser(selectedUser.id, editForm);
+        setIsLoading(false);
+
+        if (success) {
+            alert('Usuário atualizado com sucesso!');
+            setShowEditModal(false);
+            loadUsers(); // Reload to see changes
+        } else {
+            alert('Erro ao atualizar usuário.');
         }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+
+        setIsLoading(true);
+        const success = await resetUserPassword(selectedUser.id, passwordForm.newPassword);
+        setIsLoading(false);
+
+        if (success) {
+            alert('Senha redefinida com sucesso!');
+            setShowPasswordModal(false);
+        } else {
+            alert('Erro ao redefinir senha.');
+        }
+    };
+
+    const handleBlockUser = () => {
+        // Toggle block logic (would require API endpoint for blocking)
+        setShowBlockModal(false);
     };
 
     const formatDate = (dateString: string) => {
@@ -138,10 +171,10 @@ export const MasterUsersPage = () => {
                         <Store size={18} />
                         <span>{ownerCount} Proprietários</span>
                     </div>
-                    <div className="header-stat">
+                    {/* <div className="header-stat">
                         <Users size={18} />
                         <span>{customerCount} Clientes</span>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -156,26 +189,26 @@ export const MasterUsersPage = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="filter-buttons">
+                {/* <div className="filter-buttons">
                     <button
                         className={`filter-btn ${typeFilter === 'all' ? 'active' : ''}`}
                         onClick={() => setTypeFilter('all')}
                     >
-                        Todos ({users.length})
+                        Todos
                     </button>
                     <button
                         className={`filter-btn ${typeFilter === 'owner' ? 'active' : ''}`}
                         onClick={() => setTypeFilter('owner')}
                     >
-                        Proprietários ({ownerCount})
+                        Proprietários
                     </button>
-                    <button
+                     <button
                         className={`filter-btn ${typeFilter === 'customer' ? 'active' : ''}`}
                         onClick={() => setTypeFilter('customer')}
                     >
-                        Clientes ({customerCount})
+                        Clientes
                     </button>
-                </div>
+                </div> */}
             </div>
 
             {/* Users Table */}
@@ -210,11 +243,11 @@ export const MasterUsersPage = () => {
                                     <td>
                                         <div className="user-cell">
                                             <div className={`user-avatar ${user.type}`}>
-                                                {user.name.charAt(0).toUpperCase()}
+                                                {user.name?.charAt(0).toUpperCase()}
                                             </div>
                                             <div className="user-info">
                                                 <span className="user-name">{user.name}</span>
-                                                <span className="user-id">ID: {user.id.slice(0, 12)}...</span>
+                                                <span className="user-id" title={user.id}>ID: ...{user.id.slice(-6)}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -263,9 +296,13 @@ export const MasterUsersPage = () => {
                                                 </button>
                                                 {showActionsMenu === user.id && (
                                                     <div className="dropdown-menu">
-                                                        <button>
-                                                            <Eye size={14} />
-                                                            Ver Detalhes
+                                                        <button onClick={() => handleEditClick(user)}>
+                                                            <Edit size={14} />
+                                                            Editar Dados
+                                                        </button>
+                                                        <button onClick={() => handlePasswordClick(user)}>
+                                                            <Key size={14} />
+                                                            Redefinir Senha
                                                         </button>
                                                         <button
                                                             onClick={() => {
@@ -305,12 +342,6 @@ export const MasterUsersPage = () => {
                             : `Tem certeza que deseja desbloquear ${selectedUser?.name}?`
                         }
                     </p>
-                    <p className="warning">
-                        {selectedUser?.status === 'active'
-                            ? 'O usuário não poderá acessar a plataforma enquanto estiver bloqueado.'
-                            : 'O usuário voltará a ter acesso normal à plataforma.'
-                        }
-                    </p>
                     <div className="modal-actions">
                         <Button variant="outline" onClick={() => setShowBlockModal(false)}>
                             Cancelar
@@ -323,6 +354,67 @@ export const MasterUsersPage = () => {
                         </Button>
                     </div>
                 </div>
+            </Modal>
+
+            {/* Edit User Modal */}
+            <Modal
+                isOpen={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                title="Editar Usuário"
+            >
+                <form onSubmit={handleUpdateUser}>
+                    <Input
+                        label="Nome do Responsável"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                        required
+                    />
+                    {selectedUser?.type === 'owner' && (
+                        <Input
+                            label="Nome da Loja"
+                            value={editForm.storeName}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, storeName: e.target.value }))}
+                            required
+                        />
+                    )}
+                    <div className="modal-actions">
+                        <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" variant="primary" isLoading={isLoading}>
+                            Salvar Alterações
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Reset Password Modal */}
+            <Modal
+                isOpen={showPasswordModal}
+                onClose={() => setShowPasswordModal(false)}
+                title="Redefinir Senha"
+            >
+                <form onSubmit={handleResetPassword}>
+                    <p className="mb-4 text-sm text-gray-600">
+                        Digite a nova senha para o usuário <strong>{selectedUser?.name}</strong>.
+                    </p>
+                    <Input
+                        label="Nova Senha"
+                        type="password"
+                        value={passwordForm.newPassword}
+                        onChange={(e) => setPasswordForm({ newPassword: e.target.value })}
+                        required
+                        minLength={6}
+                    />
+                    <div className="modal-actions">
+                        <Button type="button" variant="outline" onClick={() => setShowPasswordModal(false)}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" variant="primary" isLoading={isLoading}>
+                            Redefinir Senha
+                        </Button>
+                    </div>
+                </form>
             </Modal>
         </div>
     );
