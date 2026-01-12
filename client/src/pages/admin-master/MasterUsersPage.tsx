@@ -52,6 +52,24 @@ export const MasterUsersPage = () => {
         filterUsers();
     }, [users, searchQuery, typeFilter]);
 
+    // Fechar dropdown ao clicar fora
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.dropdown')) {
+                setShowActionsMenu(null);
+            }
+        };
+
+        if (showActionsMenu) {
+            document.addEventListener('click', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [showActionsMenu]);
+
     const loadUsers = async () => {
         try {
             const apiUsers = await getAllUsers();
@@ -348,6 +366,7 @@ export const MasterUsersPage = () => {
                                         <div className="actions-cell">
                                             <div className="dropdown" style={{ zIndex: showActionsMenu === user.id ? 100 : 1, position: 'relative' }}>
                                                 <button
+                                                    type="button"
                                                     className="action-btn"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -359,19 +378,20 @@ export const MasterUsersPage = () => {
                                                 </button>
                                                 {showActionsMenu === user.id && (
                                                     <div className="dropdown-menu">
-                                                        <button onClick={() => handleEditClick(user)}>
+                                                        <button type="button" onClick={() => handleEditClick(user)}>
                                                             <Edit size={14} />
                                                             Editar Dados
                                                         </button>
-                                                        <button onClick={() => handlePlanClick(user)}>
+                                                        <button type="button" onClick={() => handlePlanClick(user)}>
                                                             <Crown size={14} />
                                                             Atualizar Plano
                                                         </button>
-                                                        <button onClick={() => handlePasswordClick(user)}>
+                                                        <button type="button" onClick={() => handlePasswordClick(user)}>
                                                             <Key size={14} />
                                                             Redefinir Senha
                                                         </button>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 setSelectedUser(user);
                                                                 setShowBlockModal(true);

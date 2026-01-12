@@ -304,6 +304,12 @@
     color: var(--text-muted);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .action-btn:hover {
