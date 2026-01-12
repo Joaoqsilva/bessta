@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             } catch (error) {
                 console.error('Error verifying session:', error);
                 // If in development and API fails, don't logout - just show login
+            } finally {
                 setIsLoading(false);
             }
         };
