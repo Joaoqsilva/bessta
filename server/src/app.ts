@@ -46,11 +46,28 @@ const limiter = rateLimit({
 app.use('/api', limiter); // Global rate limiting enabled
 
 // CORS configuration
+const getAllowedOrigins = () => {
+    const envOrigin = process.env.CORS_ORIGIN;
+
+    // If wildcard, allow all origins
+    if (envOrigin === '*') {
+        return true; // cors package accepts 'true' to allow all
+    }
+
+    // If comma-separated list, split into array
+    if (envOrigin) {
+        return envOrigin.split(',').map(o => o.trim());
+    }
+
+    // Default origins for development
+    return ['http://localhost:5173', 'http://localhost:3000', 'https://bessta-booking.vercel.app', 'https://bessta-app.vercel.app'];
+};
+
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'https://bessta-booking.vercel.app', 'https://bessta-app.vercel.app'],
+    origin: getAllowedOrigins(),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
 app.use(cors(corsOptions));
