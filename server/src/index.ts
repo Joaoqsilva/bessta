@@ -23,6 +23,35 @@ async function startServer() {
     try {
         await connectDB();
         console.log('✅ Database is ready and accepting requests');
+
+        // Seed Admin User if not exists
+        const { User } = require('./models/User');
+        // Simple retry logic or just run once
+        try {
+            // We can dynamically import or just use require for this seed logic to avoid top-level dependency issues
+            // before DB is ready, although models are safe to import.
+            const adminEmail = 'admin@master.com';
+            const adminExists = await User.findOne({ email: adminEmail });
+
+            if (!adminExists) {
+                console.log('Creating default Admin Master user...');
+                const adminUser = new User({
+                    email: adminEmail,
+                    password: 'admin123', // Will be hashed by pre-save
+                    ownerName: 'Master Admin',
+                    phone: '99999999999',
+                    role: 'admin_master',
+                    plan: 'professional'
+                });
+                await adminUser.save();
+                console.log('✅ Default Admin created: admin@master.com / admin123');
+            } else {
+                console.log('ℹ️ Admin user already exists: admin@master.com');
+            }
+        } catch (seedError) {
+            console.error('Failed to seed admin user:', seedError);
+        }
+
     } catch (error) {
         console.error('❌ Failed to connect to MongoDB:', error);
     }
