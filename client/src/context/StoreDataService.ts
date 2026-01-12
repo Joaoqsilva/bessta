@@ -68,7 +68,7 @@ export const saveStoreServices = (storeId: string, services: Service[]): void =>
 
 export const addStoreService = (storeId: string, service: Omit<Service, 'id'>): Service => {
     const data = getStoreData(storeId);
-    const newId = data.services.length > 0 ? Math.max(...data.services.map(s => s.id)) + 1 : 1;
+    const newId = data.services.length > 0 ? Math.max(...data.services.map(s => Number(s.id))) + 1 : 1;
     const newService = { ...service, id: newId };
     data.services.push(newService);
     saveStoreData(storeId, data);
@@ -104,7 +104,7 @@ export const saveStoreCustomers = (storeId: string, customers: Customer[]): void
 
 export const addStoreCustomer = (storeId: string, customer: Omit<Customer, 'id'>): Customer => {
     const data = getStoreData(storeId);
-    const newId = data.customers.length > 0 ? Math.max(...data.customers.map(c => c.id)) + 1 : 1;
+    const newId = data.customers.length > 0 ? Math.max(...data.customers.map(c => Number(c.id))) + 1 : 1;
     const newCustomer = { ...customer, id: newId };
     data.customers.push(newCustomer);
     saveStoreData(storeId, data);
@@ -140,7 +140,7 @@ export const saveStoreAppointments = (storeId: string, appointments: Appointment
 
 export const addStoreAppointment = (storeId: string, appointment: Omit<Appointment, 'id'>): Appointment => {
     const data = getStoreData(storeId);
-    const newId = data.appointments.length > 0 ? Math.max(...data.appointments.map(a => a.id)) + 1 : 1;
+    const newId = data.appointments.length > 0 ? Math.max(...data.appointments.map(a => Number(a.id))) + 1 : 1;
     const newAppointment = { ...appointment, id: newId };
     data.appointments.push(newAppointment);
     saveStoreData(storeId, data);
