@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
     Users, Search, Mail, Phone, Store, Calendar,
-    MoreVertical, Shield, ShieldOff, Trash2, Eye, Edit, Key
+    MoreVertical, Shield, ShieldOff, Trash2, Eye, Edit, Key, Crown
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Modal } from '../../components/Modal';
 import { Input } from '../../components/Input';
-import { getAllUsers, updatePlatformUser, resetUserPassword } from '../../context/AdminMasterService';
+import { getAllUsers, updatePlatformUser, resetUserPassword, updateUserPlan } from '../../context/AdminMasterService';
 import './MasterUsersPage.css';
 
 interface PlatformUser {
@@ -19,6 +19,7 @@ interface PlatformUser {
     storeName?: string;
     createdAt: string;
     status: 'active' | 'blocked';
+    plan: 'free' | 'basic' | 'pro' | 'start' | 'professional' | 'business';
 }
 
 export const MasterUsersPage = () => {
@@ -35,10 +36,12 @@ export const MasterUsersPage = () => {
     const [showBlockModal, setShowBlockModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [showPlanModal, setShowPlanModal] = useState(false);
 
     // Form State
     const [editForm, setEditForm] = useState({ name: '', storeName: '' });
     const [passwordForm, setPasswordForm] = useState({ newPassword: '' });
+    const [planForm, setPlanForm] = useState({ plan: 'start' as string });
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -64,10 +67,8 @@ export const MasterUsersPage = () => {
                 storeName: u.storeName,
                 createdAt: u.createdAt,
                 status: u.isActive === false ? 'blocked' : 'active', // Assuming isActive field exists or default active
+                plan: u.plan || u.subscriptionPlan || 'start',
             }));
-
-            // TODO: If you still need mocked customers from localStorage, merge them here
-            // For now focusing on API users (Owners) as requested for editing features
 
             setUsers(mappedUsers);
         } catch (error) {
@@ -146,6 +147,30 @@ export const MasterUsersPage = () => {
         }
     };
 
+    const handlePlanClick = (user: PlatformUser) => {
+        setSelectedUser(user);
+        setPlanForm({ plan: user.plan || 'start' });
+        setShowPlanModal(true);
+        setShowActionsMenu(null);
+    };
+
+    const handleUpdatePlan = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+
+        setIsLoading(true);
+        const success = await updateUserPlan(selectedUser.id, planForm.plan);
+        setIsLoading(false);
+
+        if (success) {
+            alert('Plano atualizado com sucesso!');
+            setShowPlanModal(false);
+            loadUsers(); // Reload to see changes
+        } else {
+            alert('Erro ao atualizar plano.');
+        }
+    };
+
     const handleBlockUser = () => {
         // Toggle block logic (would require API endpoint for blocking)
         setShowBlockModal(false);
@@ -154,6 +179,30 @@ export const MasterUsersPage = () => {
     const formatDate = (dateString: string) => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString('pt-BR');
+    };
+
+    const formatPlanName = (plan: string) => {
+        const planNames: Record<string, string> = {
+            'free': 'Gratuito',
+            'basic': 'Básico',
+            'pro': 'Pro',
+            'start': 'Start',
+            'professional': 'Profissional',
+            'business': 'Business'
+        };
+        return planNames[plan] || plan;
+    };
+
+    const getPlanColor = (plan: string) => {
+        const planColors: Record<string, string> = {
+            'free': '#6b7280',
+            'basic': '#3b82f6',
+            'pro': '#8b5cf6',
+            'start': '#10b981',
+            'professional': '#f59e0b',
+            'business': '#ef4444'
+        };
+        return planColors[plan] || '#6b7280';
     };
 
     const ownerCount = users.filter(u => u.type === 'owner').length;
@@ -233,6 +282,7 @@ export const MasterUsersPage = () => {
                                 <th>Tipo</th>
                                 <th>Loja Associada</th>
                                 <th>Cadastro</th>
+                                <th>Plano</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -277,6 +327,19 @@ export const MasterUsersPage = () => {
                                     </td>
                                     <td>{formatDate(user.createdAt)}</td>
                                     <td>
+                                        <span
+                                            className="plan-badge"
+                                            style={{
+                                                backgroundColor: getPlanColor(user.plan) + '20',
+                                                color: getPlanColor(user.plan),
+                                                border: `1px solid ${getPlanColor(user.plan)}40`
+                                            }}
+                                        >
+                                            <Crown size={12} />
+                                            {formatPlanName(user.plan)}
+                                        </span>
+                                    </td>
+                                    <td>
                                         <span className={`status-badge status-${user.status}`}>
                                             {user.status === 'active' ? 'Ativo' : 'Bloqueado'}
                                         </span>
@@ -299,6 +362,10 @@ export const MasterUsersPage = () => {
                                                         <button onClick={() => handleEditClick(user)}>
                                                             <Edit size={14} />
                                                             Editar Dados
+                                                        </button>
+                                                        <button onClick={() => handlePlanClick(user)}>
+                                                            <Crown size={14} />
+                                                            Atualizar Plano
                                                         </button>
                                                         <button onClick={() => handlePasswordClick(user)}>
                                                             <Key size={14} />
@@ -412,6 +479,53 @@ export const MasterUsersPage = () => {
                         </Button>
                         <Button type="submit" variant="primary" isLoading={isLoading}>
                             Redefinir Senha
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Update Plan Modal */}
+            <Modal
+                isOpen={showPlanModal}
+                onClose={() => setShowPlanModal(false)}
+                title="Atualizar Plano"
+            >
+                <form onSubmit={handleUpdatePlan}>
+                    <p className="mb-4 text-sm text-gray-600">
+                        Selecione o novo plano para o usuário <strong>{selectedUser?.name}</strong>.
+                    </p>
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
+                            Plano
+                        </label>
+                        <select
+                            value={planForm.plan}
+                            onChange={(e) => setPlanForm({ plan: e.target.value })}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '1rem',
+                                backgroundColor: '#fff',
+                                cursor: 'pointer'
+                            }}
+                            required
+                        >
+                            <option value="start">Start (Gratuito)</option>
+                            <option value="free">Free (Gratuito)</option>
+                            <option value="basic">Básico</option>
+                            <option value="professional">Profissional</option>
+                            <option value="pro">Pro</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+                    <div className="modal-actions">
+                        <Button type="button" variant="outline" onClick={() => setShowPlanModal(false)}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" variant="primary" isLoading={isLoading}>
+                            Atualizar Plano
                         </Button>
                     </div>
                 </form>

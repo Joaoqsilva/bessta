@@ -264,6 +264,15 @@ export const platformManagementApi = {
             success: true,
             message: response.data.message
         };
+    },
+
+    updateUserPlan: async (userId: string, plan: string, planExpiresAt?: string) => {
+        const response = await api.put(`/platform/users/${userId}/plan`, { plan, planExpiresAt });
+        return {
+            success: true,
+            message: response.data.message,
+            plan: response.data.plan
+        };
     }
 };
 

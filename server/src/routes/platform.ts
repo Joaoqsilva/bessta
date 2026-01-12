@@ -391,4 +391,50 @@ router.put('/users/:id/password', authMiddleware, adminMiddleware, async (req, r
     }
 });
 
+/**
+ * PUT /api/platform/users/:id/plan
+ * Admin Master Update User Plan
+ */
+router.put('/users/:id/plan', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { plan, planExpiresAt } = req.body;
+
+        const validPlans = ['free', 'basic', 'pro', 'start', 'professional', 'business'];
+        if (!plan || !validPlans.includes(plan)) {
+            return res.status(400).json({ error: 'Plano inválido' });
+        }
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+        user.plan = plan;
+        user.subscriptionPlan = plan;
+        user.subscriptionStatus = 'active';
+
+        if (planExpiresAt) {
+            user.planExpiresAt = new Date(planExpiresAt);
+            user.subscriptionEndDate = new Date(planExpiresAt);
+        } else {
+            // Se não for especificado, definir para 30 dias a partir de agora para planos pagos
+            if (plan !== 'free' && plan !== 'start') {
+                const thirtyDaysFromNow = new Date();
+                thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+                user.planExpiresAt = thirtyDaysFromNow;
+                user.subscriptionEndDate = thirtyDaysFromNow;
+            } else {
+                user.planExpiresAt = null;
+                user.subscriptionEndDate = undefined;
+            }
+        }
+
+        await user.save();
+
+        res.json({ success: true, message: 'Plano atualizado com sucesso', plan: user.plan });
+    } catch (error: any) {
+        console.error('Error updating user plan:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router;

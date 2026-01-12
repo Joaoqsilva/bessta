@@ -169,3 +169,14 @@ export const resetUserPassword = async (userId: string, password: string): Promi
         return false;
     }
 };
+
+// Update user plan
+export const updateUserPlan = async (userId: string, plan: string, planExpiresAt?: string): Promise<boolean> => {
+    try {
+        const result = await platformManagementApi.updateUserPlan(userId, plan, planExpiresAt);
+        return result.success;
+    } catch (error) {
+        console.error('Error updating user plan:', error);
+        return false;
+    }
+};
