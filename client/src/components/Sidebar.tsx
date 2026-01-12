@@ -89,16 +89,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
         }
     };
 
-    // Load current plan on mount and when returning from Stripe portal
+    // Load current plan on mount
     useEffect(() => {
         if (type === 'store') {
             const loadPlan = async () => {
                 try {
-                    const response = await paymentService.getSubscriptionStatus();
+                    const response = await paymentService.getSubscription();
                     console.log('DEBUG [Sidebar]: Subscription status:', response);
-                    if (response.success) {
-                        setCurrentPlan(response.plan === 'pro' ? 'pro' : 'free');
-                        setIsCancelling(!!response.subscription?.cancelAtPeriodEnd);
+                    if (response.success && response.subscription) {
+                        const plan = response.subscription.plan;
+                        setCurrentPlan(plan === 'professional' || plan === 'business' || plan === 'pro' ? 'pro' : 'free');
+                        setIsCancelling(response.subscription.status === 'cancelled');
                     }
                 } catch (error) {
                     console.error('Error loading plan:', error);
@@ -108,7 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
             // Load on mount
             loadPlan();
 
-            // Reload when tab becomes visible (user returns from Stripe portal)
+            // Reload when tab becomes visible
             const handleVisibilityChange = () => {
                 if (document.visibilityState === 'visible') {
                     loadPlan();

@@ -93,7 +93,7 @@ export const SettingsPage = () => {
         setCurrentPlan(plan);
     }, [store, user, isAuthLoading]);
 
-    // Load detailed subscription status from backend on mount AND when returning from Stripe portal
+    // Load detailed subscription status from backend on mount
     useEffect(() => {
         const loadSubscriptionStatus = async () => {
             if (!store?.id && !user?.id) return;
@@ -118,7 +118,7 @@ export const SettingsPage = () => {
         // Load on mount
         loadSubscriptionStatus();
 
-        // Also reload when tab becomes visible (user returns from Stripe portal)
+        // Also reload when tab becomes visible
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
                 console.log('Page became visible - reloading subscription status...');
@@ -143,43 +143,20 @@ export const SettingsPage = () => {
             setActiveTab('plans');
         }
 
-        if (payment === 'success' && sessionId) {
-            // Verify the session and update the plan in the database
-            const verifyPayment = async () => {
+        if (payment === 'success') {
+            setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
+            // Reload subscription status
+            const loadStatus = async () => {
                 try {
-                    const result = await paymentService.verifySession(sessionId);
-                    if (result.success && result.plan === 'pro') {
-                        setCurrentPlan('pro');
-                        setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado para Profissional.' });
-                    } else {
-                        // Still show success but reload status
-                        setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
-                        // Reload subscription status
-                        const status = await paymentService.getSubscriptionStatus();
-                        if (status.success) {
-                            setCurrentPlan(status.plan || 'free');
-                        }
+                    const response = await paymentService.getSubscription();
+                    if (response.success && response.subscription) {
+                        setCurrentPlan(response.subscription.plan);
                     }
-                } catch (error) {
-                    console.error('Error verifying session:', error);
-                    setPaymentMessage({ type: 'success', text: 'Pagamento realizado! Atualizando seu plano...' });
-                    // Try to reload subscription status anyway
-                    try {
-                        const status = await paymentService.getSubscriptionStatus();
-                        if (status.success) {
-                            setCurrentPlan(status.plan || 'free');
-                        }
-                    } catch (e) {
-                        console.error('Error getting subscription status:', e);
-                    }
+                } catch (e) {
+                    console.error('Error getting subscription status:', e);
                 }
             };
-            verifyPayment();
-            // Clear URL params
-            window.history.replaceState({}, '', '/app/settings?tab=plans');
-        } else if (payment === 'success') {
-            setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
-            setCurrentPlan('pro');
+            loadStatus();
             window.history.replaceState({}, '', '/app/settings?tab=plans');
         } else if (payment === 'cancelled') {
             setPaymentMessage({ type: 'error', text: 'Pagamento cancelado. Você ainda está no plano gratuito.' });
@@ -518,11 +495,10 @@ export const SettingsPage = () => {
 
     const handlePlanUpgrade = () => {
         if (!selectedPlan) return;
-        if (selectedPlan === 'pro') {
-            handleStripeCheckout();
+        if (selectedPlan === 'professional' || selectedPlan === 'business' || selectedPlan === 'pro') {
+            handleMercadoPagoCheckout(selectedPlan === 'pro' ? 'professional' : selectedPlan);
         } else {
-            // If they select 'free' (downgrade) via modal, we should probably guide them to the portal
-            // or handle it via API if we support it directly. For now, redirect to portal.
+            // If they select 'start' or 'free' (downgrade), cancel subscription
             handleManageSubscription();
         }
     };
@@ -1341,7 +1317,7 @@ export const SettingsPage = () => {
                         onClose={() => setIsPlanModalOpen(false)}
                         title={selectedPlan === 'free' ? "Alterar para Plano Grátis" : "Confirmar Upgrade"}
                         description={selectedPlan === 'free'
-                            ? "Para cancelar sua assinatura atual e voltar ao plano gratuito, você será redirecionado para o Portal do Stripe."
+                            ? "Para cancelar sua assinatura atual e voltar ao plano gratuito, sua assinatura será encerrada imediatamente."
                             : `Você está prestes a assinar o plano ${PLANS.find(p => p.id === selectedPlan)?.name}`
                         }
                     >
@@ -1356,8 +1332,8 @@ export const SettingsPage = () => {
                             )}
                             <p className="upgrade-note">
                                 {selectedPlan === 'free'
-                                    ? "No Portal da Stripe, você poderá gerenciar sua assinatura e interromper as cobranças."
-                                    : "Você será redirecionado para a página de pagamento seguro."
+                                    ? "Ao confirmar, você voltará para o plano gratuito e perderá os benefícios premium."
+                                    : "O pagamento será processado de forma segura pelo Mercado Pago."
                                 }
                             </p>
                             <div className="modal-actions">
@@ -1365,7 +1341,7 @@ export const SettingsPage = () => {
                                     Cancelar
                                 </Button>
                                 <Button variant="primary" onClick={handlePlanUpgrade} isLoading={isCheckoutLoading}>
-                                    {selectedPlan === 'free' ? 'Ir para o Portal Stripe' : 'Confirmar Upgrade'}
+                                    {selectedPlan === 'free' ? 'Confirmar Cancelamento' : 'Confirmar Upgrade'}
                                 </Button>
                             </div>
                         </div>
