@@ -22,8 +22,9 @@ import {
     type StoreCustomization
 } from '../../context/StoreCustomizationService';
 import * as domainApi from '../../services/domainApi';
-import { paymentService } from '../../services/paymentService';
+import { paymentService, PLANS as MP_PLANS } from '../../services/paymentService';
 import { storeApi } from '../../services/storeApi';
+import MercadoPagoCheckout from '../../components/payment/MercadoPagoCheckout';
 import './SettingsPage.css';
 
 const PLANS = [
@@ -98,15 +99,16 @@ export const SettingsPage = () => {
             if (!store?.id && !user?.id) return;
 
             try {
-                const response = await paymentService.getSubscriptionStatus();
+                const response = await paymentService.getSubscription();
                 console.log('DEBUG: Subscription status response:', response);
-                if (response.success) {
-                    // Update only if backend has a more specific status (e.g. valid 'pro')
-                    // But keep local optimistic update if we just paid
-                    if (response.plan) {
-                        setCurrentPlan(response.plan);
-                    }
-                    setSubscriptionStatus(response.subscription);
+                if (response.success && response.subscription) {
+                    setCurrentPlan(response.subscription.plan);
+                    setSubscriptionStatus({
+                        id: '',
+                        status: response.subscription.status,
+                        currentPeriodEnd: response.subscription.endDate || '',
+                        cancelAtPeriodEnd: response.subscription.status === 'cancelled'
+                    });
                 }
             } catch (error) {
                 console.error('Failed to load subscription status:', error);
@@ -185,40 +187,52 @@ export const SettingsPage = () => {
         }
     }, [searchParams]);
 
-    // Handle Stripe Checkout
-    const handleStripeCheckout = async () => {
-        setIsCheckoutLoading(true);
-        try {
-            const response = await paymentService.createCheckoutSession();
-            if (response.success && response.url) {
-                // Redirect to Stripe Checkout
-                window.location.href = response.url;
-            } else {
-                setPaymentMessage({ type: 'error', text: 'Erro ao iniciar checkout. Tente novamente.' });
-            }
-        } catch (error) {
-            console.error('Checkout error:', error);
-            setPaymentMessage({ type: 'error', text: 'Erro ao conectar com o gateway de pagamento.' });
-        } finally {
-            setIsCheckoutLoading(false);
+    // State for Mercado Pago Checkout Modal
+    const [showMPCheckout, setShowMPCheckout] = useState(false);
+    const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<{ id: string; name: string; price: number; features: string[] } | null>(null);
+
+    // Handle Mercado Pago Checkout
+    const handleMercadoPagoCheckout = (planId: string) => {
+        const plan = MP_PLANS.find(p => p.id === planId);
+        if (plan && plan.price > 0) {
+            setSelectedPlanForCheckout(plan);
+            setShowMPCheckout(true);
         }
     };
 
-    // Handle Manage Subscription (Customer Portal)
+    // Handle payment success
+    const handlePaymentSuccess = (paymentId: string) => {
+        console.log('Payment successful:', paymentId);
+        setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
+        if (selectedPlanForCheckout) {
+            setCurrentPlan(selectedPlanForCheckout.id);
+        }
+        setShowMPCheckout(false);
+        setSelectedPlanForCheckout(null);
+    };
+
+    // Handle payment error
+    const handlePaymentError = (error: string) => {
+        console.error('Payment error:', error);
+        setPaymentMessage({ type: 'error', text: `Erro no pagamento: ${error}` });
+    };
+
+    // Handle Manage Subscription (Cancel)
     const handleManageSubscription = async () => {
-        setIsCheckoutLoading(true);
-        try {
-            const response = await paymentService.createPortalSession();
-            if (response.success && response.url) {
-                window.location.href = response.url;
-            } else {
-                setPaymentMessage({ type: 'error', text: 'Erro ao abrir portal de gerenciamento.' });
+        if (confirm('Tem certeza que deseja cancelar sua assinatura? Você voltará para o plano gratuito.')) {
+            setIsCheckoutLoading(true);
+            try {
+                const response = await paymentService.cancelSubscription();
+                if (response.success) {
+                    setCurrentPlan('start');
+                    setPaymentMessage({ type: 'success', text: 'Assinatura cancelada com sucesso.' });
+                }
+            } catch (error) {
+                console.error('Cancel error:', error);
+                setPaymentMessage({ type: 'error', text: 'Erro ao cancelar assinatura.' });
+            } finally {
+                setIsCheckoutLoading(false);
             }
-        } catch (error) {
-            console.error('Portal error:', error);
-            setPaymentMessage({ type: 'error', text: 'Erro ao conectar com o gateway de pagamento.' });
-        } finally {
-            setIsCheckoutLoading(false);
         }
     };
 
@@ -1206,7 +1220,7 @@ export const SettingsPage = () => {
                                                         <Button
                                                             variant="primary"
                                                             fullWidth
-                                                            onClick={handleStripeCheckout}
+                                                            onClick={() => handleMercadoPagoCheckout('professional')}
                                                             isLoading={isCheckoutLoading}
                                                         >
                                                             Assinar Agora
@@ -1420,6 +1434,19 @@ export const SettingsPage = () => {
                         </div>
                     </Modal>
                 </>
+            )}
+
+            {/* Mercado Pago Checkout Modal */}
+            {showMPCheckout && selectedPlanForCheckout && (
+                <MercadoPagoCheckout
+                    plan={selectedPlanForCheckout}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                    onClose={() => {
+                        setShowMPCheckout(false);
+                        setSelectedPlanForCheckout(null);
+                    }}
+                />
             )}
         </div >
     );
