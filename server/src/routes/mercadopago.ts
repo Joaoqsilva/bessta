@@ -28,11 +28,7 @@ const PLANS = {
         price: 0,
         features: ['1 profissional', 'Agendamentos ilimitados', 'Página personalizada']
     },
-    test: {
-        name: 'Teste',
-        price: 1.00,
-        features: ['Plano de teste - R$ 1,00']
-    },
+
     professional: {
         name: 'Professional',
         price: 49.90,
