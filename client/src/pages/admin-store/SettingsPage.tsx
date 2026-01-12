@@ -47,6 +47,19 @@ const PLANS = [
         color: 'surface',
     },
     {
+        id: 'test',
+        name: '🧪 Teste',
+        price: 1,
+        period: '/único',
+        description: 'Para testar pagamento',
+        features: [
+            'Plano de teste R$ 1,00',
+            'Só para validar integração',
+        ],
+        limitations: [],
+        color: 'warning',
+    },
+    {
         id: 'pro',
         name: 'Profissional',
         price: 49,
@@ -1192,6 +1205,18 @@ export const SettingsPage = () => {
                                                             </li>
                                                         ))}
                                                     </ul>
+                                                    {/* Test plan button */}
+                                                    {plan.id !== currentPlan && plan.id === 'test' && (
+                                                        <Button
+                                                            variant="primary"
+                                                            fullWidth
+                                                            onClick={() => handleMercadoPagoCheckout('test')}
+                                                            isLoading={isCheckoutLoading}
+                                                        >
+                                                            Testar por R$ 1,00
+                                                        </Button>
+                                                    )}
+                                                    {/* Pro plan button */}
                                                     {plan.id !== currentPlan && plan.id === 'pro' && (
                                                         <Button
                                                             variant="primary"

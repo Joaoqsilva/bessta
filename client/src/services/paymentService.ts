@@ -29,6 +29,12 @@ export const PLANS: Plan[] = [
         features: ['1 profissional', 'Agendamentos ilimitados', 'Página personalizada']
     },
     {
+        id: 'test',
+        name: 'Teste',
+        price: 1.00,
+        features: ['Plano de teste - R$ 1,00']
+    },
+    {
         id: 'professional',
         name: 'Professional',
         price: 49.90,
