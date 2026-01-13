@@ -14,6 +14,7 @@ export interface User {
     role: UserRole;
     createdAt: string;
     isActive: boolean;
+    plan?: string;
 }
 
 export interface StoreOwner extends User {
