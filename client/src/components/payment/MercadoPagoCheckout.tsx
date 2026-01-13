@@ -1,11 +1,13 @@
 // ========================================
-// MERCADO PAGO CHECKOUT COMPONENT
-// Checkout Bricks Integration
+// STRIPE-STYLE CHECKOUT COMPONENT
+// Checkout Bricks Integration + License Key
 // ========================================
 
 import { useState, useEffect } from 'react';
-import { initMercadoPago, CardPayment, StatusScreen } from '@mercadopago/sdk-react';
+import { initMercadoPago, CardPayment } from '@mercadopago/sdk-react';
 import api from '../../services/api';
+import { licenseApi } from '../../services/licenseApi';
+import { Check, CreditCard, QrCode, Key, Lock, AlertCircle, Copy, ArrowRight } from 'lucide-react';
 import './MercadoPagoCheckout.css';
 
 // Initialize Mercado Pago with public key
@@ -26,19 +28,29 @@ interface MercadoPagoCheckoutProps {
     onClose: () => void;
 }
 
-type PaymentMethod = 'card' | 'pix' | null;
-type CheckoutStep = 'select' | 'payment' | 'processing' | 'success' | 'error';
+type PaymentTab = 'card' | 'pix' | 'license';
+type CheckoutStatus = 'idle' | 'processing' | 'success' | 'error';
 
 export default function MercadoPagoCheckout({ plan, onSuccess, onError, onClose }: MercadoPagoCheckoutProps) {
-    const [step, setStep] = useState<CheckoutStep>('select');
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-    const [paymentId, setPaymentId] = useState<string | null>(null);
-    const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string } | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<PaymentTab>('card');
+    const [status, setStatus] = useState<CheckoutStatus>('idle');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    // Handle card payment submission
+    // License State
+    const [licenseKey, setLicenseKey] = useState('');
+
+    // PIX State
+    const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string; id: string } | null>(null);
+
+    // Reset status on tab change
+    useEffect(() => {
+        setErrorMessage(null);
+        if (status === 'error') setStatus('idle');
+    }, [activeTab]);
+
+    // Handle card payment submission from SDK
     const handleCardSubmit = async (formData: any) => {
-        setStep('processing');
+        setStatus('processing');
         try {
             const response = await api.post('/mercadopago/process-payment', {
                 ...formData,
@@ -46,28 +58,27 @@ export default function MercadoPagoCheckout({ plan, onSuccess, onError, onClose 
             });
 
             if (response.data.success && response.data.status === 'approved') {
-                setPaymentId(response.data.id.toString());
-                setStep('success');
-                onSuccess(response.data.id.toString());
+                setStatus('success');
+                setTimeout(() => onSuccess(response.data.id.toString()), 2000);
             } else if (response.data.status === 'pending' || response.data.status === 'in_process') {
-                setPaymentId(response.data.id.toString());
-                setStep('processing');
+                // For card, pending usually means manual review or similar. Treat as success for UI flow but warn?
+                // Or maybe show processing state.
+                setStatus('success'); // Showing success for UX, backend handles status
+                setTimeout(() => onSuccess(response.data.id.toString()), 2000);
             } else {
-                setError(response.data.status_detail || 'Pagamento não aprovado');
-                setStep('error');
-                onError(response.data.status_detail || 'Pagamento não aprovado');
+                setErrorMessage(response.data.status_detail || 'Pagamento não aprovado');
+                setStatus('error');
             }
         } catch (err: any) {
             console.error('Payment error:', err);
-            setError(err.response?.data?.error || 'Erro ao processar pagamento');
-            setStep('error');
-            onError(err.response?.data?.error || 'Erro ao processar pagamento');
+            setErrorMessage(err.response?.data?.error || 'Erro ao processar pagamento');
+            setStatus('error');
         }
     };
 
-    // Handle PIX payment
-    const handlePixPayment = async () => {
-        setStep('processing');
+    // Handle PIX generation
+    const generatePix = async () => {
+        setStatus('processing');
         try {
             const userEmail = localStorage.getItem('bookme_user_email') || 'cliente@email.com';
 
@@ -76,200 +87,249 @@ export default function MercadoPagoCheckout({ plan, onSuccess, onError, onClose 
                 payer: {
                     email: userEmail,
                     first_name: 'Cliente',
-                    last_name: 'BookMe',
-                    identification: {
-                        type: 'CPF',
-                        number: '00000000000'
-                    }
+                    last_name: 'Store',
+                    identification: { type: 'CPF', number: '00000000000' }
                 }
             });
 
             if (response.data.success) {
-                setPaymentId(response.data.id.toString());
                 setPixData({
+                    id: response.data.id.toString(),
                     qrCode: response.data.qr_code,
                     qrCodeBase64: response.data.qr_code_base64
                 });
-                setStep('payment');
+                setStatus('idle'); // Back to idle but showing PIX data
             } else {
-                setError('Erro ao gerar PIX');
-                setStep('error');
+                setErrorMessage('Erro ao gerar PIX');
+                setStatus('error');
             }
         } catch (err: any) {
-            console.error('PIX error:', err);
-            setError(err.response?.data?.error || 'Erro ao gerar PIX');
-            setStep('error');
+            setErrorMessage(err.response?.data?.error || 'Erro ao gerar PIX');
+            setStatus('error');
         }
     };
 
-    // Poll PIX payment status
+    // Poll PIX status
     useEffect(() => {
-        if (paymentMethod === 'pix' && paymentId && step === 'payment') {
+        if (activeTab === 'pix' && pixData?.id) {
             const interval = setInterval(async () => {
                 try {
-                    const response = await api.get(`/mercadopago/status/${paymentId}`);
+                    const response = await api.get(`/mercadopago/status/${pixData.id}`);
                     if (response.data.status === 'approved') {
-                        setStep('success');
-                        onSuccess(paymentId);
+                        setStatus('success');
                         clearInterval(interval);
+                        setTimeout(() => onSuccess(pixData.id), 2000);
                     }
                 } catch (err) {
                     console.error('Status check error:', err);
                 }
-            }, 5000); // Check every 5 seconds
+            }, 5000);
 
             return () => clearInterval(interval);
         }
-    }, [paymentMethod, paymentId, step, onSuccess]);
+    }, [activeTab, pixData]);
 
-    // Copy PIX code to clipboard
-    const copyPixCode = () => {
-        if (pixData?.qrCode) {
-            navigator.clipboard.writeText(pixData.qrCode);
-            alert('Código PIX copiado!');
+    // Handle License Activation
+    const handleLicenseActivation = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!licenseKey.trim()) return;
+
+        setStatus('processing');
+        try {
+            const response = await licenseApi.activateKey(licenseKey);
+            if (response.success) {
+                setStatus('success');
+                setTimeout(() => onSuccess('license-activation'), 2000);
+            }
+        } catch (err: any) {
+            setErrorMessage(err.response?.data?.error || 'Chave de ativação inválida ou expirada');
+            setStatus('error');
         }
     };
+
+    // Render Logic
+    if (status === 'success') {
+        return (
+            <div className="mp-checkout-overlay">
+                <div className="mp-checkout-modal" style={{ maxWidth: 500, minHeight: 'auto', flexDirection: 'column', padding: 40, textAlign: 'center' }}>
+                    <div className="summary-check-icon" style={{ margin: '0 auto 20px', color: '#10b981', transform: 'scale(2)' }}>
+                        <Check size={32} />
+                    </div>
+                    <h2 style={{ fontSize: 24, marginBottom: 10, color: '#0f172a' }}>Sucesso!</h2>
+                    <p style={{ color: '#64748b', marginBottom: 30 }}>Seu plano {plan.name} foi ativado com sucesso.</p>
+                    <div className="spinner" style={{ borderColor: '#6366f1', borderTopColor: 'transparent', margin: '0 auto' }}></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="mp-checkout-overlay">
             <div className="mp-checkout-modal">
                 <button className="mp-close-btn" onClick={onClose}>×</button>
 
-                {/* Header */}
-                <div className="mp-checkout-header">
-                    <h2>Assinar Plano {plan.name}</h2>
-                    <p className="mp-plan-price">
-                        R$ {plan.price.toFixed(2).replace('.', ',')}<span>/mês</span>
-                    </p>
+                {/* Left Column: Summary */}
+                <div className="stripe-checkout-summary">
+                    <div className="summary-header">
+                        <h2>Assinatura</h2>
+                        <div className="summary-price">
+                            R$ {plan.price.toFixed(2).replace('.', ',')} <span>/mês</span>
+                        </div>
+                    </div>
+
+                    <div className="summary-features">
+                        <ul>
+                            <li>
+                                <Check size={16} className="summary-check-icon" />
+                                <span>Plano <strong>{plan.name}</strong> Completo</span>
+                            </li>
+                            {plan.features.map((feature, i) => (
+                                <li key={i}>
+                                    <Check size={16} className="summary-check-icon" />
+                                    <span>{feature}</span>
+                                </li>
+                            ))}
+                            <li>
+                                <Check size={16} className="summary-check-icon" />
+                                <span>Cancele quando quiser</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                {/* Step: Select Payment Method */}
-                {step === 'select' && (
-                    <div className="mp-payment-methods">
-                        <h3>Escolha a forma de pagamento</h3>
+                {/* Right Column: Payment */}
+                <div className="stripe-checkout-payment">
+                    <div className="payment-header">
+                        <h3>Pagamento</h3>
+                    </div>
 
+                    <div className="payment-tabs">
                         <button
-                            className="mp-method-btn mp-method-card"
+                            className={`payment-tab ${activeTab === 'card' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('card')}
+                        >
+                            <CreditCard size={18} />
+                            Cartão
+                        </button>
+                        <button
+                            className={`payment-tab ${activeTab === 'pix' ? 'active' : ''}`}
                             onClick={() => {
-                                setPaymentMethod('card');
-                                setStep('payment');
+                                setActiveTab('pix');
+                                if (!pixData) generatePix();
                             }}
                         >
-                            <span className="mp-method-icon">💳</span>
-                            <span className="mp-method-text">
-                                <strong>Cartão de Crédito</strong>
-                                <small>Até 12x sem juros</small>
-                            </span>
+                            <QrCode size={18} />
+                            PIX
                         </button>
-
                         <button
-                            className="mp-method-btn mp-method-pix"
-                            onClick={() => {
-                                setPaymentMethod('pix');
-                                handlePixPayment();
-                            }}
+                            className={`payment-tab ${activeTab === 'license' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('license')}
                         >
-                            <span className="mp-method-icon">📱</span>
-                            <span className="mp-method-text">
-                                <strong>PIX</strong>
-                                <small>Aprovação instantânea</small>
-                            </span>
+                            <Key size={18} />
+                            Chave
                         </button>
                     </div>
-                )}
 
-                {/* Step: Card Payment Form */}
-                {step === 'payment' && paymentMethod === 'card' && (
-                    <div className="mp-card-form">
-                        <button className="mp-back-btn" onClick={() => setStep('select')}>
-                            ← Voltar
-                        </button>
-                        <CardPayment
-                            initialization={{
-                                amount: plan.price
-                            }}
-                            onSubmit={handleCardSubmit}
-                            customization={{
-                                paymentMethods: {
-                                    maxInstallments: 12,
-                                    minInstallments: 1
-                                },
-                                visual: {
-                                    style: {
-                                        theme: 'default'
-                                    }
-                                }
-                            }}
-                        />
-                    </div>
-                )}
-
-                {/* Step: PIX Payment */}
-                {step === 'payment' && paymentMethod === 'pix' && pixData && (
-                    <div className="mp-pix-container">
-                        <button className="mp-back-btn" onClick={() => setStep('select')}>
-                            ← Voltar
-                        </button>
-
-                        <div className="mp-pix-qr">
-                            <h3>Escaneie o QR Code</h3>
-                            {pixData.qrCodeBase64 && (
-                                <img
-                                    src={`data:image/png;base64,${pixData.qrCodeBase64}`}
-                                    alt="QR Code PIX"
-                                />
-                            )}
-                        </div>
-
-                        <div className="mp-pix-code">
-                            <p>Ou copie o código PIX:</p>
-                            <div className="mp-pix-code-box">
-                                <code>{pixData.qrCode?.substring(0, 50)}...</code>
-                                <button onClick={copyPixCode}>Copiar</button>
+                    <div className="payment-form-container">
+                        {errorMessage && (
+                            <div className="status-message error">
+                                <AlertCircle size={20} />
+                                <span>{errorMessage}</span>
                             </div>
-                        </div>
+                        )}
 
-                        <p className="mp-pix-waiting">
-                            ⏳ Aguardando confirmação do pagamento...
-                        </p>
+                        {activeTab === 'card' && (
+                            <div className="card-payment-wrapper">
+                                <CardPayment
+                                    initialization={{ amount: plan.price }}
+                                    onSubmit={handleCardSubmit}
+                                    customization={{
+                                        visual: {
+                                            style: { theme: 'default' },
+                                            hidePaymentButton: false
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {activeTab === 'pix' && (
+                            <div className="pix-container">
+                                {status === 'processing' ? (
+                                    <div className="mp-processing" style={{ textAlign: 'center', padding: 40 }}>
+                                        <div className="spinner" style={{ borderColor: '#6366f1', borderTopColor: 'transparent', margin: '0 auto 20px' }}></div>
+                                        <p>Gerando QR Code...</p>
+                                    </div>
+                                ) : pixData ? (
+                                    <>
+                                        <p style={{ fontSize: 14, color: '#64748b' }}>Escaneie o QR Code abaixo com seu app de banco:</p>
+                                        <div className="pix-qr-wrapper">
+                                            {pixData.qrCodeBase64 && (
+                                                <img
+                                                    src={`data:image/png;base64,${pixData.qrCodeBase64}`}
+                                                    alt="QR Code"
+                                                    className="pix-qr-img"
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="pix-copy-box">
+                                            <div className="pix-code-field">{pixData.qrCode}</div>
+                                            <button
+                                                className="pix-copy-btn"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(pixData.qrCode);
+                                                    alert('Copiado!');
+                                                }}
+                                            >
+                                                <Copy size={16} />
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : null}
+                            </div>
+                        )}
+
+                        {activeTab === 'license' && (
+                            <form onSubmit={handleLicenseActivation}>
+                                <div className="stripe-input-group">
+                                    <label className="stripe-label">Chave de Ativação</label>
+                                    <div className="input-with-icon" style={{ position: 'relative' }}>
+                                        <Key size={18} style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }} />
+                                        <input
+                                            type="text"
+                                            className="stripe-input code-input"
+                                            style={{ paddingLeft: 42 }}
+                                            placeholder="XXXX-XXXX-XXXX-XXXX"
+                                            value={licenseKey}
+                                            onChange={(e) => setLicenseKey(e.target.value.toUpperCase())}
+                                            required
+                                        />
+                                    </div>
+                                    <p style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>
+                                        Insira a chave de licença fornecida pelo administrador ou suporte.
+                                    </p>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="stripe-btn-primary"
+                                    disabled={status === 'processing' || !licenseKey.trim()}
+                                >
+                                    {status === 'processing' ? (
+                                        <div className="spinner"></div>
+                                    ) : (
+                                        <>
+                                            Ativar Plano <ArrowRight size={18} />
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        )}
                     </div>
-                )}
 
-                {/* Step: Processing */}
-                {step === 'processing' && (
-                    <div className="mp-processing">
-                        <div className="mp-spinner"></div>
-                        <p>Processando pagamento...</p>
+                    <div className="mp-security-badge">
+                        <Lock size={12} />
+                        Pagamento processado de forma segura e criptografada
                     </div>
-                )}
-
-                {/* Step: Success */}
-                {step === 'success' && (
-                    <div className="mp-success">
-                        <div className="mp-success-icon">✅</div>
-                        <h2>Pagamento Aprovado!</h2>
-                        <p>Seu plano {plan.name} foi ativado com sucesso.</p>
-                        <button className="mp-success-btn" onClick={onClose}>
-                            Continuar
-                        </button>
-                    </div>
-                )}
-
-                {/* Step: Error */}
-                {step === 'error' && (
-                    <div className="mp-error">
-                        <div className="mp-error-icon">❌</div>
-                        <h2>Erro no Pagamento</h2>
-                        <p>{error}</p>
-                        <button className="mp-retry-btn" onClick={() => setStep('select')}>
-                            Tentar Novamente
-                        </button>
-                    </div>
-                )}
-
-                {/* Security Badge */}
-                <div className="mp-security-badge">
-                    🔒 Pagamento seguro via Mercado Pago
                 </div>
             </div>
         </div>

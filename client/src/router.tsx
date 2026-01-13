@@ -33,6 +33,7 @@ import { MasterComplaintsPage } from './pages/admin-master/MasterComplaintsPage'
 import { MasterSupportPage } from './pages/admin-master/MasterSupportPage';
 import { MasterAnalyticsPage } from './pages/admin-master/MasterAnalyticsPage';
 import { MasterSettingsPage } from './pages/admin-master/MasterSettingsPage';
+import { MasterLicensesPage } from './pages/admin-master/MasterLicensesPage';
 
 const router = createBrowserRouter([
     {
@@ -92,6 +93,7 @@ const router = createBrowserRouter([
             { path: 'complaints', element: <MasterComplaintsPage /> },
             { path: 'support', element: <MasterSupportPage /> },
             { path: 'analytics', element: <MasterAnalyticsPage /> },
+            { path: 'licenses', element: <MasterLicensesPage /> },
             { path: 'settings', element: <MasterSettingsPage /> },
         ]
     }

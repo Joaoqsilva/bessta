@@ -15,7 +15,8 @@ import {
     BarChart3,
     Zap,
     ExternalLink,
-    Crown
+    Crown,
+    Key
 } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
@@ -43,6 +44,7 @@ const masterNavItems = [
     { to: '/admin/master', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { to: '/admin/master/stores', icon: Store, label: 'Lojas' },
     { to: '/admin/master/users', icon: Users, label: 'Usuários' },
+    { to: '/admin/master/licenses', icon: Key, label: 'Licenças' },
     { to: '/admin/master/complaints', icon: AlertTriangle, label: 'Reclamações' },
     { to: '/admin/master/support', icon: MessageSquare, label: 'Suporte' },
     { to: '/admin/master/analytics', icon: BarChart3, label: 'Relatórios' },

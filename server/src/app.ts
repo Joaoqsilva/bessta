@@ -16,6 +16,7 @@ import reviewRoutes from './routes/reviews';
 import customerRoutes from './routes/customers';
 import notificationRoutes from './routes/notifications';
 import securityRoutes from './routes/security';
+import licenseRoutes from './routes/license';
 
 // Security packages
 import helmet from 'helmet';
@@ -121,6 +122,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/security', securityRoutes);
+app.use('/api/licenses', licenseRoutes);
 
 // 404 handler
 app.use((req, res) => {

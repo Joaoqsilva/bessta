@@ -1,45 +1,22 @@
 /* ========================================
-   MERCADO PAGO CHECKOUT STYLES - MODERN REDESIGN
+   STRIPE-STYLE CHECKOUT
+   Clean, modern, premium payment interface
    ======================================== */
-
-:root {
-    --mp-primary: #009EE3;
-    --mp-primary-dark: #007eb5;
-    --mp-surface: #ffffff;
-    --mp-bg: #f3f4f6;
-    --mp-text: #111827;
-    --mp-text-muted: #6b7280;
-    --mp-border: #e5e7eb;
-    --mp-radius: 16px;
-    --mp-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
-}
 
 .mp-checkout-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     z-index: 9999;
-    padding: 1rem;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.mp-checkout-modal {
-    background: var(--mp-surface);
-    border-radius: var(--mp-radius);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: var(--mp-shadow);
-    animation: slideUp 0.3s ease-out;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -50,6 +27,19 @@
     to {
         opacity: 1;
     }
+}
+
+.mp-checkout-modal {
+    background: #fff;
+    width: 100%;
+    max-width: 900px;
+    min-height: 500px;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    animation: slideUp 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -64,395 +54,329 @@
     }
 }
 
+/* Close Button */
 .mp-close-btn {
     position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    background: transparent;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    color: #64748b;
+    background: none;
     border: none;
-    color: var(--mp-text-muted);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
 
 .mp-close-btn:hover {
-    background: var(--mp-bg);
-    color: var(--mp-text);
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
-/* Header */
-.mp-checkout-header {
-    text-align: center;
-    padding: 2.5rem 2rem 1.5rem;
-    border-bottom: 1px solid var(--mp-border);
-    background: linear-gradient(to bottom, #f9fafb, #ffffff);
-}
-
-.mp-checkout-header h2 {
-    color: var(--mp-text);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem;
-}
-
-.mp-plan-price {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--mp-text);
-    margin: 0;
-    letter-spacing: -0.02em;
-}
-
-.mp-plan-price span {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--mp-text-muted);
-    margin-left: 4px;
-}
-
-/* Payment Methods Selection */
-.mp-payment-methods {
-    padding: 2rem;
-}
-
-.mp-payment-methods h3 {
-    color: var(--mp-text);
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0 1rem;
-    text-align: center;
-}
-
-.mp-method-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    border: 1px solid var(--mp-border);
-    border-radius: 12px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.mp-method-btn:hover {
-    border-color: var(--mp-primary);
-    background: #f0f9ff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 158, 227, 0.1);
-}
-
-.mp-method-icon {
-    font-size: 1.5rem;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--mp-bg);
-    border-radius: 10px;
-    transition: background 0.2s;
-}
-
-.mp-method-btn:hover .mp-method-icon {
-    background: white;
-}
-
-.mp-method-text {
-    text-align: left;
+/* Layout Columns */
+.stripe-checkout-summary {
+    flex: 1;
+    background: #f8fafc;
+    padding: 40px;
+    border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
 }
 
-.mp-method-text strong {
-    color: var(--mp-text);
-    font-size: 1rem;
+.stripe-checkout-payment {
+    flex: 1.5;
+    padding: 40px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .mp-checkout-modal {
+        flex-direction: column;
+        height: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .stripe-checkout-summary {
+        padding: 24px;
+        order: -1;
+        /* Summary first on mobile sometimes, or second */
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .stripe-checkout-payment {
+        padding: 24px;
+    }
+}
+
+/* Left Column: Summary */
+.summary-header h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
     font-weight: 600;
+    margin-bottom: 12px;
 }
 
-.mp-method-text small {
-    color: var(--mp-text-muted);
-    font-size: 0.85rem;
-    margin-top: 2px;
+.summary-price {
+    font-size: 36px;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 30px;
 }
 
-/* Back Button */
-.mp-back-btn {
-    background: none;
-    border: none;
-    color: var(--mp-text-muted);
-    font-size: 0.9rem;
+.summary-price span {
+    font-size: 16px;
     font-weight: 500;
-    cursor: pointer;
-    padding: 0.5rem 0;
-    margin-bottom: 1rem;
-    transition: color 0.2s;
+    color: #64748b;
+}
+
+.summary-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.summary-features li {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: #334155;
+    font-size: 15px;
+    font-weight: 500;
 }
 
-.mp-back-btn:hover {
-    color: var(--mp-primary);
+.summary-check-icon {
+    color: #10b981;
+    min-width: 20px;
 }
 
-/* Card Form Container */
-.mp-card-form {
-    padding: 1.5rem 2rem;
+/* Right Column: Payment */
+.payment-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 24px;
 }
 
-/* PIX Container */
-.mp-pix-container {
-    padding: 2rem;
-    text-align: center;
-}
-
-.mp-pix-qr {
-    margin-bottom: 1.5rem;
-}
-
-.mp-pix-qr h3 {
-    color: var(--mp-text);
-    margin: 0 0 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.mp-pix-qr img {
-    max-width: 200px;
-    border-radius: 12px;
-    border: 1px solid var(--mp-border);
-    padding: 0.5rem;
-}
-
-.mp-pix-code {
-    margin-bottom: 1.5rem;
-}
-
-.mp-pix-code p {
-    color: var(--mp-text-muted);
-    margin: 0 0 0.5rem;
-    font-size: 0.9rem;
-}
-
-.mp-pix-code-box {
+/* Payment Tabs */
+.payment-tabs {
     display: flex;
-    gap: 0.5rem;
-    background: var(--mp-bg);
-    padding: 0.75rem;
-    border-radius: 8px;
-    border: 1px solid var(--mp-border);
+    gap: 8px;
+    margin-bottom: 30px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 12px;
 }
 
-.mp-pix-code-box code {
+.payment-tab {
     flex: 1;
-    color: var(--mp-text);
-    font-size: 0.8rem;
-    font-family: monospace;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.mp-pix-code-box button {
-    background: var(--mp-primary);
+.payment-tab.active {
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.payment-tab:hover:not(.active) {
+    color: #334155;
+}
+
+/* Forms */
+.payment-form-container {
+    flex: 1;
+}
+
+.stripe-input-group {
+    margin-bottom: 20px;
+}
+
+.stripe-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.stripe-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stripe-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.stripe-input.code-input {
+    font-family: monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Buttons */
+.stripe-btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #0f172a;
+    color: #fff;
     border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    white-space: nowrap;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.mp-pix-code-box button:hover {
-    background: var(--mp-primary-dark);
+.stripe-btn-primary:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
 }
 
-.mp-pix-waiting {
-    color: #d97706;
-    background: #fffbeb;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    display: inline-block;
+.stripe-btn-primary:active {
+    transform: translateY(0);
 }
 
-/* Processing State */
-.mp-processing {
-    padding: 4rem 2rem;
-    text-align: center;
+.stripe-btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.mp-spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid var(--mp-border);
-    border-top-color: var(--mp-primary);
+/* Spinner */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    margin: 0 auto 1.5rem;
+    border-top: 3px solid #fff;
+    width: 20px;
+    height: 20px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
         transform: rotate(360deg);
     }
 }
 
-.mp-processing p {
-    color: var(--mp-text);
-    font-weight: 500;
+/* Success/Error States */
+.status-message {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
-/* Success State */
-.mp-success {
-    padding: 3rem 2rem;
+.status-message.success {
+    background: #edfcf5;
+    color: #047857;
+}
+
+.status-message.error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+/* PIX Specific */
+.pix-container {
     text-align: center;
+    padding: 20px 0;
 }
 
-.mp-success-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.pix-qr-wrapper {
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    width: fit-content;
 }
 
-@keyframes bounceIn {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    60% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.pix-qr-img {
+    max-width: 200px;
+    height: auto;
 }
 
-.mp-success h2 {
-    color: var(--mp-text);
-    margin: 0 0 0.5rem;
-    font-size: 1.5rem;
+.pix-copy-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
 }
 
-.mp-success p {
-    color: var(--mp-text-muted);
-    margin: 0 0 2rem;
+.pix-code-field {
+    flex: 1;
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.mp-success-btn {
-    background: #10b981;
-    border: none;
-    color: white;
-    padding: 1rem 3rem;
-    border-radius: 50px;
-    font-size: 1rem;
+.pix-copy-btn {
+    padding: 0 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);
 }
 
-.mp-success-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -10px rgba(16, 185, 129, 0.6);
-}
-
-/* Error State */
-.mp-error {
-    padding: 3rem 2rem;
-    text-align: center;
-}
-
-.mp-error-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-}
-
-.mp-error h2 {
-    color: #ef4444;
-    margin: 0 0 0.5rem;
-    font-size: 1.5rem;
-}
-
-.mp-error p {
-    color: var(--mp-text-muted);
-    margin: 0 0 2rem;
-}
-
-.mp-retry-btn {
-    background: transparent;
-    border: 2px solid var(--mp-border);
-    color: var(--mp-text);
-    padding: 0.75rem 2rem;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.mp-retry-btn:hover {
-    border-color: var(--mp-text);
-    background: var(--mp-bg);
-}
-
-/* Security Badge */
 .mp-security-badge {
-    text-align: center;
-    padding: 1rem;
-    color: var(--mp-text-muted);
-    font-size: 0.75rem;
-    border-top: 1px solid var(--mp-border);
-    background: #f9fafb;
-    border-radius: 0 0 var(--mp-radius) var(--mp-radius);
+    margin-top: auto;
+    padding-top: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .mp-checkout-modal {
-        max-height: 100vh;
-        border-radius: 0;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .mp-checkout-header {
-        flex-shrink: 0;
-    }
-
-    .mp-payment-methods,
-    .mp-card-form {
-        flex-grow: 1;
-        overflow-y: auto;
-    }
-
-    .mp-security-badge {
-        flex-shrink: 0;
-        border-radius: 0;
-    }
+    gap: 6px;
+    font-size: 12px;
+    color: #94a3b8;
 }
