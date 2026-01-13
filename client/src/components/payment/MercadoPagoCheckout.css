@@ -347,6 +347,7 @@
     display: flex;
     gap: 8px;
     margin-top: 15px;
+    width: 100%;
 }
 
 .pix-code-field {
@@ -355,10 +356,12 @@
     padding: 10px;
     border-radius: 6px;
     font-family: monospace;
-    font-size: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 11px;
+    overflow-y: auto;
+    word-break: break-all;
+    max-height: 80px;
+    color: #475569;
+    border: 1px solid #e2e8f0;
 }
 
 .pix-copy-btn {
