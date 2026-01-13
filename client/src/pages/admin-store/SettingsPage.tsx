@@ -86,12 +86,23 @@ export const SettingsPage = () => {
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
     const [paymentMessage, setPaymentMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    // Helper to normalize plan names
+    const normalizePlan = (p: string | undefined | null) => {
+        if (!p) return 'free';
+        return ['pro', 'professional', 'business'].includes(p) ? 'pro' : 'free';
+    };
+
     // Sync plan with store/user context updates
     useEffect(() => {
         if (isAuthLoading) return;
 
-        const plan = store?.plan || (user as any)?.plan || 'free';
-        setCurrentPlan(plan);
+        if (store) {
+            setCurrentPlan(normalizePlan(store.plan));
+        } else if (user) {
+            setCurrentPlan(normalizePlan((user as any).plan));
+        } else {
+            setCurrentPlan('free');
+        }
     }, [store, user, isAuthLoading]);
 
     // Load detailed subscription status from backend on mount
@@ -103,7 +114,7 @@ export const SettingsPage = () => {
                 const response = await paymentService.getSubscription();
                 console.log('DEBUG: Subscription status response:', response);
                 if (response.success && response.subscription) {
-                    setCurrentPlan(response.subscription.plan);
+                    setCurrentPlan(normalizePlan(response.subscription.plan));
                     setSubscriptionStatus({
                         id: '',
                         status: response.subscription.status,
@@ -151,7 +162,7 @@ export const SettingsPage = () => {
                 try {
                     const response = await paymentService.getSubscription();
                     if (response.success && response.subscription) {
-                        setCurrentPlan(response.subscription.plan);
+                        setCurrentPlan(normalizePlan(response.subscription.plan));
                     }
                 } catch (e) {
                     console.error('Error getting subscription status:', e);
@@ -183,7 +194,7 @@ export const SettingsPage = () => {
         console.log('Payment successful:', paymentId);
         setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
         if (selectedPlanForCheckout) {
-            setCurrentPlan(selectedPlanForCheckout.id);
+            setCurrentPlan(normalizePlan(selectedPlanForCheckout.id));
             // Recarregar a página para garantir que todas as permissões e contextos sejam atualizados
             setTimeout(() => {
                 window.location.reload();
