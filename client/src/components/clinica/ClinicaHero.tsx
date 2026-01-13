@@ -114,40 +114,41 @@ export const ClinicaHero = ({ content, isEditorMode, onEditAction, customization
                                 alt="Ambiente Terapêutico"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
+                        </div>
 
-                            {/* Glass Overlay Card */}
-                            <div className="glass-card" style={{
-                                position: 'absolute',
-                                bottom: '20px',
-                                right: '-20px',
-                                left: '20px',
-                                padding: '1.5rem',
-                                maxWidth: '80%',
-                                zIndex: 10
+                        {/* Glass Overlay Card - Fora do image-frame para permitir edição independente */}
+                        <div className="glass-card" style={{
+                            position: 'absolute',
+                            bottom: '20px',
+                            right: '0',
+                            left: '40px',
+                            padding: '1.5rem',
+                            maxWidth: '80%',
+                            zIndex: 20,
+                            pointerEvents: 'auto'
+                        }}>
+                            <p style={{
+                                fontFamily: 'var(--font-serif)',
+                                fontStyle: 'italic',
+                                fontSize: '1.1rem',
+                                color: 'var(--clinica-primary)',
+                                marginBottom: '0.5rem'
                             }}>
-                                <p style={{
-                                    fontFamily: 'var(--font-serif)',
-                                    fontStyle: 'italic',
-                                    fontSize: '1.1rem',
-                                    color: 'var(--clinica-primary)',
-                                    marginBottom: '0.5rem'
-                                }}>
-                                    <EditableText
-                                        id="clinica_hero_quote"
-                                        defaultText='"O inconsciente é estruturado como uma linguagem."'
-                                        tagName="span"
-                                        {...editProps}
-                                    />
-                                </p>
-                                <span style={{ fontSize: '0.875rem', color: 'var(--clinica-gray)', display: 'block', textAlign: 'right' }}>
-                                    — <EditableText
-                                        id="clinica_hero_author"
-                                        defaultText='Jacques Lacan'
-                                        tagName="span"
-                                        {...editProps}
-                                    />
-                                </span>
-                            </div>
+                                <EditableText
+                                    id="clinica_hero_quote"
+                                    defaultText='"O inconsciente é estruturado como uma linguagem."'
+                                    tagName="span"
+                                    {...editProps}
+                                />
+                            </p>
+                            <span style={{ fontSize: '0.875rem', color: 'var(--clinica-gray)', display: 'block', textAlign: 'right' }}>
+                                — <EditableText
+                                    id="clinica_hero_author"
+                                    defaultText='Jacques Lacan'
+                                    tagName="span"
+                                    {...editProps}
+                                />
+                            </span>
                         </div>
                     </div>
                 </div>
