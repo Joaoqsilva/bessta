@@ -184,6 +184,10 @@ export const SettingsPage = () => {
         setPaymentMessage({ type: 'success', text: 'Pagamento realizado com sucesso! Seu plano foi atualizado.' });
         if (selectedPlanForCheckout) {
             setCurrentPlan(selectedPlanForCheckout.id);
+            // Recarregar a página para garantir que todas as permissões e contextos sejam atualizados
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
         setShowMPCheckout(false);
         setSelectedPlanForCheckout(null);
@@ -1104,55 +1108,10 @@ export const SettingsPage = () => {
                                         <h2 className="section-title">Seu Plano</h2>
                                         <p className="section-subtitle">Gerencie sua assinatura e benefícios</p>
 
-                                        {/* Current Plan Card */}
-                                        <div className="current-plan-card">
-                                            {subscriptionStatus?.cancelAtPeriodEnd && (
-                                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4 flex items-start gap-3">
-                                                    <AlertCircle className="text-orange-500 shrink-0 mt-0.5" size={18} />
-                                                    <div>
-                                                        <h4 className="font-semibold text-orange-700 text-sm">Cancelamento Agendado</h4>
-                                                        <p className="text-orange-600 text-sm mt-1">
-                                                            Seu plano será cancelado automaticamente em {new Date(subscriptionStatus.currentPeriodEnd).toLocaleDateString()}.
-                                                            Até lá, você continua com acesso total aos recursos.
-                                                        </p>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="mt-2 border-orange-200 text-orange-700 hover:bg-orange-100"
-                                                            onClick={handleManageSubscription}
-                                                        >
-                                                            Reativar Assinatura
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            )}
+                                        {/* Current Plan Card Removido conforme solicitado */}
 
-                                            <div className="current-plan-info">
-                                                <div className={`current-plan-badge ${subscriptionStatus?.cancelAtPeriodEnd ? 'cancelling' : ''}`}>
-                                                    {currentPlan === 'free' ? <Zap size={18} /> : <Crown size={18} />}
-                                                    <span>
-                                                        {currentPlan === 'free' ? 'Starter' : 'Profissional'}
-                                                        {subscriptionStatus?.cancelAtPeriodEnd && ' (Encerrando em breve)'}
-                                                    </span>
-                                                </div>
-                                                <p className="current-plan-desc">
-                                                    {subscriptionStatus?.cancelAtPeriodEnd
-                                                        ? `Seu plano ${currentPlan === 'free' ? 'Starter' : 'Profissional'} está ativo até o fim do período, mas não será renovado.`
-                                                        : currentPlan === 'free'
-                                                            ? 'Você está no plano gratuito. Faça upgrade para desbloquear mais recursos!'
-                                                            : 'Você tem acesso a todos os recursos do seu plano.'
-                                                    }
-                                                </p>
-                                            </div>
-                                            {currentPlan === 'free' && (
-                                                <Button variant="primary" onClick={() => setIsPlanModalOpen(true)}>
-                                                    Fazer Upgrade
-                                                </Button>
-                                            )}
-                                        </div>
-
-                                        {/* Store Link */}
-                                        <div className="store-link-card" style={{ marginTop: '1.5rem' }}>
+                                        {/* Store Link - Mantido mas movido para topo da seção se desejar, ou deixado aqui */}
+                                        <div className="store-link-card" style={{ marginBottom: '2rem' }}>
                                             <div className="store-link-info">
                                                 <span className="store-link-label">Seu link de agendamento:</span>
                                                 <a href={`/${storeData.slug}`} className="store-link" target="_blank">
