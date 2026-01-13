@@ -21,14 +21,22 @@ const getClient = () => {
     return new MercadoPagoConfig({ accessToken });
 };
 
-// Plan definitions
 const PLANS = {
     start: {
         name: 'Start',
         price: 0,
         features: ['1 profissional', 'Agendamentos ilimitados', 'Página personalizada']
     },
-
+    free: {
+        name: 'Start',
+        price: 0,
+        features: ['1 profissional', 'Agendamentos ilimitados', 'Página personalizada']
+    },
+    pro: {
+        name: 'Professional',
+        price: 49.90,
+        features: ['5 profissionais', 'Lembretes por email', 'Relatórios básicos', 'Suporte prioritário']
+    },
     professional: {
         name: 'Professional',
         price: 49.90,
