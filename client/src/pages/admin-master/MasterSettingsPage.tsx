@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
     Settings, Save, Bell, Mail, Shield, Globe,
-    Palette, DollarSign, Users, CheckCircle
+    Palette, DollarSign, Users, CheckCircle, User, Lock, Eye, EyeOff
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { platformSettingsApi } from '../../services/platformApi';
 import type { PlatformSettings as IPlatformSettings } from '../../services/platformApi';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 import './MasterSettingsPage.css';
 
 interface PlatformSettings {
@@ -45,15 +47,34 @@ const defaultSettings: PlatformSettings = {
 };
 
 export const MasterSettingsPage = () => {
+    const { user } = useAuth();
     const [settings, setSettings] = useState<PlatformSettings>(defaultSettings);
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showSaved, setShowSaved] = useState(false);
-    const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'plans' | 'security'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'plans' | 'security' | 'account'>('general');
+
+    // Account settings state
+    const [accountForm, setAccountForm] = useState({
+        email: '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [showPasswords, setShowPasswords] = useState({
+        current: false,
+        new: false,
+        confirm: false
+    });
+    const [accountMessage, setAccountMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [isAccountSaving, setIsAccountSaving] = useState(false);
 
     useEffect(() => {
         loadSettings();
-    }, []);
+        if (user?.email) {
+            setAccountForm(prev => ({ ...prev, email: user.email }));
+        }
+    }, [user]);
 
     const loadSettings = async () => {
         try {
@@ -82,11 +103,54 @@ export const MasterSettingsPage = () => {
         }
     };
 
+    const handleAccountUpdate = async (type: 'email' | 'password') => {
+        setIsAccountSaving(true);
+        setAccountMessage(null);
+
+        try {
+            if (type === 'email') {
+                if (!accountForm.email || !accountForm.currentPassword) {
+                    setAccountMessage({ type: 'error', text: 'Preencha o novo email e sua senha atual' });
+                    return;
+                }
+                await api.patch('/api/auth/update-email', {
+                    newEmail: accountForm.email,
+                    password: accountForm.currentPassword
+                });
+                setAccountMessage({ type: 'success', text: 'Email atualizado com sucesso!' });
+            } else {
+                if (!accountForm.currentPassword || !accountForm.newPassword) {
+                    setAccountMessage({ type: 'error', text: 'Preencha a senha atual e a nova senha' });
+                    return;
+                }
+                if (accountForm.newPassword !== accountForm.confirmPassword) {
+                    setAccountMessage({ type: 'error', text: 'As senhas não coincidem' });
+                    return;
+                }
+                if (accountForm.newPassword.length < 6) {
+                    setAccountMessage({ type: 'error', text: 'A nova senha deve ter pelo menos 6 caracteres' });
+                    return;
+                }
+                await api.patch('/api/auth/update-password', {
+                    currentPassword: accountForm.currentPassword,
+                    newPassword: accountForm.newPassword
+                });
+                setAccountMessage({ type: 'success', text: 'Senha atualizada com sucesso!' });
+                setAccountForm(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
+            }
+        } catch (error: any) {
+            setAccountMessage({ type: 'error', text: error.response?.data?.error || 'Erro ao atualizar' });
+        } finally {
+            setIsAccountSaving(false);
+        }
+    };
+
     const updateSetting = <K extends keyof PlatformSettings>(key: K, value: PlatformSettings[K]) => {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
     const tabs = [
+        { id: 'account', label: 'Minha Conta', icon: User },
         { id: 'general', label: 'Geral', icon: Globe },
         { id: 'notifications', label: 'Notificações', icon: Bell },
         { id: 'plans', label: 'Planos', icon: DollarSign },
@@ -134,6 +198,130 @@ export const MasterSettingsPage = () => {
 
                 {/* Tab Content */}
                 <div className="settings-content">
+                    {activeTab === 'account' && (
+                        <div className="settings-section">
+                            <h2 className="section-title">
+                                <User size={20} />
+                                Minha Conta
+                            </h2>
+                            <p className="section-description">
+                                Altere seu email e senha de acesso
+                            </p>
+
+                            {accountMessage && (
+                                <div className={`account-message ${accountMessage.type}`}>
+                                    {accountMessage.type === 'success' ? <CheckCircle size={18} /> : <Shield size={18} />}
+                                    {accountMessage.text}
+                                </div>
+                            )}
+
+                            <div className="settings-form">
+                                {/* Email Section */}
+                                <div className="account-section">
+                                    <h3><Mail size={18} /> Alterar Email</h3>
+                                    <div className="form-group">
+                                        <label>Novo Email</label>
+                                        <Input
+                                            type="email"
+                                            value={accountForm.email}
+                                            onChange={(e) => setAccountForm(prev => ({ ...prev, email: e.target.value }))}
+                                            placeholder="novo@email.com"
+                                            leftIcon={<Mail size={18} />}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Senha Atual (para confirmar)</label>
+                                        <div className="password-input-wrapper">
+                                            <Input
+                                                type={showPasswords.current ? 'text' : 'password'}
+                                                value={accountForm.currentPassword}
+                                                onChange={(e) => setAccountForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                                                placeholder="••••••••"
+                                                leftIcon={<Lock size={18} />}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
+                                            >
+                                                {showPasswords.current ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        variant="primary"
+                                        onClick={() => handleAccountUpdate('email')}
+                                        disabled={isAccountSaving}
+                                    >
+                                        {isAccountSaving ? 'Salvando...' : 'Atualizar Email'}
+                                    </Button>
+                                </div>
+
+                                {/* Password Section */}
+                                <div className="account-section">
+                                    <h3><Lock size={18} /> Alterar Senha</h3>
+                                    <div className="form-group">
+                                        <label>Senha Atual</label>
+                                        <div className="password-input-wrapper">
+                                            <Input
+                                                type={showPasswords.current ? 'text' : 'password'}
+                                                value={accountForm.currentPassword}
+                                                onChange={(e) => setAccountForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                                                placeholder="••••••••"
+                                                leftIcon={<Lock size={18} />}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Nova Senha</label>
+                                        <div className="password-input-wrapper">
+                                            <Input
+                                                type={showPasswords.new ? 'text' : 'password'}
+                                                value={accountForm.newPassword}
+                                                onChange={(e) => setAccountForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                                                placeholder="••••••••"
+                                                leftIcon={<Lock size={18} />}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                                            >
+                                                {showPasswords.new ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Confirmar Nova Senha</label>
+                                        <div className="password-input-wrapper">
+                                            <Input
+                                                type={showPasswords.confirm ? 'text' : 'password'}
+                                                value={accountForm.confirmPassword}
+                                                onChange={(e) => setAccountForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                placeholder="••••••••"
+                                                leftIcon={<Lock size={18} />}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                                            >
+                                                {showPasswords.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        variant="primary"
+                                        onClick={() => handleAccountUpdate('password')}
+                                        disabled={isAccountSaving}
+                                    >
+                                        {isAccountSaving ? 'Salvando...' : 'Atualizar Senha'}
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'general' && (
                         <div className="settings-section">
                             <h2 className="section-title">

@@ -510,4 +510,155 @@ router.put('/password', authMiddleware, async (req: AuthRequest, res: Response) 
         });
     }
 });
+
+/**
+ * PATCH /api/auth/update-email
+ * Update user email (requires current password)
+ */
+router.patch('/update-email', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const { newEmail, password } = req.body;
+
+        if (!newEmail || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Novo email e senha atual são obrigatórios'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Formato de email inválido'
+            });
+        }
+
+        // Get user with password
+        const user = await User.findById(req.userId).select('+password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado'
+            });
+        }
+
+        // Verify password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                error: 'Senha incorreta'
+            });
+        }
+
+        // Check if new email already exists
+        const normalizedEmail = newEmail.toLowerCase().trim();
+        const existingUser = await User.findOne({ email: normalizedEmail, _id: { $ne: user._id } });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                error: 'Este email já está em uso'
+            });
+        }
+
+        // Update email
+        user.email = normalizedEmail;
+        await user.save();
+
+        // Update store email if exists
+        if (user.storeId) {
+            await Store.findByIdAndUpdate(user.storeId, { email: normalizedEmail });
+        }
+
+        // Log email change
+        const ip = req.ip || req.socket.remoteAddress || 'unknown';
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'EMAIL_CHANGE',
+            details: { newEmail: normalizedEmail },
+            ip,
+            severity: 'info'
+        });
+
+        res.json({
+            success: true,
+            message: 'Email atualizado com sucesso'
+        });
+    } catch (error: any) {
+        console.error('Update email error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao atualizar email'
+        });
+    }
+});
+
+/**
+ * PATCH /api/auth/update-password
+ * Update user password (requires current password)
+ */
+router.patch('/update-password', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                error: 'Senha atual e nova senha são obrigatórias'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                error: 'Nova senha deve ter pelo menos 6 caracteres'
+            });
+        }
+
+        // Get user with password
+        const user = await User.findById(req.userId).select('+password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado'
+            });
+        }
+
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                error: 'Senha atual incorreta'
+            });
+        }
+
+        // Update password
+        user.password = newPassword;
+        await user.save();
+
+        // Log password change
+        const ip = req.ip || req.socket.remoteAddress || 'unknown';
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'PASSWORD_CHANGE',
+            ip,
+            severity: 'info'
+        });
+
+        res.json({
+            success: true,
+            message: 'Senha atualizada com sucesso'
+        });
+    } catch (error: any) {
+        console.error('Update password error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao alterar senha'
+        });
+    }
+});
+
 export default router;

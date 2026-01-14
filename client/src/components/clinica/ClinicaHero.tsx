@@ -124,7 +124,7 @@ export const ClinicaHero = ({ content, isEditorMode, onEditAction, customization
                             left: '40px',
                             padding: '1.5rem',
                             maxWidth: '80%',
-                            zIndex: 20,
+                            zIndex: 100,
                             pointerEvents: 'auto'
                         }}>
                             <p style={{

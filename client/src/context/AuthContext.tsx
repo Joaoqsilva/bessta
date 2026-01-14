@@ -83,66 +83,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = async (email: string, password: string): Promise<boolean> => {
         setIsLoading(true);
 
-        // --- BYPASS / TUNNEL FOR DEV ---
-        if (email === 'bypass@master') {
-            console.log('⚡ TUNNEL LOGIN ACTIVATED');
-            const mockUser: User = {
-                id: 'bypass-master-id',
-                name: 'Master Admin (Bypass)',
-                email: 'bypass@master',
-                role: 'admin_master',
-                plan: 'business',
-                isActive: true, // Adicionado campo obrigatório
-                createdAt: new Date().toISOString()
-            } as User;
-
-            // Set fake token
-            localStorage.setItem(STORAGE_KEYS.TOKEN, 'bypass-token-dev-only');
-            setUser(mockUser);
-            setStore(null);
-
-            setIsLoading(false);
-            return true;
-        }
-
-        if (email === 'bypass@store') {
-            console.log('⚡ TUNNEL LOGIN ACTIVATED (STORE)');
-            const mockUser: User = {
-                id: 'bypass-store-id',
-                name: 'Store Owner (Bypass)',
-                email: 'bypass@store',
-                role: 'store_owner',
-                plan: 'pro',
-                storeId: 'bypass-store-123',
-                isActive: true, // Adicionado campo obrigatório
-                createdAt: new Date().toISOString()
-            } as any; // Cast as any pois User não tem storeId explícito aqui sem importar StoreOwner
-
-            const mockStore: UserStore = {
-                id: 'bypass-store-123',
-                slug: 'loja-teste-bypass',
-                name: 'Loja Teste Bypass',
-                ownerId: 'bypass-store-id',
-                category: 'health',
-                status: 'active', // Corrigido isActive -> status
-                plan: 'pro',
-                customization: {
-                    primaryColor: '#3b82f6',
-                    secondaryColor: '#1e40af',
-                    welcomeTitle: 'Bem-vindo',
-                    welcomeMessage: 'Agende seu horário'
-                } as any
-            } as any;
-
-            localStorage.setItem(STORAGE_KEYS.TOKEN, 'bypass-token-store-dev');
-            setUser(mockUser);
-            setStore(mockStore);
-
-            setIsLoading(false);
-            return true;
-        }
-        // -------------------------------
-
         try {
             const data = await authService.login(email, password);
 

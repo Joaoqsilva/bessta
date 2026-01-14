@@ -317,3 +317,81 @@
 .plan-card.pro h3 {
     color: var(--primary-700);
 }
+
+/* ========================================
+   ACCOUNT SECTION STYLES
+   ======================================== */
+
+.account-section {
+    padding: var(--spacing-5);
+    background: var(--surface-50);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-4);
+}
+
+.account-section h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px solid var(--surface-200);
+}
+
+.account-section h3 svg {
+    color: var(--primary-500);
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .input-wrapper {
+    flex: 1;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--spacing-2);
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    z-index: 1;
+}
+
+.password-toggle:hover {
+    color: var(--text-main);
+    background: var(--surface-100);
+}
+
+.account-message {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    margin-bottom: var(--spacing-4);
+    animation: slideIn 0.3s ease;
+}
+
+.account-message.success {
+    background: var(--success-50);
+    border: 1px solid var(--success-200);
+    color: var(--success-700);
+}
+
+.account-message.error {
+    background: var(--error-50);
+    border: 1px solid var(--error-200);
+    color: var(--error-700);
+}
