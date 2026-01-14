@@ -381,6 +381,7 @@ export const LandingPageModern = ({ store, customization, onBook, isEditorMode, 
                         </div>
                     </div>
                 </section>
+            )}
 
             {/* GALLERY */}
             <section id="gallery" className="modern-gallery modern-container relative group">
