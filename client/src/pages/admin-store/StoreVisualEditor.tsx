@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Layout, Palette, Type, Image as ImageIcon, MessageCircle,
-    Save, ArrowLeft, Monitor, Smartphone, Layers
+    Save, ArrowLeft, Monitor, Smartphone, Layers, Crown
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -25,6 +25,11 @@ import type { FAQItem, TestimonialItem, ServiceItem, TeamMember } from '../../ty
 import './StoreVisualEditor.css';
 
 type EditorTab = 'layout' | 'colors' | 'typography' | 'content' | 'social' | 'text-editor' | 'icon-editor' | 'sections';
+
+// Helper to check if user has premium plan
+const isPremiumPlan = (plan?: string | null): boolean => {
+    return ['pro', 'professional', 'business'].includes(plan || '');
+};
 
 export const StoreVisualEditor = () => {
     const navigate = useNavigate();
@@ -659,16 +664,48 @@ export const StoreVisualEditor = () => {
                                     <div className="config-group">
                                         <label>Estilo do Layout</label>
                                         <div className="grid-options">
-                                            {LAYOUT_OPTIONS.map(layout => (
-                                                <div
-                                                    key={layout.id}
-                                                    className={`card-option ${customization.layout === layout.id ? 'selected' : ''}`}
-                                                    onClick={() => updateCustomization('layout', layout.id)}
-                                                >
-                                                    <span className="option-name">{layout.name}</span>
-                                                </div>
-                                            ))}
+                                            {LAYOUT_OPTIONS.map(layout => {
+                                                const isLocked = layout.isPremium && !isPremiumPlan(store?.plan);
+                                                return (
+                                                    <div
+                                                        key={layout.id}
+                                                        className={`card-option ${customization.layout === layout.id ? 'selected' : ''} ${isLocked ? 'locked' : ''}`}
+                                                        onClick={() => {
+                                                            if (isLocked) {
+                                                                alert('Este layout é exclusivo do plano PRO. Faça upgrade para desbloquear todos os layouts premium!');
+                                                                return;
+                                                            }
+                                                            updateCustomization('layout', layout.id);
+                                                        }}
+                                                        style={isLocked ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
+                                                    >
+                                                        <span className="option-name">{layout.name}</span>
+                                                        {layout.isPremium && (
+                                                            <span style={{
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px',
+                                                                marginLeft: '8px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 600,
+                                                                color: '#FFC107',
+                                                                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                                                                padding: '2px 6px',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <Crown size={10} />
+                                                                PRO
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
+                                        {!isPremiumPlan(store?.plan) && (
+                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '12px', fontStyle: 'italic' }}>
+                                                💡 Faça upgrade para o plano PRO e desbloqueie todos os layouts premium!
+                                            </p>
+                                        )}
                                     </div>
                                 )}
 

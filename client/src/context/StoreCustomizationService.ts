@@ -62,15 +62,15 @@ export const FONT_OPTIONS = [
 ];
 
 export const LAYOUT_OPTIONS = [
-    { id: 'sophisticated-therapy', name: 'Sofisticado (Original)', description: 'Design premium com efeitos de vidro' },
-    { id: 'modern-therapy', name: 'Moderno (Original)', description: 'Glassmorphism e Design Sofisticado' },
-    { id: 'lacanian-clinic', name: 'Minimalista (Original)', description: 'Estilo clássico e misterioso com glassmorfismo' },
-    { id: 'therapy-new', name: 'Terapia (Novo)', description: 'Azul e profissional (8 seções)' },
-    { id: 'clinic-new', name: 'Clínica Acolhedora', description: 'Tons terrosos e institucional (9 seções)' },
-    { id: 'harmony-new', name: 'Harmony Zen', description: 'Verde sálvia e mindfulness (9 seções)' },
-    { id: 'vibrant-new', name: 'Vibrant Future', description: 'Cores neon e design 2026 (9 seções)' },
-    { id: 'sunny-new', name: 'Sunny Day', description: 'Laranja e otimista (9 seções)' },
-    { id: 'vitality-new', name: 'Vitality Performance', description: 'Verde esmeralda e alta performance (10 seções)' },
+    { id: 'sophisticated-therapy', name: 'Sofisticado (Original)', description: 'Design premium com efeitos de vidro', isPremium: false },
+    { id: 'modern-therapy', name: 'Moderno (Original)', description: 'Glassmorphism e Design Sofisticado', isPremium: false },
+    { id: 'lacanian-clinic', name: 'Minimalista (Original)', description: 'Estilo clássico e misterioso com glassmorfismo', isPremium: true },
+    { id: 'therapy-new', name: 'Terapia (Novo)', description: 'Azul e profissional (8 seções)', isPremium: true },
+    { id: 'clinic-new', name: 'Clínica Acolhedora', description: 'Tons terrosos e institucional (9 seções)', isPremium: true },
+    { id: 'harmony-new', name: 'Harmony Zen', description: 'Verde sálvia e mindfulness (9 seções)', isPremium: true },
+    { id: 'vibrant-new', name: 'Vibrant Future', description: 'Cores neon e design 2026 (9 seções)', isPremium: true },
+    { id: 'sunny-new', name: 'Sunny Day', description: 'Laranja e otimista (9 seções)', isPremium: true },
+    { id: 'vitality-new', name: 'Vitality Performance', description: 'Verde esmeralda e alta performance (10 seções)', isPremium: true },
 ];
 
 export const BUTTON_STYLES = [
