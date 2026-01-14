@@ -10,6 +10,7 @@ import { POPULAR_ICONS, DynamicIcon } from '../../components/EditableIcon';
 import { StoreBookingPage } from '../public/StoreBookingPage';
 import { useAuth } from '../../context/AuthContext';
 import { DynamicListEditor } from '../../components/DynamicListEditor';
+import { paymentService } from '../../services/paymentService';
 import {
     getStoreCustomization,
     saveStoreCustomization,
@@ -55,6 +56,31 @@ export const StoreVisualEditor = () => {
 
     // Premium Upgrade Modal
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+    // Pro plan check - fetched from backend subscription
+    const [isPro, setIsPro] = useState<boolean>(() => {
+        // Initial check from store context
+        return isPremiumPlan(store?.plan);
+    });
+
+    // Load subscription status from backend on mount
+    useEffect(() => {
+        const loadSubscriptionStatus = async () => {
+            try {
+                const response = await paymentService.getSubscription();
+                if (response.success && response.subscription) {
+                    const plan = response.subscription.plan;
+                    setIsPro(isPremiumPlan(plan));
+                }
+            } catch (error) {
+                console.error('Error loading subscription status:', error);
+                // Fallback to store?.plan check
+                setIsPro(isPremiumPlan(store?.plan));
+            }
+        };
+
+        loadSubscriptionStatus();
+    }, [store?.id]);
 
     // Initialize customization state
     useEffect(() => {
@@ -105,7 +131,7 @@ export const StoreVisualEditor = () => {
 
         // Check if user is trying to save a premium layout without premium plan
         const selectedLayout = LAYOUT_OPTIONS.find(l => l.id === customization.layout);
-        if (selectedLayout?.isPremium && !isPremiumPlan(store?.plan)) {
+        if (selectedLayout?.isPremium && !isPro) {
             setShowUpgradeModal(true);
             return;
         }
@@ -675,7 +701,7 @@ export const StoreVisualEditor = () => {
                                         <label>Estilo do Layout</label>
                                         <div className="grid-options">
                                             {LAYOUT_OPTIONS.map(layout => {
-                                                const isPremiumLayout = layout.isPremium && !isPremiumPlan(store?.plan);
+                                                const isPremiumLayout = layout.isPremium && !isPro;
                                                 return (
                                                     <div
                                                         key={layout.id}
@@ -705,7 +731,7 @@ export const StoreVisualEditor = () => {
                                                 );
                                             })}
                                         </div>
-                                        {!isPremiumPlan(store?.plan) && (
+                                        {!isPro && (
                                             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '12px', fontStyle: 'italic' }}>
                                                 💡 Você pode visualizar todos os layouts! Faça upgrade para PRO para salvar com layouts premium.
                                             </p>
