@@ -53,6 +53,9 @@ export const StoreVisualEditor = () => {
     // Dynamic Section Editing
     const [activeDynamicSection, setActiveDynamicSection] = useState<'faq' | 'team' | 'testimonials' | 'services' | null>(null);
 
+    // Premium Upgrade Modal
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
     // Initialize customization state
     useEffect(() => {
         if (store?.id) {
@@ -103,7 +106,7 @@ export const StoreVisualEditor = () => {
         // Check if user is trying to save a premium layout without premium plan
         const selectedLayout = LAYOUT_OPTIONS.find(l => l.id === customization.layout);
         if (selectedLayout?.isPremium && !isPremiumPlan(store?.plan)) {
-            alert('O layout selecionado é exclusivo do plano PRO. Faça upgrade para salvar com este layout, ou escolha um layout gratuito (Sofisticado ou Moderno).');
+            setShowUpgradeModal(true);
             return;
         }
 
@@ -1420,6 +1423,136 @@ export const StoreVisualEditor = () => {
                                 }}
                             >
                                 Remover
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Premium Upgrade Modal */}
+            {showUpgradeModal && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.6)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 9999
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                        borderRadius: '20px',
+                        padding: '2.5rem',
+                        maxWidth: '440px',
+                        width: '90%',
+                        textAlign: 'center',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                        border: '1px solid rgba(255, 193, 7, 0.3)',
+                        animation: 'fadeIn 0.2s ease-out'
+                    }}>
+                        {/* Crown Icon */}
+                        <div style={{
+                            width: '70px',
+                            height: '70px',
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #FFC107 0%, #FF9800 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 1.5rem',
+                            boxShadow: '0 8px 20px rgba(255, 193, 7, 0.4)'
+                        }}>
+                            <Crown size={36} color="#1a1a2e" />
+                        </div>
+
+                        {/* Title */}
+                        <h3 style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            color: '#fff',
+                            marginBottom: '0.75rem'
+                        }}>
+                            Layout Exclusivo PRO
+                        </h3>
+
+                        {/* Description */}
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '0.95rem',
+                            lineHeight: 1.6,
+                            marginBottom: '1.5rem'
+                        }}>
+                            O layout selecionado é exclusivo do plano <strong style={{ color: '#FFC107' }}>PRO</strong>.
+                            Faça upgrade para desbloquear todos os layouts premium e recursos avançados!
+                        </p>
+
+                        {/* Free layouts hint */}
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            fontSize: '0.85rem',
+                            marginBottom: '2rem'
+                        }}>
+                            Layouts gratuitos: <strong>Sofisticado</strong> e <strong>Moderno</strong>
+                        </p>
+
+                        {/* Buttons */}
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                            <button
+                                onClick={() => setShowUpgradeModal(false)}
+                                style={{
+                                    padding: '12px 24px',
+                                    borderRadius: '10px',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    background: 'transparent',
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    fontSize: '0.95rem',
+                                    fontWeight: 500,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
+                                }}
+                            >
+                                Voltar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowUpgradeModal(false);
+                                    navigate('/app/settings?tab=plans');
+                                }}
+                                style={{
+                                    padding: '12px 28px',
+                                    borderRadius: '10px',
+                                    border: 'none',
+                                    background: 'linear-gradient(135deg, #FFC107 0%, #FF9800 100%)',
+                                    color: '#1a1a2e',
+                                    fontSize: '0.95rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 4px 15px rgba(255, 193, 7, 0.4)'
+                                }}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 193, 7, 0.5)';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 193, 7, 0.4)';
+                                }}
+                            >
+                                Fazer Upgrade
                             </button>
                         </div>
                     </div>
