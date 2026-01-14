@@ -7,6 +7,7 @@ import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
 import { StarRating } from '../../components/StarRating';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 
 interface LandingPageProps {

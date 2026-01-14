@@ -7,7 +7,7 @@ import { ClinicaAbout } from '../../components/clinica/ClinicaAbout';
 import { ClinicaGallery } from '../../components/clinica/ClinicaGallery';
 import { ClinicaServices } from '../../components/clinica/ClinicaServices';
 import { ClinicaFAQ } from '../../components/clinica/ClinicaFAQ';
-import { ClinicaFooter } from '../../components/clinica/ClinicaFooter';
+import { StandardFooter } from '../../components/StandardFooter';
 
 import '../../styles/clinica.css';
 
@@ -51,7 +51,9 @@ export const LandingPageNew = ({ store, customization, onBook, isEditorMode, onE
     // Override colors if customization exists
     const dynamicStyle = customization ? {
         '--clinica-primary': customization.primaryColor,
+        '--clinica-active': customization.primaryColor, // Ensure consistent primary color usage
         '--clinica-accent': customization.accentColor,
+        '--clinica-icon': customization.iconColor || customization.primaryColor,
     } as React.CSSProperties : {};
 
     const commonProps = { isEditorMode, onEditAction, customization };
@@ -61,20 +63,25 @@ export const LandingPageNew = ({ store, customization, onBook, isEditorMode, onE
             <ClinicaHeader content={content.header} onBook={onBook} {...commonProps} storeId={store?._id || store?.id} />
 
             <main>
-                <ClinicaHero content={content.hero} onBook={onBook} {...commonProps} />
-                <ClinicaAbout content={content.about} {...commonProps} />
-                <ClinicaServices content={content.services} {...commonProps} />
-                <ClinicaGallery content={content.gallery} {...commonProps} />
-                <ClinicaFAQ content={content.faq} {...commonProps} />
+                {customization?.visibleSections?.['hero'] !== false && <ClinicaHero content={content.hero} onBook={onBook} {...commonProps} />}
+                {customization?.visibleSections?.['about'] !== false && <ClinicaAbout content={content.about} {...commonProps} />}
+                {customization?.visibleSections?.['services'] !== false && <ClinicaServices content={content.services} {...commonProps} />}
+                {customization?.visibleSections?.['gallery'] !== false && <ClinicaGallery content={content.gallery} {...commonProps} />}
+                {customization?.visibleSections?.['faq'] !== false && <ClinicaFAQ content={content.faq} {...commonProps} />}
             </main>
 
-            <ClinicaFooter
-                content={content.footer}
-                navItems={content.header.menuItems}
-                {...commonProps}
+            <StandardFooter
+                storeName={store?.name || content.header.logo}
                 storeId={store?._id || store?.id}
-                storeRating={store?.rating}
-                storeTotalReviews={store?.totalReviews}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor="var(--clinica-primary)"
+                accentColor="var(--clinica-accent)"
+                textColor="#333333"
+                bgColor="#F5E6D3"
             />
         </div>
     );

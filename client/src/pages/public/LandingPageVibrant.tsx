@@ -10,6 +10,7 @@ import { StarRating } from '../../components/StarRating';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -65,6 +66,18 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
     const heroImage = customization?.coverImage || store?.coverImage;
     const gallery = customization?.galleryImages || [];
 
+    // Cores
+    const primaryColor = customization?.primaryColor || '#00f0ff';
+    const accentColor = customization?.accentColor || '#7000ff';
+    const iconColor = customization?.iconColor || '#00ff9d'; // Default green neon for icons
+
+    const dynamicStyle = {
+        '--vib-primary': primaryColor,
+        '--vib-accent': accentColor,
+        '--vib-icon': iconColor,
+        '--vib-success': '#00ff9d', // Keep success independent or map to icon? Let's keep independent but use icon color for icons
+    } as React.CSSProperties;
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const DEFAULT_SERVICES = [
@@ -110,7 +123,7 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
     }, [isEditorMode, onEditAction, customization]);
 
     return (
-        <div className="vib-wrapper">
+        <div className="vib-wrapper" style={dynamicStyle}>
 
             {/* 1. NAVBAR */}
             <nav className="vib-nav">
@@ -280,7 +293,7 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
                                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <ArrowRight className="text-[var(--vib-accent)]" />
                                     </div>
-                                    <div className="mb-8 p-3 bg-white/5 w-min rounded-lg text-[var(--vib-success)]">
+                                    <div className="mb-8 p-3 bg-white/5 w-min rounded-lg text-[var(--vib-icon)]">
                                         <EditableIcon id={`vb_srv_i${i}`} defaultIcon="Zap" size={24} {...editProps} />
                                     </div>
                                     <EditableText id={`vb_srv_t${i}`} defaultText={service.title} className="text-xl font-bold mb-2 block" tagName="h3" {...editProps} />
@@ -500,9 +513,9 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
                 </section>
             )}
 
-            {/* 10. CONTACT / FOOTER */}
+            {/* 10. CONTACT CTA */}
             {customization?.visibleSections?.['contact'] !== false && (
-                <footer className="vib-footer">
+                <section className="vib-footer pb-20">
                     <div className="vib-container">
                         <div className="vib-bot-cta">
                             <div className="absolute top-0 right-0 p-32 bg-[var(--vib-accent)] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
@@ -511,28 +524,23 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
                                 <EditableText id="vb_footer_btn" defaultText="Iniciar Transformação" tagName="span" {...editProps} />
                             </button>
                         </div>
-
-                        <div className="flex flex-col md:flex-row justify-between items-center text-white/40 text-sm">
-                            <div className="flex flex-col items-start gap-2">
-                                <p>&copy; 2026 {d.name}. <EditableText id="vb_footer_copy" defaultText="Built for the future." tagName="span" {...editProps} /></p>
-                                <StoreFooterRating
-                                    storeId={store?.id || 'demo'}
-                                    rating={store?.rating}
-                                    totalReviews={store?.totalReviews}
-                                    color="var(--vib-accent)"
-                                    isEditorMode={isEditorMode}
-                                    textColor="rgba(255,255,255,0.6)"
-                                />
-                            </div>
-                            <div className="flex gap-6 mt-4 md:mt-0">
-                                <Instagram className="hover:text-white cursor-pointer transition-colors" />
-                                <Twitter className="hover:text-white cursor-pointer transition-colors" />
-                                <Linkedin className="hover:text-white cursor-pointer transition-colors" />
-                            </div>
-                        </div>
                     </div>
-                </footer>
+                </section>
             )}
+
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?._id || store?.id || 'demo'}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor="var(--vib-primary)"
+                accentColor="var(--vib-accent)"
+                textColor="rgba(255,255,255,0.7)"
+                bgColor="#0f101a"
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal

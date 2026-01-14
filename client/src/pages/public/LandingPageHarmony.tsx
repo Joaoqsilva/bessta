@@ -9,6 +9,7 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -63,6 +64,17 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
     };
 
     const editProps = { isEditorMode, onEditAction, customization };
+
+    const primaryColor = customization?.primaryColor || '#6b9080';
+    const accentColor = customization?.accentColor || '#a4c3b2';
+    const iconColor = customization?.iconColor || primaryColor;
+
+    const dynamicStyle = {
+        '--harmony-primary': primaryColor,
+        '--harmony-accent': accentColor,
+        '--harmony-icon': iconColor,
+    } as React.CSSProperties;
+
     const heroImage = customization?.coverImage || store?.coverImage;
     const aboutImage = customization?.aboutImage;
 
@@ -111,7 +123,7 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
     }, [isEditorMode, onEditAction, customization]);
 
     return (
-        <div className="harmony-wrapper">
+        <div className="harmony-wrapper" style={dynamicStyle}>
 
             {/* 1. NAVBAR */}
             <nav className="harmony-nav">
@@ -171,7 +183,7 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                 <header className="harmony-hero">
                     <div className="harmony-container harmony-hero-grid">
                         <div>
-                            <Leaf className="text-[var(--harmony-primary)] mb-4 animate-bounce" size={32} />
+                            <Leaf className="text-[var(--harmony-icon)] mb-4 animate-bounce" size={32} />
                             <EditableText id="hm_hero_title" defaultText={d.heroTitle} className="harmony-heading text-5xl md:text-6xl mb-6 leading-tight" tagName="h1" {...editProps} />
                             <EditableText id="hm_hero_sub" defaultText={d.heroSub} className="text-xl text-[var(--harmony-text)] mb-8 leading-relaxed opacity-90" tagName="p" {...editProps} />
                             <div className="flex gap-4">
@@ -207,21 +219,21 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                         <EditableText id="hm_emp_title" defaultText={d.empTitle} className="harmony-heading text-3xl mb-12" tagName="h2" {...editProps} />
                         <div className="harmony-empathy-grid">
                             <div className="harmony-card">
-                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-primary)] mb-4 mx-auto">
+                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-icon)] mb-4 mx-auto">
                                     <EditableIcon id="hm_emp_i1" defaultIcon="Wind" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="hm_emp_t1" defaultText="Mente Agitada" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="hm_emp_d1" defaultText="Dificuldade para relaxar e excesso de pensamentos." className="text-sm opacity-80" tagName="p" {...editProps} />
                             </div>
                             <div className="harmony-card">
-                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-primary)] mb-4 mx-auto">
+                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-icon)] mb-4 mx-auto">
                                     <EditableIcon id="hm_emp_i2" defaultIcon="Heart" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="hm_emp_t2" defaultText="Desconexão" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="hm_emp_d2" defaultText="Sentimento de vazio ou falta de propósito." className="text-sm opacity-80" tagName="p" {...editProps} />
                             </div>
                             <div className="harmony-card">
-                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-primary)] mb-4 mx-auto">
+                                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-[var(--harmony-icon)] mb-4 mx-auto">
                                     <EditableIcon id="hm_emp_i3" defaultIcon="Sun" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="hm_emp_t3" defaultText="Fadiga" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
@@ -269,7 +281,7 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                         <div className="harmony-services-grid">
                             {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : DEFAULT_SERVICES).map((service: any, i: number) => (
                                 <div key={i} className="harmony-card border-none bg-[#f8faf8] hover:bg-white text-center p-8">
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-[var(--harmony-primary)]">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-[var(--harmony-icon)]">
                                         <EditableIcon id={`hm_srv_i${i}`} defaultIcon={i === 0 ? "User" : i === 1 ? "Users" : "Globe"} size={28} {...editProps} />
                                     </div>
                                     <EditableText id={`hm_srv_t${i}`} defaultText={service.title} className="font-bold text-xl mb-3 block" tagName="h3" {...editProps} />
@@ -312,19 +324,19 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                             </div>
                             <div className="flex-1 harmony-benefits-list mt-0">
                                 <div>
-                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} /> <EditableText id="hm_ben_t1" defaultText="Clareza" tagName="span" {...editProps} /></h3>
+                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} className="text-[var(--harmony-icon)]" /> <EditableText id="hm_ben_t1" defaultText="Clareza" tagName="span" {...editProps} /></h3>
                                     <p className="opacity-70 text-sm"><EditableText id="hm_ben_d1" defaultText="Entenda seus padrões e tome decisões melhores." tagName="span" {...editProps} /></p>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} /> <EditableText id="hm_ben_t2" defaultText="Resiliência" tagName="span" {...editProps} /></h3>
+                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} className="text-[var(--harmony-icon)]" /> <EditableText id="hm_ben_t2" defaultText="Resiliência" tagName="span" {...editProps} /></h3>
                                     <p className="opacity-70 text-sm"><EditableText id="hm_ben_d2" defaultText="Aprenda a lidar com os desafios da vida." tagName="span" {...editProps} /></p>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} /> <EditableText id="hm_ben_t3" defaultText="Autoestima" tagName="span" {...editProps} /></h3>
+                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} className="text-[var(--harmony-icon)]" /> <EditableText id="hm_ben_t3" defaultText="Autoestima" tagName="span" {...editProps} /></h3>
                                     <p className="opacity-70 text-sm"><EditableText id="hm_ben_d3" defaultText="Fortaleça sua relação consigo mesmo." tagName="span" {...editProps} /></p>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} /> <EditableText id="hm_ben_t4" defaultText="Relações" tagName="span" {...editProps} /></h3>
+                                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2"><CheckCircle size={20} className="text-[var(--harmony-icon)]" /> <EditableText id="hm_ben_t4" defaultText="Relações" tagName="span" {...editProps} /></h3>
                                     <p className="opacity-70 text-sm"><EditableText id="hm_ben_d4" defaultText="Melhore sua comunicação e vínculos." tagName="span" {...editProps} /></p>
                                 </div>
                             </div>
@@ -468,19 +480,19 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                 </footer>
             )}
 
-            <div className="harmony-footer">
-                <div className="harmony-container flex flex-col items-center gap-4">
-                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="hm_footer_txt" defaultText="Paz e equilíbrio." tagName="span" {...editProps} /></p>
-                    <StoreFooterRating
-                        storeId={store?.id || 'demo'}
-                        rating={store?.rating}
-                        totalReviews={store?.totalReviews}
-                        color="#a78bfa"
-                        isEditorMode={isEditorMode}
-                        textColor="#5b21b6"
-                    />
-                </div>
-            </div>
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?.id || store?.id || 'demo'}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor="var(--harmony-primary)"
+                accentColor="var(--harmony-accent)"
+                textColor="#5b21b6"
+                bgColor="#f8faf8" // Green-50 ish
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal
@@ -505,9 +517,9 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
 };
 
 const LaptopIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--harmony-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="12" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--harmony-icon)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="12" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
 );
 
 const CoffeeIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--harmony-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--harmony-icon)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
 );

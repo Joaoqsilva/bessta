@@ -10,6 +10,7 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -62,6 +63,17 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
     };
 
     const editProps = { isEditorMode, onEditAction, customization };
+
+    const primaryColor = customization?.primaryColor || '#f59e0b';
+    const accentColor = customization?.accentColor || '#fbbf24';
+    const iconColor = customization?.iconColor || primaryColor;
+
+    const dynamicStyle = {
+        '--sunny-primary': primaryColor,
+        '--sunny-accent': accentColor,
+        '--sunny-icon': iconColor,
+    } as React.CSSProperties;
+
     const heroImage = customization?.coverImage || store?.coverImage;
     const aboutImage = customization?.aboutImage;
 
@@ -108,7 +120,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
     }, [isEditorMode, onEditAction, customization]);
 
     return (
-        <div className="sunny-wrapper">
+        <div className="sunny-wrapper" style={dynamicStyle}>
 
             {/* 1. NAVBAR */}
             <nav className="sunny-nav">
@@ -167,7 +179,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                 <header className="sunny-hero">
                     <div className="sunny-container sunny-hero-grid">
                         <div>
-                            <div className="inline-block p-2 bg-orange-100 rounded-lg text-[var(--sunny-primary)] mb-4">
+                            <div className="inline-block p-2 bg-orange-100 rounded-lg text-[var(--sunny-icon)] mb-4">
                                 <Sun size={24} />
                             </div>
                             <EditableText id="sn_hero_title" defaultText={d.heroTitle} className="sunny-heading text-5xl md:text-6xl mb-6" tagName="h1" {...editProps} />
@@ -261,7 +273,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                         <div className="sunny-services-grid">
                             {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : DEFAULT_SERVICES).map((service: any, i: number) => (
                                 <div key={i} className="sunny-card flex flex-col items-center text-center hover:bg-orange-50 transition-colors">
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-[var(--sunny-primary)]">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-[var(--sunny-icon)]">
                                         <EditableIcon id={`sn_srv_i${i}`} defaultIcon={i === 0 ? "Heart" : i === 1 ? "MessageCircle" : "Smile"} size={28} {...editProps} />
                                     </div>
                                     <EditableText id={`sn_srv_t${i}`} defaultText={service.title} className="font-bold text-xl mb-2 block" tagName="h3" {...editProps} />
@@ -329,7 +341,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                         <div className="sunny-benefits-list text-left">
                             {[1, 2, 3, 4].map(i => (
                                 <div key={i} className="sunny-benefit-item">
-                                    <CheckCircle className="text-[var(--sunny-primary)]" />
+                                    <CheckCircle className="text-[var(--sunny-icon)]" />
                                     <EditableText id={`sn_ben_t${i}`} defaultText="Melhora na qualidade do sono e bem-estar físico." tagName="span" {...editProps} />
                                 </div>
                             ))}
@@ -461,19 +473,19 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                 </section>
             )}
 
-            <footer className="sunny-footer">
-                <div className="sunny-container flex flex-col items-center gap-4">
-                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="sn_footer_copy" defaultText="Feito com carinho 🧡" tagName="span" {...editProps} /></p>
-                    <StoreFooterRating
-                        storeId={store?.id || 'demo'}
-                        rating={store?.rating}
-                        totalReviews={store?.totalReviews}
-                        color="#f59e0b"
-                        isEditorMode={isEditorMode}
-                        textColor="#4b5563"
-                    />
-                </div>
-            </footer>
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?._id || store?.id || 'demo'}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor="var(--sunny-primary)"
+                accentColor="var(--sunny-accent)"
+                textColor="#4b5563"
+                bgColor="#fff7ed" // Orange-50 ish
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal

@@ -4,6 +4,7 @@ import { ChevronDown, ArrowRight, Star, Instagram, Facebook, Phone, Menu, X, Che
 import './LandingPageSophisticated.css';
 import { EditOverlay } from '../../components/EditOverlay';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
+import { StandardFooter } from '../../components/StandardFooter';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
@@ -37,6 +38,7 @@ export const LandingPageSophisticated = ({ store, customization, onBook, isEdito
     };
 
     const primaryColor = customization?.primaryColor || "#8b5cf6";
+    const iconColor = customization?.iconColor || primaryColor;
     const heroImage = customization?.coverImage || store?.coverImage;
     const aboutImage = customization?.aboutImage;
     const gallery = customization?.galleryImages || [];
@@ -46,7 +48,8 @@ export const LandingPageSophisticated = ({ store, customization, onBook, isEdito
         '--soph-primary': primaryColor,
         '--soph-primary-light': customization?.secondaryColor || '#ddd6fe',
         '--soph-text': '#1f2937', // Could be customizable
-        '--store-font': customization?.fontFamily ? customization.fontFamily : 'Inter, sans-serif'
+        '--store-font': customization?.fontFamily ? customization.fontFamily : 'Inter, sans-serif',
+        '--soph-icon': iconColor,
     } as React.CSSProperties;
 
     const editProps = { isEditorMode, onEditAction, customization };
@@ -165,446 +168,431 @@ export const LandingPageSophisticated = ({ store, customization, onBook, isEdito
             </header>
 
             {/* Hero Section */}
-            <section className="soph-hero">
-                <div className="soph-container grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div className="z-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 border border-white/60 text-xs font-semibold uppercase tracking-wider text-[var(--soph-primary)] mb-6">
-                            <Star size={12} fill="currentColor" />
-                            <EditableText id="soph_tag" defaultText="Excelência em Terapia" tagName="span" {...editProps} />
-                        </div>
-                        <EditableText
-                            id="soph_hero_title"
-                            defaultText={d.heroTitle}
-                            className="soph-title"
-                            tagName="h1"
-                            {...editProps}
-                        />
-                        <EditableText
-                            id="soph_hero_sub"
-                            defaultText={d.heroSubtitle}
-                            className="soph-subtitle"
-                            tagName="p"
-                            {...editProps}
-                        />
-
-                        <div className="flex gap-4">
-                            <button onClick={onBook} className="soph-btn soph-btn-primary">
-                                <EditableText id="soph_hero_cta" defaultText={d.ctaHero} tagName="span" {...editProps} />
-                                <ArrowRight size={18} />
-                            </button>
-                            <a href="#about" className="soph-btn soph-btn-outline">
-                                <EditableText id="soph_hero_more" defaultText="Conhecer mais" tagName="span" {...editProps} />
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="relative h-[500px] hidden md:block">
-                        {/* Main Hero Image */}
-                        <div className="absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl relative group">
-                            <EditableImage
-                                editKey="coverImage"
-                                currentSrc={heroImage}
-                                isEditorMode={isEditorMode}
-                                onEditAction={onEditAction}
-                                className="w-full h-full object-cover"
-                                label="Alterar Capa"
-                                alt="Cover"
+            {customization?.visibleSections?.['hero'] !== false && (
+                <section className="soph-hero">
+                    <div className="soph-container grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div className="z-10">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 border border-white/60 text-xs font-semibold uppercase tracking-wider text-[var(--soph-icon)] mb-6">
+                                <Star size={12} fill="currentColor" />
+                                <EditableText id="soph_tag" defaultText="Excelência em Terapia" tagName="span" {...editProps} />
+                            </div>
+                            <EditableText
+                                id="soph_hero_title"
+                                defaultText={d.heroTitle}
+                                className="soph-title"
+                                tagName="h1"
+                                {...editProps}
                             />
-                        </div>
-
-                        {/* Floating Glass Cards */}
-                        <div className="absolute -bottom-6 -left-6 soph-glass-card p-4 flex items-center gap-4 w-64 soph-float">
-                            <div className="bg-[var(--soph-primary)] text-white p-3 rounded-full">
-                                <EditableIcon id="soph_float_1_icon" defaultIcon="Heart" size={20} {...editProps} />
-                            </div>
-                            <div>
-                                <EditableText id="soph_float_1_title" defaultText="Acolhimento" className="font-bold text-sm block" tagName="span" {...editProps} />
-                                <EditableText id="soph_float_1_desc" defaultText="Humanizado" className="text-xs text-gray-500 block" tagName="span" {...editProps} />
-                            </div>
-                        </div>
-
-                        <div className="absolute top-12 -right-6 soph-glass-card p-4 flex items-center gap-4 w-56 soph-float" style={{ animationDelay: '2s' }}>
-                            <div className="bg-orange-400 text-white p-3 rounded-full">
-                                <EditableIcon id="soph_float_2_icon" defaultIcon="Sun" size={20} {...editProps} />
-                            </div>
-                            <div>
-                                <EditableText id="soph_float_2_title" defaultText="Bem-estar" className="font-bold text-sm block" tagName="span" {...editProps} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Services Section */}
-            <section id="services" className="py-20 bg-white/50 backdrop-blur-sm">
-                <div className="soph-container">
-                    <div className="text-center max-w-2xl mx-auto mb-16">
-                        <EditableText id="soph_serv_title" defaultText="Como podemos ajudar" className="text-3xl font-bold mb-4" tagName="h2" {...editProps} />
-                        <EditableText id="soph_serv_sub" defaultText="Abordagens modernas baseadas em evidências para o seu desenvolvimento." className="text-gray-500" tagName="p" {...editProps} />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : DEFAULT_SERVICES).map((service: any, i: number) => (
-                            <div key={i} className="soph-glass-card p-8 hover:bg-white transition-colors">
-                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-[var(--soph-primary)] mb-6">
-                                    <EditableIcon id={`soph_card_${i}_icon`} defaultIcon={i === 0 ? 'Brain' : i === 1 ? 'Users' : 'Smile'} size={24} {...editProps} />
-                                </div>
-                                <EditableText id={`soph_card_${i}_title`} defaultText={service.title} className="text-xl font-bold mb-3 block" tagName="h3" {...editProps} />
-                                <EditableText id={`soph_card_${i}_desc`} defaultText={service.description} className="text-gray-500 leading-relaxed text-sm" tagName="p" {...editProps} />
-                                {isEditorMode && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('service-remove__' + i); }}
-                                        className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full text-purple-400 hover:bg-red-50 hover:text-red-600 transition-colors z-20"
-                                        title="Remover Serviço"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        {isEditorMode && (
-                            <button
-                                onClick={() => onEditAction?.('service-add')}
-                                className="soph-glass-card p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-colors border-2 border-dashed border-purple-300 min-h-[250px] group"
-                            >
-                                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
-                                    <Plus size={24} />
-                                </div>
-                                <span className="font-bold text-purple-700">Adicionar Serviço</span>
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* About Section */}
-            <section id="about" className="py-24">
-                <div className="soph-container soph-about-grid">
-                    <div className="soph-mosaic relative group">
-                        {/* Simulate mosaic with either dynamic images or placeholders */}
-                        <div className="soph-mosaic-item bg-gray-200">
-                            <EditableImage
-                                editKey="teamImages__0"
-                                currentSrc={customization?.teamImages?.[0]}
-                                isEditorMode={isEditorMode}
-                                onEditAction={onEditAction}
-                                className="w-full h-full object-cover"
-                                label="Imagem 1"
-                                alt="Team 1"
+                            <EditableText
+                                id="soph_hero_sub"
+                                defaultText={d.heroSubtitle}
+                                className="soph-subtitle"
+                                tagName="p"
+                                {...editProps}
                             />
-                        </div>
-                        <div className="soph-mosaic-item bg-gray-300">
-                            <EditableImage
-                                editKey="teamImages__1"
-                                currentSrc={customization?.teamImages?.[1] || aboutImage}
-                                isEditorMode={isEditorMode}
-                                onEditAction={onEditAction}
-                                className="w-full h-full object-cover"
-                                label="Imagem 2"
-                                alt="Team 2"
-                            />
-                        </div>
-                        <div className="soph-mosaic-item bg-gray-100">
-                            <EditableImage
-                                editKey="teamImages__2"
-                                currentSrc={customization?.teamImages?.[2]}
-                                isEditorMode={isEditorMode}
-                                onEditAction={onEditAction}
-                                className="w-full h-full object-cover"
-                                label="Imagem 3"
-                                alt="Team 3"
-                            />
-                        </div>
-                    </div>
 
-                    <div>
-                        <EditableText id="soph_about_label" defaultText="SOBRE NÓS" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest mb-4 block" tagName="span" {...editProps} />
-                        <EditableText id="soph_about_title" defaultText={d.aboutTitle} className="text-4xl font-bold mb-6 leading-tight" tagName="h2" {...editProps} />
-                        <EditableText id="soph_about_text" defaultText={d.aboutText} className="text-lg text-gray-600 mb-8 leading-relaxed" tagName="div" {...editProps} />
-
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <div className="text-3xl font-bold text-[var(--soph-primary)] mb-1">
-                                    <EditableText id="soph_stat_1_num" defaultText="10+" tagName="span" {...editProps} />
-                                </div>
-                                <EditableText id="soph_stat_1_txt" defaultText="Anos de Experiência" className="text-sm text-gray-500" tagName="p" {...editProps} />
-                            </div>
-                            <div>
-                                <div className="text-3xl font-bold text-[var(--soph-primary)] mb-1">
-                                    <EditableText id="soph_stat_2_num" defaultText="500+" tagName="span" {...editProps} />
-                                </div>
-                                <EditableText id="soph_stat_2_txt" defaultText="Pacientes Atendidos" className="text-sm text-gray-500" tagName="p" {...editProps} />
+                            <div className="flex gap-4">
+                                <button onClick={onBook} className="soph-btn soph-btn-primary">
+                                    <EditableText id="soph_hero_cta" defaultText={d.ctaHero} tagName="span" {...editProps} />
+                                    <ArrowRight size={18} />
+                                </button>
+                                <a href="#about" className="soph-btn soph-btn-outline">
+                                    <EditableText id="soph_hero_more" defaultText="Conhecer mais" tagName="span" {...editProps} />
+                                </a>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Team Section */}
-            <section id="team" className="py-20 bg-white border-t border-gray-50">
-                <div className="soph-container">
-                    <div className="text-center mb-16">
-                        <EditableText id="soph_team_title" defaultText="Nossa Equipe" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest uppercase mb-2 block" tagName="span" {...editProps} />
-                        <EditableText id="soph_team_sub" defaultText="Quem cuida de você" className="text-3xl font-bold" tagName="h2" {...editProps} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {(customization?.team && customization.team.length > 0 ? customization.team : [
-                            { name: 'Dra. Sofia', role: 'Psicóloga Principal', bio: 'Especialista em TCC.' },
-                            { name: 'Dr. André', role: 'Psiquiatra', bio: 'Focado em tratamento humanizado.' },
-                            { name: 'Isabela Costa', role: 'Terapeuta', bio: 'Pós-graduada em Psicologia Positiva.' }
-                        ]).map((member: any, i: number) => (
-                            <div key={i} className="soph-glass-card overflow-hidden group relative">
-                                <div className="h-64 bg-gray-100 relative">
-                                    <EditableImage
-                                        editKey={`teamImages__${i}`}
-                                        currentSrc={customization?.teamImages?.[i]}
-                                        isEditorMode={isEditorMode}
-                                        onEditAction={onEditAction}
-                                        className="w-full h-full object-cover"
-                                        alt={member.name}
-                                        renderPlaceholder={() => (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                <EditableIcon id={`soph_team_ph_${i}`} defaultIcon="User" size={48} {...editProps} />
-                                            </div>
-                                        )}
-                                    />
-                                </div>
-                                <div className="p-6">
-                                    <EditableText id={`soph_team_n${i}`} defaultText={member.name || 'Nome Profissional'} className="font-bold text-xl mb-1 block" tagName="h3" {...editProps} />
-                                    <EditableText id={`soph_team_r${i}`} defaultText={member.role || 'Cargo'} className="text-[var(--soph-primary)] text-sm mb-4 block" tagName="span" {...editProps} />
-                                    <EditableText id={`soph_team_b${i}`} defaultText={member.bio || 'Biografia breve.'} className="text-gray-500 text-sm" tagName="p" {...editProps} />
-                                </div>
-                                {isEditorMode && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('team-remove__' + i); }}
-                                        className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        {isEditorMode && (
-                            <button
-                                onClick={() => onEditAction?.('team-add')}
-                                className="soph-glass-card p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-colors border-2 border-dashed border-purple-300 min-h-[300px]"
-                            >
-                                <Plus size={24} className="text-purple-600 mb-2" />
-                                <span className="font-bold text-purple-700">Adicionar Membro</span>
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Gallery Section */}
-            <section id="gallery" className="py-20 bg-white">
-                <div className="soph-container">
-                    <div className="text-center mb-12 relative group">
-                        <EditOverlay label="Gerenciar Galeria" action="gallery" isEditorMode={false} onEditAction={undefined} />
-                        <EditableText id="soph_gallery_title" defaultText="Nosso Espaço" className="text-3xl font-bold" tagName="h2" {...editProps} />
-                    </div>
-
-                    <div className="soph-gallery-grid">
-                        {/* Gallery Items */}
-                        {(isEditorMode ? (gallery.length > 0 ? gallery : []) : gallery.filter(Boolean)).map((img, idx) => (
-                            <div key={idx} className="aspect-square bg-gray-100 relative group overflow-hidden">
+                        <div className="relative h-[500px] hidden md:block">
+                            {/* Main Hero Image */}
+                            <div className="absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl relative group">
                                 <EditableImage
-                                    editKey={`galleryImages__${idx}`}
-                                    currentSrc={img}
+                                    editKey="coverImage"
+                                    currentSrc={heroImage}
                                     isEditorMode={isEditorMode}
                                     onEditAction={onEditAction}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    label={`Galeria ${idx + 1}`}
-                                    alt={`Gallery ${idx}`}
+                                    className="w-full h-full object-cover"
+                                    label="Alterar Capa"
+                                    alt="Cover"
                                 />
-                                {isEditorMode && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('gallery-remove__' + idx); }}
-                                        className="absolute top-2 right-2 bg-white/80 p-2 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors z-20 backdrop-blur-sm"
-                                        title="Remover Imagem"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
                             </div>
-                        ))}
 
-                        {/* Add Button (Editor Only) */}
-                        {isEditorMode && (
-                            <button
-                                onClick={() => onEditAction?.('gallery-add')}
-                                className="aspect-square border-2 border-dashed border-green-500 bg-green-50 hover:bg-green-100 flex flex-col items-center justify-center cursor-pointer transition-colors group"
-                            >
-                                <div className="w-12 h-12 rounded-full bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-2">
-                                    <Plus className="text-green-600" size={24} />
+                            {/* Floating Glass Cards */}
+                            <div className="absolute -bottom-6 -left-6 soph-glass-card p-4 flex items-center gap-4 w-64 soph-float">
+                                <div className="bg-[var(--soph-primary)] text-white p-3 rounded-full">
+                                    <EditableIcon id="soph_float_1_icon" defaultIcon="Heart" size={20} {...editProps} />
                                 </div>
-                                <span className="text-sm font-bold text-green-700">Adicionar Foto</span>
-                            </button>
-                        )}
+                                <div>
+                                    <EditableText id="soph_float_1_title" defaultText="Acolhimento" className="font-bold text-sm block" tagName="span" {...editProps} />
+                                    <EditableText id="soph_float_1_desc" defaultText="Humanizado" className="text-xs text-gray-500 block" tagName="span" {...editProps} />
+                                </div>
+                            </div>
+
+                            <div className="absolute top-12 -right-6 soph-glass-card p-4 flex items-center gap-4 w-56 soph-float" style={{ animationDelay: '2s' }}>
+                                <div className="bg-orange-400 text-white p-3 rounded-full">
+                                    <EditableIcon id="soph_float_2_icon" defaultIcon="Sun" size={20} {...editProps} />
+                                </div>
+                                <div>
+                                    <EditableText id="soph_float_2_title" defaultText="Bem-estar" className="font-bold text-sm block" tagName="span" {...editProps} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* Testimonials Section */}
-            <section id="testimonials" className="py-20 bg-[var(--soph-bg)] relative overflow-hidden">
-                <div className="soph-container relative z-10">
-                    <div className="text-center mb-16">
-                        <EditableText id="soph_test_title" defaultText="O que dizem" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest uppercase mb-2 block" tagName="span" {...editProps} />
-                        <EditableText id="soph_test_sub" defaultText="Depoimentos" className="text-3xl font-bold" tagName="h2" {...editProps} />
+            {/* Services Section */}
+            {customization?.visibleSections?.['services'] !== false && (
+                <section id="services" className="py-20 bg-white/50 backdrop-blur-sm">
+                    <div className="soph-container">
+                        <div className="text-center max-w-2xl mx-auto mb-16">
+                            <EditableText id="soph_serv_title" defaultText="Como podemos ajudar" className="text-3xl font-bold mb-4" tagName="h2" {...editProps} />
+                            <EditableText id="soph_serv_sub" defaultText="Abordagens modernas baseadas em evidências para o seu desenvolvimento." className="text-gray-500" tagName="p" {...editProps} />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {(customization?.servicesList && customization.servicesList.length > 0 ? customization.servicesList : DEFAULT_SERVICES).map((service: any, i: number) => (
+                                <div key={i} className="soph-glass-card p-8 hover:bg-white transition-colors">
+                                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-[var(--soph-icon)] mb-6">
+                                        <EditableIcon id={`soph_card_${i}_icon`} defaultIcon={i === 0 ? 'Brain' : i === 1 ? 'Users' : 'Smile'} size={24} {...editProps} />
+                                    </div>
+                                    <EditableText id={`soph_card_${i}_title`} defaultText={service.title} className="text-xl font-bold mb-3 block" tagName="h3" {...editProps} />
+                                    <EditableText id={`soph_card_${i}_desc`} defaultText={service.description} className="text-gray-500 leading-relaxed text-sm" tagName="p" {...editProps} />
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('service-remove__' + i); }}
+                                            className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full text-purple-400 hover:bg-red-50 hover:text-red-600 transition-colors z-20"
+                                            title="Remover Serviço"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            {isEditorMode && (
+                                <button
+                                    onClick={() => onEditAction?.('service-add')}
+                                    className="soph-glass-card p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-colors border-2 border-dashed border-purple-300 min-h-[250px] group"
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
+                                        <Plus size={24} />
+                                    </div>
+                                    <span className="font-bold text-purple-700">Adicionar Serviço</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
+                </section>
+            )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {(customization?.testimonials && customization.testimonials.length > 0 ? customization.testimonials : [
-                            { id: '1', text: 'Uma experiência transformadora. Encontrei acolhimento e profissionalismo.', author: 'Mariana Santos', role: 'Paciente', rating: 5 },
-                            { id: '2', text: 'Ambiente incrível e atendimento impecável. Super recomendo!', author: 'Carlos Oliveira', role: 'Paciente', rating: 5 },
-                            { id: '3', text: 'Me ajudou muito a entender minhas questões e evoluir.', author: 'Fernanda Lima', role: 'Paciente', rating: 5 }
-                        ]).map((testim: any, i: number) => (
-                            <div key={i} className="soph-glass-card p-8 relative group">
-                                <div className="flex gap-1 mb-4 text-[var(--soph-primary)]" title={isEditorMode ? "Alterar avaliação" : ""}>
-                                    {[1, 2, 3, 4, 5].map(s => (
-                                        <Star
-                                            key={s}
-                                            size={16}
-                                            fill={s <= (testim.rating || 5) ? "currentColor" : "none"}
-                                            className={`cursor-pointer ${s <= (testim.rating || 5) ? '' : 'text-gray-300'}`}
-                                            onClick={isEditorMode ? (e) => { e.stopPropagation(); onEditAction?.(`testimonial-rating__${i}__${s}`); } : undefined}
-                                        />
-                                    ))}
+            {/* About Section */}
+            {customization?.visibleSections?.['about'] !== false && (
+                <section id="about" className="py-24">
+                    <div className="soph-container soph-about-grid">
+                        <div className="soph-mosaic relative group">
+                            {/* Simulate mosaic with either dynamic images or placeholders */}
+                            <div className="soph-mosaic-item bg-gray-200">
+                                <EditableImage
+                                    editKey="teamImages__0"
+                                    currentSrc={customization?.teamImages?.[0]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 1"
+                                    alt="Team 1"
+                                />
+                            </div>
+                            <div className="soph-mosaic-item bg-gray-300">
+                                <EditableImage
+                                    editKey="teamImages__1"
+                                    currentSrc={customization?.teamImages?.[1] || aboutImage}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 2"
+                                    alt="Team 2"
+                                />
+                            </div>
+                            <div className="soph-mosaic-item bg-gray-100">
+                                <EditableImage
+                                    editKey="teamImages__2"
+                                    currentSrc={customization?.teamImages?.[2]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 3"
+                                    alt="Team 3"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <EditableText id="soph_about_label" defaultText="SOBRE NÓS" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest mb-4 block" tagName="span" {...editProps} />
+                            <EditableText id="soph_about_title" defaultText={d.aboutTitle} className="text-4xl font-bold mb-6 leading-tight" tagName="h2" {...editProps} />
+                            <EditableText id="soph_about_text" defaultText={d.aboutText} className="text-lg text-gray-600 mb-8 leading-relaxed" tagName="div" {...editProps} />
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                    <div className="text-3xl font-bold text-[var(--soph-primary)] mb-1">
+                                        <EditableText id="soph_stat_1_num" defaultText="10+" tagName="span" {...editProps} />
+                                    </div>
+                                    <EditableText id="soph_stat_1_txt" defaultText="Anos de Experiência" className="text-sm text-gray-500" tagName="p" {...editProps} />
                                 </div>
-                                <div className="mb-6 flex gap-1 text-gray-600 italic">
-                                    "
-                                    <EditableText id={`soph_test_t${i}`} defaultText={testim.text} tagName="span" {...editProps} />
-                                    "
+                                <div>
+                                    <div className="text-3xl font-bold text-[var(--soph-primary)] mb-1">
+                                        <EditableText id="soph_stat_2_num" defaultText="500+" tagName="span" {...editProps} />
+                                    </div>
+                                    <EditableText id="soph_stat_2_txt" defaultText="Pacientes Atendidos" className="text-sm text-gray-500" tagName="p" {...editProps} />
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 relative shrink-0">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Team Section */}
+            {customization?.visibleSections?.['team'] !== false && (
+                <section id="team" className="py-20 bg-white border-t border-gray-50">
+                    <div className="soph-container">
+                        <div className="text-center mb-16">
+                            <EditableText id="soph_team_title" defaultText="Nossa Equipe" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest uppercase mb-2 block" tagName="span" {...editProps} />
+                            <EditableText id="soph_team_sub" defaultText="Quem cuida de você" className="text-3xl font-bold" tagName="h2" {...editProps} />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {(customization?.team && customization.team.length > 0 ? customization.team : [
+                                { name: 'Dra. Sofia', role: 'Psicóloga Principal', bio: 'Especialista em TCC.' },
+                                { name: 'Dr. André', role: 'Psiquiatra', bio: 'Focado em tratamento humanizado.' },
+                                { name: 'Isabela Costa', role: 'Terapeuta', bio: 'Pós-graduada em Psicologia Positiva.' }
+                            ]).map((member: any, i: number) => (
+                                <div key={i} className="soph-glass-card overflow-hidden group relative">
+                                    <div className="h-64 bg-gray-100 relative">
                                         <EditableImage
-                                            editKey={`testimonialImages__${i}`}
-                                            currentSrc={customization?.testimonialImages?.[i]}
+                                            editKey={`teamImages__${i}`}
+                                            currentSrc={customization?.teamImages?.[i]}
                                             isEditorMode={isEditorMode}
                                             onEditAction={onEditAction}
                                             className="w-full h-full object-cover"
-                                            alt={testim.author}
+                                            alt={member.name}
                                             renderPlaceholder={() => (
-                                                <div className="w-full h-full bg-[var(--soph-primary)] text-white flex items-center justify-center font-bold">
-                                                    {testim.author.charAt(0)}
+                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <EditableIcon id={`soph_team_ph_${i}`} defaultIcon="User" size={48} {...editProps} />
                                                 </div>
                                             )}
                                         />
                                     </div>
-                                    <div>
-                                        <EditableText id={`soph_test_a${i}`} defaultText={testim.author} className="font-bold text-sm block" tagName="span" {...editProps} />
-                                        <EditableText id={`soph_test_r${i}`} defaultText={testim.role || 'Paciente'} className="text-xs text-gray-500 block" tagName="span" {...editProps} />
+                                    <div className="p-6">
+                                        <EditableText id={`soph_team_n${i}`} defaultText={member.name || 'Nome Profissional'} className="font-bold text-xl mb-1 block" tagName="h3" {...editProps} />
+                                        <EditableText id={`soph_team_r${i}`} defaultText={member.role || 'Cargo'} className="text-[var(--soph-primary)] text-sm mb-4 block" tagName="span" {...editProps} />
+                                        <EditableText id={`soph_team_b${i}`} defaultText={member.bio || 'Biografia breve.'} className="text-gray-500 text-sm" tagName="p" {...editProps} />
                                     </div>
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('team-remove__' + i); }}
+                                            className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
                                 </div>
-                                {isEditorMode && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('testimonial-remove__' + i); }}
-                                        className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                            {isEditorMode && (
+                                <button
+                                    onClick={() => onEditAction?.('team-add')}
+                                    className="soph-glass-card p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-colors border-2 border-dashed border-purple-300 min-h-[300px]"
+                                >
+                                    <Plus size={24} className="text-purple-600 mb-2" />
+                                    <span className="font-bold text-purple-700">Adicionar Membro</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
-                    {isEditorMode && (
-                        <button
-                            onClick={() => onEditAction?.('testimonial-add')}
-                            className="w-full mt-8 py-8 border-2 border-dashed border-[var(--soph-primary)]/30 hover:bg-[var(--soph-primary)]/5 flex flex-col items-center justify-center cursor-pointer transition-colors group rounded-xl"
-                        >
-                            <Plus size={24} className="text-[var(--soph-primary)] mb-2" />
-                            <span className="font-bold text-[var(--soph-primary)] text-lg">Adicionar Depoimento</span>
-                        </button>
-                    )}
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* FAQ Section */}
-            <section className="py-20 bg-[var(--soph-bg)]">
-                <div className="soph-container max-w-3xl">
-                    <EditableText id="soph_faq_title" defaultText="Dúvidas Frequentes" className="text-3xl font-bold text-center mb-12" tagName="h2" {...editProps} />
+            {/* Gallery Section */}
+            {customization?.visibleSections?.['gallery'] !== false && (
+                <section id="gallery" className="py-20 bg-white">
+                    <div className="soph-container">
+                        <div className="text-center mb-12 relative group">
+                            <EditOverlay label="Gerenciar Galeria" action="gallery" isEditorMode={false} onEditAction={undefined} />
+                            <EditableText id="soph_gallery_title" defaultText="Nosso Espaço" className="text-3xl font-bold" tagName="h2" {...editProps} />
+                        </div>
 
-                    <div className="space-y-4">
-                        {(customization?.faq && customization.faq.length > 0 ? customization.faq : DEFAULT_FAQ).map((faq: any, i: number) => (
-                            <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
-                                <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleFaq(i)}>
-                                    <EditableText id={`soph_faq_q_${i}`} defaultText={faq.question} className="font-bold text-lg" tagName="h3" {...editProps} />
-                                    <ChevronDown className={`transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                        <div className="soph-gallery-grid">
+                            {/* Gallery Items */}
+                            {(isEditorMode ? (gallery.length > 0 ? gallery : []) : gallery.filter(Boolean)).map((img, idx) => (
+                                <div key={idx} className="aspect-square bg-gray-100 relative group overflow-hidden">
+                                    <EditableImage
+                                        editKey={`galleryImages__${idx}`}
+                                        currentSrc={img}
+                                        isEditorMode={isEditorMode}
+                                        onEditAction={onEditAction}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        label={`Galeria ${idx + 1}`}
+                                        alt={`Gallery ${idx}`}
+                                    />
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('gallery-remove__' + idx); }}
+                                            className="absolute top-2 right-2 bg-white/80 p-2 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors z-20 backdrop-blur-sm"
+                                            title="Remover Imagem"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
                                 </div>
-                                {openFaq === i && (
-                                    <div className="mt-4 pt-4 border-t border-gray-100">
-                                        <EditableText id={`soph_faq_a_${i}`} defaultText={faq.answer} className="text-gray-600" tagName="p" {...editProps} />
+                            ))}
+
+                            {/* Add Button (Editor Only) */}
+                            {isEditorMode && (
+                                <button
+                                    onClick={() => onEditAction?.('gallery-add')}
+                                    className="aspect-square border-2 border-dashed border-green-500 bg-green-50 hover:bg-green-100 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-2">
+                                        <Plus className="text-green-600" size={24} />
                                     </div>
-                                )}
-                                {isEditorMode && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onEditAction?.('faq-remove__' + i); }}
-                                        className="absolute top-4 right-12 text-gray-300 hover:text-red-600 transition-colors z-20"
-                                        title="Remover Pergunta"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                                    <span className="text-sm font-bold text-green-700">Adicionar Foto</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Testimonials Section */}
+            {customization?.visibleSections?.['testimonials'] !== false && (
+                <section id="testimonials" className="py-20 bg-[var(--soph-bg)] relative overflow-hidden">
+                    <div className="soph-container relative z-10">
+                        <div className="text-center mb-16">
+                            <EditableText id="soph_test_title" defaultText="O que dizem" className="text-sm font-bold text-[var(--soph-primary)] tracking-widest uppercase mb-2 block" tagName="span" {...editProps} />
+                            <EditableText id="soph_test_sub" defaultText="Depoimentos" className="text-3xl font-bold" tagName="h2" {...editProps} />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {(customization?.testimonials && customization.testimonials.length > 0 ? customization.testimonials : [
+                                { id: '1', text: 'Uma experiência transformadora. Encontrei acolhimento e profissionalismo.', author: 'Mariana Santos', role: 'Paciente', rating: 5 },
+                                { id: '2', text: 'Ambiente incrível e atendimento impecável. Super recomendo!', author: 'Carlos Oliveira', role: 'Paciente', rating: 5 },
+                                { id: '3', text: 'Me ajudou muito a entender minhas questões e evoluir.', author: 'Fernanda Lima', role: 'Paciente', rating: 5 }
+                            ]).map((testim: any, i: number) => (
+                                <div key={i} className="soph-glass-card p-8 relative group">
+                                    <div className="flex gap-1 mb-4 text-[var(--soph-primary)]" title={isEditorMode ? "Alterar avaliação" : ""}>
+                                        {[1, 2, 3, 4, 5].map(s => (
+                                            <Star
+                                                key={s}
+                                                size={16}
+                                                fill={s <= (testim.rating || 5) ? "currentColor" : "none"}
+                                                className={`cursor-pointer ${s <= (testim.rating || 5) ? '' : 'text-gray-300'}`}
+                                                onClick={isEditorMode ? (e) => { e.stopPropagation(); onEditAction?.(`testimonial-rating__${i}__${s}`); } : undefined}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="mb-6 flex gap-1 text-gray-600 italic">
+                                        "
+                                        <EditableText id={`soph_test_t${i}`} defaultText={testim.text} tagName="span" {...editProps} />
+                                        "
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 relative shrink-0">
+                                            <EditableImage
+                                                editKey={`testimonialImages__${i}`}
+                                                currentSrc={customization?.testimonialImages?.[i]}
+                                                isEditorMode={isEditorMode}
+                                                onEditAction={onEditAction}
+                                                className="w-full h-full object-cover"
+                                                alt={testim.author}
+                                                renderPlaceholder={() => (
+                                                    <div className="w-full h-full bg-[var(--soph-primary)] text-white flex items-center justify-center font-bold">
+                                                        {testim.author.charAt(0)}
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                        <div>
+                                            <EditableText id={`soph_test_a${i}`} defaultText={testim.author} className="font-bold text-sm block" tagName="span" {...editProps} />
+                                            <EditableText id={`soph_test_r${i}`} defaultText={testim.role || 'Paciente'} className="text-xs text-gray-500 block" tagName="span" {...editProps} />
+                                        </div>
+                                    </div>
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('testimonial-remove__' + i); }}
+                                            className="absolute top-2 right-2 bg-red-50 p-2 rounded-full text-red-600 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                         {isEditorMode && (
                             <button
-                                onClick={() => onEditAction?.('faq-add')}
-                                className="w-full py-4 border-2 border-dashed border-purple-300 bg-purple-50 hover:bg-purple-100 flex items-center justify-center gap-2 rounded-2xl transition-colors group mt-6"
+                                onClick={() => onEditAction?.('testimonial-add')}
+                                className="w-full mt-8 py-8 border-2 border-dashed border-[var(--soph-primary)]/30 hover:bg-[var(--soph-primary)]/5 flex flex-col items-center justify-center cursor-pointer transition-colors group rounded-xl"
                             >
-                                <Plus className="text-purple-600" size={24} />
-                                <span className="font-bold text-purple-700">Adicionar Pergunta</span>
+                                <Plus size={24} className="text-[var(--soph-primary)] mb-2" />
+                                <span className="font-bold text-[var(--soph-primary)] text-lg">Adicionar Depoimento</span>
                             </button>
                         )}
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* Footer */}
-            <footer className="bg-white pt-90 pb-10 border-t border-gray-100">
-                <div className="soph-container text-center">
-                    <EditableText id="soph_footer_title" defaultText={d.footerTitle} className="text-2xl font-bold mb-4 block" tagName="h3" {...editProps} />
-                    <EditableText id="soph_footer_text" defaultText={d.footerText} className="text-gray-500 mb-8 block" tagName="p" {...editProps} />
+            {/* FAQ Section */}
+            {customization?.visibleSections?.['faq'] !== false && (
+                <section className="py-20 bg-[var(--soph-bg)]">
+                    <div className="soph-container max-w-3xl">
+                        <EditableText id="soph_faq_title" defaultText="Dúvidas Frequentes" className="text-3xl font-bold text-center mb-12" tagName="h2" {...editProps} />
 
-                    <button onClick={onBook} className="soph-btn soph-btn-primary mb-12">
-                        <EditableText id="soph_footer_cta" defaultText="Agendar Horário" tagName="span" {...editProps} />
-                    </button>
-
-                    <div className="flex justify-center gap-6 mb-12">
-                        {customization?.instagram && (
-                            <a href={`https://instagram.com/${customization.instagram}`} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Instagram size={20} />
-                            </a>
-                        )}
-                        {customization?.whatsapp && (
-                            <a href={`https://wa.me/${customization.whatsapp}`} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Phone size={20} />
-                            </a>
-                        )}
-                        {customization?.facebook && (
-                            <a href={customization.facebook} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Facebook size={20} />
-                            </a>
-                        )}
-                    </div>
-
-                    <div className="border-t border-gray-100 pt-8 text-sm text-gray-400">
-                        <div className="flex flex-col items-center gap-2">
-                            <span>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="soph_footer_copy" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></span>
-                            <StoreFooterRating
-                                storeId={store?.id || 'demo'}
-                                rating={store?.rating}
-                                totalReviews={store?.totalReviews}
-                                color="#c0a080"
-                                isEditorMode={isEditorMode}
-                                textColor="#9ca3af"
-                            />
+                        <div className="space-y-4">
+                            {(customization?.faq && customization.faq.length > 0 ? customization.faq : DEFAULT_FAQ).map((faq: any, i: number) => (
+                                <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
+                                    <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleFaq(i)}>
+                                        <EditableText id={`soph_faq_q_${i}`} defaultText={faq.question} className="font-bold text-lg" tagName="h3" {...editProps} />
+                                        <ChevronDown className={`transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                                    </div>
+                                    {openFaq === i && (
+                                        <div className="mt-4 pt-4 border-t border-gray-100">
+                                            <EditableText id={`soph_faq_a_${i}`} defaultText={faq.answer} className="text-gray-600" tagName="p" {...editProps} />
+                                        </div>
+                                    )}
+                                    {isEditorMode && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEditAction?.('faq-remove__' + i); }}
+                                            className="absolute top-4 right-12 text-gray-300 hover:text-red-600 transition-colors z-20"
+                                            title="Remover Pergunta"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            {isEditorMode && (
+                                <button
+                                    onClick={() => onEditAction?.('faq-add')}
+                                    className="w-full py-4 border-2 border-dashed border-purple-300 bg-purple-50 hover:bg-purple-100 flex items-center justify-center gap-2 rounded-2xl transition-colors group mt-6"
+                                >
+                                    <Plus className="text-purple-600" size={24} />
+                                    <span className="font-bold text-purple-700">Adicionar Pergunta</span>
+                                </button>
+                            )}
                         </div>
                     </div>
-                </div>
-            </footer>
+                </section>
+            )}
+
+            {/* Footer */}
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?._id || store?.id || 'demo'}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor="var(--soph-primary)"
+                accentColor="#c0a080"
+                textColor="#4b5563" // gray-600 to match design
+                bgColor="#ffffff"
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal
