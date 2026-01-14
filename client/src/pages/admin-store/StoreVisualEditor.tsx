@@ -100,6 +100,13 @@ export const StoreVisualEditor = () => {
     const handleSave = async () => {
         if (!customization || !store?.id) return;
 
+        // Check if user is trying to save a premium layout without premium plan
+        const selectedLayout = LAYOUT_OPTIONS.find(l => l.id === customization.layout);
+        if (selectedLayout?.isPremium && !isPremiumPlan(store?.plan)) {
+            alert('O layout selecionado é exclusivo do plano PRO. Faça upgrade para salvar com este layout, ou escolha um layout gratuito (Sofisticado ou Moderno).');
+            return;
+        }
+
         setIsSaving(true);
         try {
             const success = await saveStoreCustomization(customization);
@@ -665,19 +672,13 @@ export const StoreVisualEditor = () => {
                                         <label>Estilo do Layout</label>
                                         <div className="grid-options">
                                             {LAYOUT_OPTIONS.map(layout => {
-                                                const isLocked = layout.isPremium && !isPremiumPlan(store?.plan);
+                                                const isPremiumLayout = layout.isPremium && !isPremiumPlan(store?.plan);
                                                 return (
                                                     <div
                                                         key={layout.id}
-                                                        className={`card-option ${customization.layout === layout.id ? 'selected' : ''} ${isLocked ? 'locked' : ''}`}
-                                                        onClick={() => {
-                                                            if (isLocked) {
-                                                                alert('Este layout é exclusivo do plano PRO. Faça upgrade para desbloquear todos os layouts premium!');
-                                                                return;
-                                                            }
-                                                            updateCustomization('layout', layout.id);
-                                                        }}
-                                                        style={isLocked ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
+                                                        className={`card-option ${customization.layout === layout.id ? 'selected' : ''}`}
+                                                        onClick={() => updateCustomization('layout', layout.id)}
+                                                        style={isPremiumLayout ? { borderColor: 'rgba(255, 193, 7, 0.3)' } : {}}
                                                     >
                                                         <span className="option-name">{layout.name}</span>
                                                         {layout.isPremium && (
@@ -703,7 +704,7 @@ export const StoreVisualEditor = () => {
                                         </div>
                                         {!isPremiumPlan(store?.plan) && (
                                             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '12px', fontStyle: 'italic' }}>
-                                                💡 Faça upgrade para o plano PRO e desbloqueie todos os layouts premium!
+                                                💡 Você pode visualizar todos os layouts! Faça upgrade para PRO para salvar com layouts premium.
                                             </p>
                                         )}
                                     </div>
