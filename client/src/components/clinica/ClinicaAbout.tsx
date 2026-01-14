@@ -160,14 +160,6 @@ export const ClinicaAbout = ({ content, isEditorMode, onEditAction, customizatio
                                 </li>
                             ))}
                         </ul>
-
-                        <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_of_Sigmund_Freud.svg/1200px-Signature_of_Sigmund_Freud.svg.png"
-                                alt="Assinatura"
-                                style={{ height: '40px', opacity: 0.3 }}
-                            />
-                        </div>
                     </div>
                 </div>
             </div>

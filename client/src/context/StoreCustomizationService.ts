@@ -79,6 +79,101 @@ export const BUTTON_STYLES = [
     { id: 'pill', name: 'Pílula', borderRadius: '9999px' },
 ];
 
+// Mapa de seções disponíveis por layout
+export const LAYOUT_SECTIONS: Record<string, { id: string; name: string }[]> = {
+    'sophisticated-therapy': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'team', name: 'Equipe' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'modern-therapy': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'team', name: 'Equipe' },
+        { id: 'gallery', name: 'Galeria' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+    ],
+    'lacanian-clinic': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'gallery', name: 'Galeria' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'therapy-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'highlights', name: 'Destaques' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'team', name: 'Equipe' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'clinic-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'problem', name: 'Problema' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Especialidades' },
+        { id: 'team', name: 'Equipe' },
+        { id: 'gallery', name: 'Galeria' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'harmony-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'highlights', name: 'Empathy' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'steps', name: 'Jornada' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'video', name: 'Vídeo' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'vibrant-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'highlights', name: 'Impacto' },
+        { id: 'method', name: 'Metodologia' },
+        { id: 'services', name: 'Protocolos' },
+        { id: 'stats', name: 'Estatísticas' },
+        { id: 'team', name: 'Equipe' },
+        { id: 'gallery', name: 'Experiência' },
+        { id: 'testimonials', name: 'Comunidade' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'sunny-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'highlights', name: 'Destaques' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'services', name: 'Serviços' },
+        { id: 'steps', name: 'Jornada' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+    'vitality-new': [
+        { id: 'hero', name: 'Hero' },
+        { id: 'highlights', name: 'Destaques' },
+        { id: 'about', name: 'Sobre' },
+        { id: 'stats', name: 'Estatísticas' },
+        { id: 'services', name: 'Especialidades' },
+        { id: 'journey', name: 'Jornada' },
+        { id: 'expertise', name: 'Destaque' },
+        { id: 'testimonials', name: 'Depoimentos' },
+        { id: 'faq', name: 'FAQ' },
+        { id: 'contact', name: 'Contato' },
+    ],
+};
+
 // Customização padrão
 export const DEFAULT_CUSTOMIZATION: Omit<StoreCustomization, 'storeId'> = {
     primaryColor: '#7c3aed',
@@ -119,7 +214,8 @@ export const DEFAULT_CUSTOMIZATION: Omit<StoreCustomization, 'storeId'> = {
     servicesList: [],
     team: [],
     testimonials: [],
-    faq: []
+    faq: [],
+    socialLinks: []
 };
 
 // Buscar customização de uma loja específica (agora async e via API)

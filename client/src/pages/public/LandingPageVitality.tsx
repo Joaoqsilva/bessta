@@ -209,17 +209,23 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
                     <div className="vit-container">
                         <div className="vit-highlights-grid">
                             <div className="vit-card bg-emerald-50 border-emerald-100">
-                                <Zap className="text-[var(--vit-primary)] mb-4" />
+                                <div className="text-[var(--vit-primary)] mb-4">
+                                    <EditableIcon id="vt_hl_i1" defaultIcon="Zap" size={24} {...editProps} />
+                                </div>
                                 <EditableText id="vt_hl_t1" defaultText="Abordagem Ágil" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="vt_hl_d1" defaultText="Foco em resultados práticos para o seu dia a dia." className="text-sm text-gray-600" tagName="div" {...editProps} />
                             </div>
                             <div className="vit-card bg-teal-50 border-teal-100">
-                                <Shield className="text-teal-600 mb-4" />
+                                <div className="text-teal-600 mb-4">
+                                    <EditableIcon id="vt_hl_i2" defaultIcon="Shield" size={24} {...editProps} />
+                                </div>
                                 <EditableText id="vt_hl_t2" defaultText="Ambiente Seguro" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="vt_hl_d2" defaultText="Total confidencialidade e acolhimento." className="text-sm text-gray-600" tagName="div" {...editProps} />
                             </div>
                             <div className="vit-card bg-lime-50 border-lime-100">
-                                <Activity className="text-[var(--vit-accent)] mb-4" />
+                                <div className="text-[var(--vit-accent)] mb-4">
+                                    <EditableIcon id="vt_hl_i3" defaultIcon="Activity" size={24} {...editProps} />
+                                </div>
                                 <EditableText id="vt_hl_t3" defaultText="Saúde Integral" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="vt_hl_d3" defaultText="Cuidando da mente com reflexos no corpo." className="text-sm text-gray-600" tagName="div" {...editProps} />
                             </div>

@@ -119,7 +119,13 @@ export interface StoreCustomization {
     instagram: string;
     whatsapp: string;
     facebook: string;
+    socialLinks?: SocialLink[];
     updatedAt: string;
+}
+
+export interface SocialLink {
+    network: string;
+    handle: string;
 }
 
 export interface FAQItem {

@@ -18,6 +18,7 @@ import {
     FONT_OPTIONS,
     LAYOUT_OPTIONS,
     BUTTON_STYLES,
+    LAYOUT_SECTIONS,
     imageToBase64
 } from '../../context/StoreCustomizationService';
 import type { FAQItem, TestimonialItem, ServiceItem, TeamMember } from '../../types';
@@ -984,53 +985,51 @@ export const StoreVisualEditor = () => {
                                             <>
                                                 <p className="text-sm text-gray-500 mb-4">Gerencie as seções da sua Landing Page.</p>
 
-                                                {[
-                                                    { id: 'hero', label: 'Hero / Capa', dynamic: false },
-                                                    { id: 'highlights', label: 'Destaques / Foco', dynamic: false },
-                                                    { id: 'about', label: 'Sobre', dynamic: false },
-                                                    { id: 'services', label: 'Serviços', dynamic: true, key: 'services' },
-                                                    { id: 'method', label: 'Metodologia', dynamic: false },
-                                                    { id: 'benefits', label: 'Benefícios', dynamic: false },
-                                                    { id: 'stats', label: 'Estatísticas', dynamic: false },
-                                                    { id: 'team', label: 'Equipe', dynamic: true, key: 'team' },
-                                                    { id: 'journey', label: 'Jornada/Passos', dynamic: false },
-                                                    { id: 'expertise', label: 'Deep Dive / Destaque', dynamic: false },
-                                                    { id: 'gallery', label: 'Galeria / Experiência', dynamic: false },
-                                                    { id: 'testimonials', label: 'Depoimentos', dynamic: true, key: 'testimonials' },
-                                                    { id: 'faq', label: 'FAQ (Dúvidas)', dynamic: true, key: 'faq' },
-                                                    { id: 'contact', label: 'Contato / Rodapé', dynamic: false },
-                                                ].map(section => (
-                                                    <div key={section.id} className="flex flex-col p-3 bg-white border border-gray-100 rounded-lg mb-2 shadow-sm hover:border-blue-100 transition-colors">
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="font-medium text-gray-700">{section.label}</span>
-                                                            <label className="relative inline-flex items-center cursor-pointer">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="sr-only peer"
-                                                                    checked={customization.visibleSections?.[section.id] !== false}
-                                                                    onChange={(e) => {
-                                                                        const currentSections = customization.visibleSections || {};
-                                                                        updateCustomization('visibleSections', {
-                                                                            ...currentSections,
-                                                                            [section.id]: e.target.checked
-                                                                        });
-                                                                    }}
-                                                                />
-                                                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                            </label>
-                                                        </div>
+                                                {/* Seções dinâmicas baseadas no layout selecionado */}
+                                                {(LAYOUT_SECTIONS[customization.layout] || []).map(section => {
+                                                    // Determinar se é uma seção com conteúdo gerenciável
+                                                    const dynamicKeys: Record<string, string> = {
+                                                        'services': 'services',
+                                                        'team': 'team',
+                                                        'testimonials': 'testimonials',
+                                                        'faq': 'faq'
+                                                    };
+                                                    const isDynamic = !!dynamicKeys[section.id];
+                                                    const dynamicKey = dynamicKeys[section.id];
 
-                                                        {/* Show Manage Button if enabled and dynamic */}
-                                                        {section.dynamic && customization.visibleSections?.[section.id] !== false && (
-                                                            <button
-                                                                onClick={() => setActiveDynamicSection(section.key as any)}
-                                                                className="mt-3 text-sm flex items-center justify-center py-1.5 px-3 bg-gray-50 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors border border-gray-200"
-                                                            >
-                                                                Gerenciar Conteúdo
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                    return (
+                                                        <div key={section.id} className="flex flex-col p-3 bg-white border border-gray-100 rounded-lg mb-2 shadow-sm hover:border-blue-100 transition-colors">
+                                                            <div className="flex items-center justify-between">
+                                                                <span className="font-medium text-gray-700">{section.name}</span>
+                                                                <label className="relative inline-flex items-center cursor-pointer">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="sr-only peer"
+                                                                        checked={customization.visibleSections?.[section.id] !== false}
+                                                                        onChange={(e) => {
+                                                                            const currentSections = customization.visibleSections || {};
+                                                                            updateCustomization('visibleSections', {
+                                                                                ...currentSections,
+                                                                                [section.id]: e.target.checked
+                                                                            });
+                                                                        }}
+                                                                    />
+                                                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                                </label>
+                                                            </div>
+
+                                                            {/* Show Manage Button if enabled and dynamic */}
+                                                            {isDynamic && customization.visibleSections?.[section.id] !== false && (
+                                                                <button
+                                                                    onClick={() => setActiveDynamicSection(dynamicKey as any)}
+                                                                    className="mt-3 text-sm flex items-center justify-center py-1.5 px-3 bg-gray-50 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors border border-gray-200"
+                                                                >
+                                                                    Gerenciar Conteúdo
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
 
                                                 <p className="text-xs text-gray-400 mt-4 italic">
                                                     Nota: Ocultar o 'Hero' ou 'Contato' não é recomendado para conversão.

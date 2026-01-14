@@ -238,12 +238,27 @@ export const LandingPageModern = ({ store, customization, onBook, isEditorMode, 
                                     alt="About Main"
                                 />
                             </div>
-                            <div className="mosaic-item bg-gray-200">
-                                {/* If we had array of about images, would map here. Using static placeholder for design */}
-                                <div className="w-full h-full bg-[var(--modern-primary)] opacity-10"></div>
+                            <div className="mosaic-item bg-gray-200 relative group overflow-hidden">
+                                <EditableImage
+                                    editKey="galleryImages__0"
+                                    currentSrc={gallery[0]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 2"
+                                    alt="Gallery 1"
+                                />
                             </div>
-                            <div className="mosaic-item bg-gray-300">
-                                <div className="w-full h-full bg-[var(--modern-accent)] opacity-20"></div>
+                            <div className="mosaic-item bg-gray-300 relative group overflow-hidden">
+                                <EditableImage
+                                    editKey="galleryImages__1"
+                                    currentSrc={gallery[1]}
+                                    isEditorMode={isEditorMode}
+                                    onEditAction={onEditAction}
+                                    className="w-full h-full object-cover"
+                                    label="Imagem 3"
+                                    alt="Gallery 2"
+                                />
                             </div>
                         </div>
                     </div>
