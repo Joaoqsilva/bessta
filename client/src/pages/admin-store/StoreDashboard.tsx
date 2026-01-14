@@ -7,6 +7,7 @@ import { Input } from '../../components/Input';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentApi } from '../../services/appointmentApi';
 import { serviceApi } from '../../services/serviceApi';
+import { paymentService } from '../../services/paymentService';
 import { getStoreAverageRating, getRecentReviews, type StoreReview } from '../../context/StoreReviewService';
 import type { Appointment, Service } from '../../types';
 import './StoreDashboard.css';
@@ -55,6 +56,32 @@ export const StoreDashboard = () => {
     const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Pro plan check - fetched from backend subscription
+    const [isPro, setIsPro] = useState<boolean>(() => {
+        // Initial check from store context
+        return ['professional', 'business', 'pro'].includes(store?.plan || '');
+    });
+
+    // Load subscription status from backend on mount
+    useEffect(() => {
+        const loadSubscriptionStatus = async () => {
+            try {
+                const response = await paymentService.getSubscription();
+                if (response.success && response.subscription) {
+                    const plan = response.subscription.plan;
+                    const isProPlan = ['professional', 'business', 'pro'].includes(plan);
+                    setIsPro(isProPlan);
+                }
+            } catch (error) {
+                console.error('Error loading subscription status:', error);
+                // Fallback to store?.plan check
+                setIsPro(['professional', 'business', 'pro'].includes(store?.plan || ''));
+            }
+        };
+
+        loadSubscriptionStatus();
+    }, [store?.id]);
 
     // Stats calculated from store data
     const [stats, setStats] = useState({
@@ -391,7 +418,7 @@ export const StoreDashboard = () => {
                     {/* Performance Card */}
                     <div className="performance-card">
                         <h3 className="sidebar-title">Desempenho</h3>
-                        {['professional', 'business', 'pro'].includes(store?.plan || '') ? (
+                        {isPro ? (
                             <div className="performance-list">
                                 <div className="performance-item">
                                     <div className="performance-header">
@@ -440,7 +467,7 @@ export const StoreDashboard = () => {
                             <TrendingUp size={20} />
                             Resumo de Receita
                         </h3>
-                        {['professional', 'business', 'pro'].includes(store?.plan || '') ? (
+                        {isPro ? (
                             <div className="revenue-list">
                                 <div className="revenue-item">
                                     <span className="revenue-label">Total</span>

@@ -9,7 +9,6 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
-import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -63,18 +62,6 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
     };
 
     const editProps = { isEditorMode, onEditAction, customization };
-
-    // Cores
-    const primaryColor = customization?.primaryColor || '#10b981'; // emerald-500 default
-    const accentColor = customization?.accentColor || '#34d399'; // emerald-400 default
-    const iconColor = customization?.iconColor || primaryColor;
-
-    const dynamicStyle = {
-        '--vit-primary': primaryColor,
-        '--vit-accent': accentColor,
-        '--vit-icon': iconColor,
-    } as React.CSSProperties;
-
     const heroImage = customization?.coverImage || store?.coverImage;
     const aboutImage = customization?.aboutImage;
     const featureImage = customization?.galleryImages?.[0];
@@ -123,7 +110,7 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
     }, [isEditorMode]);
 
     return (
-        <div className="vit-wrapper" style={dynamicStyle}>
+        <div className="vit-wrapper">
 
 
             {/* 1. NAVBAR */}
@@ -222,21 +209,21 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
                     <div className="vit-container">
                         <div className="vit-highlights-grid">
                             <div className="vit-card bg-emerald-50 border-emerald-100">
-                                <div className="text-[var(--vit-icon)] mb-4">
+                                <div className="text-[var(--vit-primary)] mb-4">
                                     <EditableIcon id="vt_hl_i1" defaultIcon="Zap" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="vt_hl_t1" defaultText="Abordagem Ágil" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="vt_hl_d1" defaultText="Foco em resultados práticos para o seu dia a dia." className="text-sm text-gray-600" tagName="div" {...editProps} />
                             </div>
                             <div className="vit-card bg-teal-50 border-teal-100">
-                                <div className="text-[var(--vit-icon)] mb-4">
+                                <div className="text-teal-600 mb-4">
                                     <EditableIcon id="vt_hl_i2" defaultIcon="Shield" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="vt_hl_t2" defaultText="Ambiente Seguro" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
                                 <EditableText id="vt_hl_d2" defaultText="Total confidencialidade e acolhimento." className="text-sm text-gray-600" tagName="div" {...editProps} />
                             </div>
                             <div className="vit-card bg-lime-50 border-lime-100">
-                                <div className="text-[var(--vit-icon)] mb-4">
+                                <div className="text-[var(--vit-accent)] mb-4">
                                     <EditableIcon id="vt_hl_i3" defaultIcon="Activity" size={24} {...editProps} />
                                 </div>
                                 <EditableText id="vt_hl_t3" defaultText="Saúde Integral" className="font-bold text-lg mb-2 block" tagName="h3" {...editProps} />
@@ -330,7 +317,7 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
                                 { title: 'Orientação Profissional', description: 'Planejamento e redirecionamento de carreira.' }
                             ]).map((service: any, i: number) => (
                                 <div key={i} className="vit-card group relative">
-                                    <div className="mb-4 text-[var(--vit-icon)] transition-transform group-hover:scale-110 origin-left">
+                                    <div className="mb-4 text-[var(--vit-primary)] transition-transform group-hover:scale-110 origin-left">
                                         <EditableIcon id={`vt_srv_i${i}`} defaultIcon="Zap" size={32} {...editProps} />
                                     </div>
                                     <EditableText id={`vt_srv_t${i}`} defaultText={service.title} className="font-bold text-xl mb-2 block" tagName="h3" {...editProps} />
@@ -549,19 +536,19 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
                 </section>
             )}
 
-            <StandardFooter
-                storeName={d.name}
-                storeId={store?._id || store?.id || 'demo'}
-                rating={store?.rating}
-                totalReviews={store?.totalReviews}
-                customization={customization}
-                isEditorMode={isEditorMode}
-                onEditAction={onEditAction}
-                primaryColor="var(--vit-primary)"
-                accentColor="var(--vit-accent)"
-                textColor="#064e3b"
-                bgColor="#ecfdf5" // Emerald-50 ish
-            />
+            <footer className="vit-footer">
+                <div className="vit-container flex flex-col items-center gap-4">
+                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="vt_footer_txt" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
+                    <StoreFooterRating
+                        storeId={store?.id || 'demo'}
+                        rating={store?.rating}
+                        totalReviews={store?.totalReviews}
+                        color="#10b981"
+                        isEditorMode={isEditorMode}
+                        textColor="#064e3b"
+                    />
+                </div>
+            </footer>
 
             {/* Patient Auth Modal */}
             <PatientAuthModal

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { authMiddleware, adminMiddleware } from '../middleware/auth';
 import { LicenseKey } from '../models/LicenseKey';
 import { User } from '../models/User';
+import { Store } from '../models/Store';
 
 const router = express.Router();
 
@@ -135,6 +136,12 @@ router.post('/activate', authMiddleware, async (req, res) => {
         user.subscriptionEndDate = thirtyDaysFromNow;
 
         await user.save();
+
+        // Update store plan if exists (same as MercadoPago payment flow)
+        await Store.updateMany(
+            { owner: userId },
+            { plan: license.plan }
+        );
 
         // Mark key as used
         license.status = 'used';
