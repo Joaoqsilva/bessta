@@ -67,9 +67,20 @@ export const EditableSocialLink = ({
         setEditingLinks(updated);
     };
 
+    // Sanitize handle to prevent XSS and injection attacks
+    const sanitizeHandle = (handle: string): string => {
+        // Remove any HTML tags, scripts, and dangerous characters
+        // Only allow alphanumeric, underscores, dots, hyphens, and @ symbols
+        return handle
+            .replace(/<[^>]*>/g, '') // Remove HTML tags
+            .replace(/[<>'"(){}[\]\\;]/g, '') // Remove dangerous chars
+            .trim();
+    };
+
     const buildUrl = (network: string, handle: string) => {
         const info = getNetworkInfo(network);
-        return info.prefix + handle.replace('@', '');
+        const safeHandle = sanitizeHandle(handle.replace('@', ''));
+        return info.prefix + safeHandle;
     };
 
     return (
