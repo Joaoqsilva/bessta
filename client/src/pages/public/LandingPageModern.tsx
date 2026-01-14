@@ -11,12 +11,14 @@ import { EditOverlay } from '../../components/EditOverlay';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { EditableSocialLink } from '../../components/EditableSocialLink';
 import { StarRating } from '../../components/StarRating';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
 import { useAuth } from '../../context/AuthContext';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
+import type { SocialLink } from '../../types';
 
 interface LandingPageProps {
     store?: any;
@@ -571,8 +573,14 @@ export const LandingPageModern = ({ store, customization, onBook, isEditorMode, 
                     <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
                         <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="mod_footer_copy" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
                         <div className="flex gap-4 mt-4 md:mt-0">
-                            <a href="#" className="hover:text-[var(--modern-primary)]"><EditableText id="mod_footer_link1" defaultText="Instagram" tagName="span" {...editProps} /></a>
-                            <a href="#" className="hover:text-[var(--modern-primary)]"><EditableText id="mod_footer_link2" defaultText="WhatsApp" tagName="span" {...editProps} /></a>
+                            <EditableSocialLink
+                                id="mod_social"
+                                links={customization?.socialLinks || []}
+                                isEditorMode={isEditorMode}
+                                onUpdateLinks={(links) => onEditAction?.('socialLinks', JSON.stringify(links))}
+                                iconSize={20}
+                                iconClassName="hover:text-[var(--modern-primary)] transition-colors cursor-pointer"
+                            />
                         </div>
                     </div>
                 </div>

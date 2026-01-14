@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Layout, Palette, Type, Image as ImageIcon, MessageCircle,
-    Save, ArrowLeft, Monitor, Smartphone, Layers, Crown
+    Save, ArrowLeft, Monitor, Smartphone, Layers, Crown, CheckCircle, Unlock
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -424,6 +424,17 @@ export const StoreVisualEditor = () => {
             case 'about-section':
                 setActiveTab('content');
                 break;
+            case 'socialLinks':
+                // Handle social links update from EditableSocialLink component
+                if (defaultValue) {
+                    try {
+                        const links = JSON.parse(defaultValue);
+                        updateCustomization('socialLinks', links);
+                    } catch (e) {
+                        console.error('Failed to parse socialLinks:', e);
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -711,21 +722,40 @@ export const StoreVisualEditor = () => {
                                                     >
                                                         <span className="option-name">{layout.name}</span>
                                                         {layout.isPremium && (
-                                                            <span style={{
-                                                                display: 'inline-flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                                marginLeft: '8px',
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 600,
-                                                                color: '#FFC107',
-                                                                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                                                                padding: '2px 6px',
-                                                                borderRadius: '4px'
-                                                            }}>
-                                                                <Crown size={10} />
-                                                                PRO
-                                                            </span>
+                                                            isPro ? (
+                                                                <span style={{
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px',
+                                                                    marginLeft: '8px',
+                                                                    fontSize: '0.65rem',
+                                                                    fontWeight: 600,
+                                                                    color: '#10b981',
+                                                                    background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                                                                    padding: '2px 6px',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid #a7f3d0'
+                                                                }}>
+                                                                    <Unlock size={10} />
+                                                                    Desbloqueado
+                                                                </span>
+                                                            ) : (
+                                                                <span style={{
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px',
+                                                                    marginLeft: '8px',
+                                                                    fontSize: '0.7rem',
+                                                                    fontWeight: 600,
+                                                                    color: '#FFC107',
+                                                                    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                                                                    padding: '2px 6px',
+                                                                    borderRadius: '4px'
+                                                                }}>
+                                                                    <Crown size={10} />
+                                                                    PRO
+                                                                </span>
+                                                            )
                                                         )}
                                                     </div>
                                                 );

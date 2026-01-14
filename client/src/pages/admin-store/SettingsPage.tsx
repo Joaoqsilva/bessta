@@ -56,6 +56,7 @@ const PLANS = [
         features: [
             'Agendamentos ilimitados',
             'Serviços ilimitados',
+            'Layouts exclusivos',
             // 'Lembretes via WhatsApp',
             'Relatórios avançados',
             'Página personalizada',

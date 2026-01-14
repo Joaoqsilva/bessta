@@ -7,6 +7,7 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { EditableSocialLink } from '../../components/EditableSocialLink';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
 import { useAuth } from '../../context/AuthContext';
@@ -573,21 +574,14 @@ export const LandingPageSophisticated = ({ store, customization, onBook, isEdito
                     </button>
 
                     <div className="flex justify-center gap-6 mb-12">
-                        {customization?.instagram && (
-                            <a href={`https://instagram.com/${customization.instagram}`} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Instagram size={20} />
-                            </a>
-                        )}
-                        {customization?.whatsapp && (
-                            <a href={`https://wa.me/${customization.whatsapp}`} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Phone size={20} />
-                            </a>
-                        )}
-                        {customization?.facebook && (
-                            <a href={customization.facebook} target="_blank" rel="noreferrer" className="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors">
-                                <Facebook size={20} />
-                            </a>
-                        )}
+                        <EditableSocialLink
+                            id="soph_social"
+                            links={customization?.socialLinks || []}
+                            isEditorMode={isEditorMode}
+                            onUpdateLinks={(links) => onEditAction?.('socialLinks', JSON.stringify(links))}
+                            iconSize={20}
+                            iconClassName="p-3 bg-gray-100 rounded-full hover:bg-[var(--soph-primary)] hover:text-white transition-colors"
+                        />
                     </div>
 
                     <div className="border-t border-gray-100 pt-8 text-sm text-gray-400">
