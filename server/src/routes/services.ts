@@ -27,7 +27,16 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 
         // Check Plan Limits (1 Service for Free/Start plan)
         const store = await Store.findById(storeId);
-        if (store && (store.plan === 'start' || store.plan === 'free')) {
+
+        // Get user's subscription plan as well (in case Store hasn't been synced yet)
+        const userPlan = req.user?.subscriptionPlan || req.user?.plan;
+        const storePlan = store?.plan;
+
+        // User has Pro plan if either store or user has a paid plan
+        const isPro = ['professional', 'business', 'pro'].includes(storePlan || '') ||
+            ['professional', 'business', 'pro'].includes(userPlan || '');
+
+        if (!isPro && store) {
             const serviceCount = await Service.countDocuments({ storeId });
             if (serviceCount >= 1) {
                 return res.status(403).json({
