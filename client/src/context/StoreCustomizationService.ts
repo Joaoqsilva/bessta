@@ -11,46 +11,47 @@ export type { StoreCustomization };
 
 // Cores predefinidas
 export const PRESET_COLORS = [
-    // Standard Colors
-    { name: 'Roxo (Padrão)', primary: '#7c3aed', secondary: '#6366f1', accent: '#f97316' },
-    { name: 'Azul Clássico', primary: '#2563eb', secondary: '#3b82f6', accent: '#f59e0b' },
-    { name: 'Verde Esmeralda', primary: '#059669', secondary: '#10b981', accent: '#8b5cf6' },
-    { name: 'Rosa Vibrante', primary: '#db2777', secondary: '#ec4899', accent: '#06b6d4' },
-    { name: 'Vermelho Intenso', primary: '#dc2626', secondary: '#ef4444', accent: '#eab308' },
-    { name: 'Laranja Solar', primary: '#ea580c', secondary: '#f97316', accent: '#7c3aed' },
-    { name: 'Teal Moderno', primary: '#0d9488', secondary: '#14b8a6', accent: '#f43f5e' },
-    { name: 'Índigo Profundo', primary: '#4f46e5', secondary: '#6366f1', accent: '#10b981' },
-
-    // Thematic Collections
-    // Earthy & Natural
-    { name: 'Floresta Nórdica', primary: '#2D3436', secondary: '#636E72', accent: '#55EFC4' },
-    { name: 'Terra Cotta', primary: '#A0522D', secondary: '#CD853F', accent: '#DEB887' },
-    { name: 'Sálvia Calmante', primary: '#8FA382', secondary: '#B5C9A7', accent: '#F2D3BC' },
-    { name: 'Areia do Deserto', primary: '#C2B280', secondary: '#E6D7B6', accent: '#8B4513' },
-    { name: 'Café Expresso', primary: '#4B3621', secondary: '#6F4E37', accent: '#D2691E' },
-
-    // Spa & Wellness
-    { name: 'Lavanda Relax', primary: '#9F7AEA', secondary: '#B794F4', accent: '#F687B3' },
-    { name: 'Água Marinha', primary: '#319795', secondary: '#81E6D9', accent: '#2B6CB0' },
-    { name: 'Bambu Zen', primary: '#2F855A', secondary: '#68D391', accent: '#F6AD55' },
-    { name: 'Lótus Rosa', primary: '#D53F8C', secondary: '#FBB6CE', accent: '#ED64A6' },
-
-    // Luxury & High-End
-    { name: 'Royal Gold', primary: '#1A202C', secondary: '#2D3748', accent: '#D69E2E' },
-    { name: 'Midnight', primary: '#0f172a', secondary: '#1e293b', accent: '#38bdf8' },
-    { name: 'Vinho Nobre', primary: '#702459', secondary: '#97266D', accent: '#E9D8FD' },
-    { name: 'Champagne', primary: '#744210', secondary: '#B7791F', accent: '#F6E05E' },
-
-    // Modern & Tech
-    { name: 'Cyber Neon', primary: '#000000', secondary: '#1A1A1A', accent: '#00FF00' },
-    { name: 'Clean Slate', primary: '#475569', secondary: '#94a3b8', accent: '#3b82f6' },
-    { name: 'Dark Mode Blue', primary: '#1e3a8a', secondary: '#3b82f6', accent: '#60a5fa' },
-
-    // Aesthetic Specifics
+    // ===== PALETAS PRINCIPAIS (MANTER) =====
+    // Paleta 1 - Clínica Lacaniana (Verde/Bege/Dourado)
     { name: 'Clínica Lacaniana', primary: '#2D5A4A', secondary: '#F5E6D3', accent: '#C9A86C' },
-    { name: 'Beauty Salon Pink', primary: '#be185d', secondary: '#db2777', accent: '#fbcfe8' },
-    { name: 'Barber Classic', primary: '#1c1917', secondary: '#292524', accent: '#dc2626' },
-    { name: 'Pediatria Fun', primary: '#0ea5e9', secondary: '#38bdf8', accent: '#fbbf24' },
+    // Paleta 2 - Harmony Zen (Verde claro/Bege/Cinza)
+    { name: 'Harmony Zen', primary: '#A7C4A0', secondary: '#E8D4C8', accent: '#6B7280' },
+
+    // ===== PALETAS PARA TERAPIA =====
+    { name: 'Terapia Clássica', primary: '#4A6FA5', secondary: '#E8EEF5', accent: '#9BB5D9' },
+    { name: 'Psicologia Moderna', primary: '#5B7B8C', secondary: '#F0F4F8', accent: '#A8C5D8' },
+    { name: 'Bem-Estar Suave', primary: '#7CA7A0', secondary: '#FDF8F3', accent: '#D4A574' },
+    { name: 'Calma Profunda', primary: '#5D6B7A', secondary: '#F5F5F5', accent: '#8AA4BD' },
+
+    // ===== PALETAS PARA CLÍNICA INSTITUCIONAL =====
+    { name: 'Clínica Profissional', primary: '#3D5A6C', secondary: '#E8E4DF', accent: '#8BA9A5' },
+    { name: 'Médico Confiável', primary: '#2C5F7C', secondary: '#F8F6F4', accent: '#6BA3C7' },
+    { name: 'Saúde & Cuidado', primary: '#4E8975', secondary: '#FBF9F7', accent: '#A5C4AD' },
+    { name: 'Acolhimento', primary: '#6B8E7C', secondary: '#F5EDE6', accent: '#C4A67E' },
+
+    // ===== PALETAS SOFISTICADAS =====
+    { name: 'Elegância Sóbria', primary: '#3C3C3C', secondary: '#F2EDE8', accent: '#A08060' },
+    { name: 'Luxo Discreto', primary: '#2F3640', secondary: '#EDE7E1', accent: '#B8A07A' },
+    { name: 'Premium Minimalista', primary: '#1F2937', secondary: '#F9FAFB', accent: '#6366F1' },
+    { name: 'Sofisticado', primary: '#374151', secondary: '#F3F4F6', accent: '#8B5CF6' },
+
+    // ===== PALETAS CORES SUAVES =====
+    { name: 'Rosa Suave', primary: '#A67E88', secondary: '#FBF5F3', accent: '#D4A5AB' },
+    { name: 'Lavanda Serena', primary: '#7C6D8A', secondary: '#F6F4F8', accent: '#B8A9C9' },
+    { name: 'Verde Sálvia', primary: '#7A8E7A', secondary: '#F8FAF5', accent: '#A5B8A0' },
+    { name: 'Azul Serenidade', primary: '#6C8BA3', secondary: '#F5F8FA', accent: '#A3C4D9' },
+
+    // ===== PALETAS VIBRANTES =====
+    { name: 'Energia Positiva', primary: '#E07C4F', secondary: '#FEF7F0', accent: '#F5A574' },
+    { name: 'Verde Vitalidade', primary: '#2D9C6C', secondary: '#F0FDF4', accent: '#6FD39F' },
+    { name: 'Azul Dinâmico', primary: '#3B82F6', secondary: '#EFF6FF', accent: '#60A5FA' },
+    { name: 'Roxo Criativo', primary: '#7C3AED', secondary: '#F5F3FF', accent: '#A78BFA' },
+
+    // ===== PALETAS TEMA ESPECÍFICO =====
+    { name: 'Estética & Beleza', primary: '#C47B8C', secondary: '#FDF2F5', accent: '#E5A4B4' },
+    { name: 'Barbearia Clássica', primary: '#2C2C2C', secondary: '#F5F5F5', accent: '#B45F4D' },
+    { name: 'Pediatria Alegre', primary: '#4BB4DE', secondary: '#F0F9FF', accent: '#FBB040' },
+    { name: 'Nutrição Natural', primary: '#5D8C4B', secondary: '#F5F9EF', accent: '#A5C882' },
 ];
 
 export const FONT_OPTIONS = [

@@ -452,13 +452,7 @@ export const StoreVisualEditor = () => {
                             <Palette size={20} />
                             <span>Cores</span>
                         </button>
-                        <button
-                            className={`tool-btn ${activeTab === 'typography' ? 'active' : ''}`}
-                            onClick={() => setActiveTab(activeTab === 'typography' ? null : 'typography')}
-                        >
-                            <Type size={20} />
-                            <span>Fontes</span>
-                        </button>
+
                         <button
                             className={`tool-btn ${activeTab === 'social' ? 'active' : ''}`}
                             onClick={() => setActiveTab(activeTab === 'social' ? null : 'social')}
@@ -674,19 +668,6 @@ export const StoreVisualEditor = () => {
                                                 </div>
                                             ))}
                                         </div>
-
-                                        <label className="mt-4">Estilo dos Botões</label>
-                                        <div className="grid-options">
-                                            {BUTTON_STYLES.map(style => (
-                                                <div
-                                                    key={style.id}
-                                                    className={`card-option ${customization.buttonStyle === style.id ? 'selected' : ''}`}
-                                                    onClick={() => updateCustomization('buttonStyle', style.id)}
-                                                >
-                                                    <span className="option-name">{style.name}</span>
-                                                </div>
-                                            ))}
-                                        </div>
                                     </div>
                                 )}
 
@@ -847,25 +828,7 @@ export const StoreVisualEditor = () => {
                                     </div>
                                 )}
 
-                                {/* TYPOGRAPHY TAB */}
-                                {activeTab === 'typography' && (
-                                    <div className="config-group">
-                                        <label>Fonte Principal</label>
-                                        <div className="font-options">
-                                            {FONT_OPTIONS.map(font => (
-                                                <div
-                                                    key={font.id}
-                                                    className={`font-option ${customization.fontFamily === font.id ? 'selected' : ''}`}
-                                                    onClick={() => updateCustomization('fontFamily', font.id)}
-                                                    style={{ fontFamily: font.name }}
-                                                >
-                                                    {font.name}
-                                                    <span className="font-preview">Agende seu horário</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+
 
 
 
