@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Layout, Palette, Type, Image as ImageIcon, MessageCircle,
+    Layout, Palette, Type, Image as ImageIcon,
     Save, ArrowLeft, Monitor, Smartphone, Layers, Crown, CheckCircle, Unlock
 } from 'lucide-react';
 import { Button } from '../../components/Button';
@@ -25,7 +25,7 @@ import {
 import type { FAQItem, TestimonialItem, ServiceItem, TeamMember } from '../../types';
 import './StoreVisualEditor.css';
 
-type EditorTab = 'layout' | 'colors' | 'typography' | 'content' | 'social' | 'text-editor' | 'icon-editor' | 'sections';
+type EditorTab = 'layout' | 'colors' | 'typography' | 'content' | 'text-editor' | 'icon-editor' | 'sections';
 
 // Helper to check if user has premium plan
 const isPremiumPlan = (plan?: string | null): boolean => {
@@ -505,14 +505,6 @@ export const StoreVisualEditor = () => {
                             <Palette size={20} />
                             <span>Cores</span>
                         </button>
-
-                        <button
-                            className={`tool-btn ${activeTab === 'social' ? 'active' : ''}`}
-                            onClick={() => setActiveTab(activeTab === 'social' ? null : 'social')}
-                        >
-                            <MessageCircle size={20} />
-                            <span>Redes</span>
-                        </button>
                         <button
                             className={`tool-btn ${activeTab === 'sections' ? 'active' : ''}`}
                             onClick={() => setActiveTab(activeTab === 'sections' ? null : 'sections')}
@@ -531,7 +523,6 @@ export const StoreVisualEditor = () => {
                                     {activeTab === 'colors' && 'Cores da Marca'}
                                     {activeTab === 'typography' && 'Tipografia'}
                                     {activeTab === 'content' && 'Conteúdo'}
-                                    {activeTab === 'social' && 'Redes Sociais'}
                                     {activeTab === 'sections' && 'Gerenciar Seções'}
                                     {activeTab === 'text-editor' && 'Editar Texto'}
                                 </h3>
@@ -929,30 +920,6 @@ export const StoreVisualEditor = () => {
 
 
 
-
-                                {/* SOCIAL TAB */}
-                                {activeTab === 'social' && (
-                                    <div className="config-group">
-                                        <Input
-                                            label="Instagram"
-                                            placeholder="@usuario"
-                                            value={customization.instagram || ''}
-                                            onChange={(e) => updateCustomization('instagram', e.target.value)}
-                                        />
-                                        <Input
-                                            label="WhatsApp"
-                                            placeholder="(11) 99999-9999"
-                                            value={customization.whatsapp || ''}
-                                            onChange={(e) => updateCustomization('whatsapp', e.target.value)}
-                                        />
-                                        <Input
-                                            label="Facebook"
-                                            placeholder="Link ou usuário"
-                                            value={customization.facebook || ''}
-                                            onChange={(e) => updateCustomization('facebook', e.target.value)}
-                                        />
-                                    </div>
-                                )}
 
                                 {/* SECTIONS TAB */}
                                 {activeTab === 'sections' && (
