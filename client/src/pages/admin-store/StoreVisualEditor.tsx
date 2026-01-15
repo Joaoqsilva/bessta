@@ -1422,7 +1422,11 @@ export const StoreVisualEditor = () => {
                             <button
                                 className="px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
                                 onClick={() => {
-                                    if (editingImageKey.startsWith('teamImages__')) {
+                                    if (editingImageKey.startsWith('gallery-remove__')) {
+                                        // Handle special remove action passed as key (fallback)
+                                        // This case might not be reached if key comes from EditableImage, but good for safety
+                                        handleEditAction(editingImageKey);
+                                    } else if (editingImageKey.startsWith('teamImages__')) {
                                         const idx = parseInt(editingImageKey.split('__')[1]);
                                         const currentTeam = [...(customization.teamImages || [])];
                                         currentTeam[idx] = '';
@@ -1430,19 +1434,14 @@ export const StoreVisualEditor = () => {
                                     } else if (editingImageKey.startsWith('galleryImages__')) {
                                         const idx = parseInt(editingImageKey.split('__')[1]);
                                         const currentGallery = [...(customization.galleryImages || [])];
-                                        // The following block is likely intended for the handleEditAction function, not here.
-                                        // However, following the instruction to insert it at this specific location.
-                                        // This will cause a syntax error as 'section' and 'setCustomization' are not defined here.
-                                        // If this is a mistake in the instruction, please clarify.
-                                        // For now, inserting as requested.
-
-
-                                        // For gallery, removing an image usually means setting it to empty string to preserve layout or splice.
-                                        // We will set to empty string for now to support "placeholder" state.
+                                        // Removing from gallery sets to empty string (placeholder)
                                         currentGallery[idx] = '';
                                         updateCustomization('galleryImages', currentGallery);
-                                        setEditingImageKey(null);
+                                    } else {
+                                        // Generic removal (logo, coverImage, etc.)
+                                        updateCustomization(editingImageKey as any, '');
                                     }
+                                    setEditingImageKey(null);
                                 }}
                             >
                                 Remover
@@ -1580,7 +1579,8 @@ export const StoreVisualEditor = () => {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
