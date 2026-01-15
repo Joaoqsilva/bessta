@@ -26,7 +26,11 @@ export async function connectDB(): Promise<void> {
     }
 
     // Get URI at connection time (after dotenv loaded)
-    const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bookme';
+    const MONGODB_URI = process.env.MONGODB_URI;
+
+    if (!MONGODB_URI) {
+        throw new Error('MONGODB_URI not found in environment variables');
+    }
 
     console.log('🔄 Connecting to MongoDB...');
     console.log('   URI:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@'));

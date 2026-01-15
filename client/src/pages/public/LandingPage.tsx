@@ -394,6 +394,40 @@ export const LandingPage = () => {
                     </div>
                 </div>
             </section>
+
+            <footer className="landing-footer">
+                <div className="container">
+                    <div className="footer-grid">
+                        <div className="footer-brand">
+                            <div className="footer-logo">
+                                <div className="footer-logo-icon">S</div>
+                                <span>SimpliAgenda</span>
+                            </div>
+                            <p>A solução definitiva para gestão de horários e produtividade.</p>
+                        </div>
+                        <div className="footer-links">
+                            <h4>Produto</h4>
+                            <ul>
+                                <li><Link to="/register">Preços</Link></li>
+                                <li><Link to="/login">Entrar</Link></li>
+                                <li><Link to="/ajuda">Como Funciona</Link></li>
+                            </ul>
+                        </div>
+                        <div className="footer-links">
+                            <h4>Suporte</h4>
+                            <ul>
+                                <li><Link to="/ajuda">Central de Ajuda</Link></li>
+                                <li><Link to="/ajuda">Documentação</Link></li>
+                                <li><Link to="/contato">Contato</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="footer-bottom">
+                        <p>&copy; {new Date().getFullYear()} SimpliAgenda. Todos os direitos reservados.</p>
+                    </div>
+                </div>
+            </footer>
+
             <ChatWidget mode="saas" />
         </div>
     );

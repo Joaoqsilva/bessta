@@ -339,7 +339,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                     <div className="help-section">
                         <h4>📚 Documentação</h4>
                         <p>Acesse nossa documentação completa para aprender a usar todas as funcionalidades.</p>
-                        <Button variant="outline" size="sm">Ver Documentação</Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                setShowHelp(false);
+                                navigate('/ajuda');
+                            }}
+                        >
+                            Ver Documentação
+                        </Button>
                     </div>
                     <div className="help-section">
                         <h4>💬 Suporte ao Vivo</h4>

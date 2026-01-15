@@ -25,6 +25,7 @@ import { ServicesPage } from './pages/admin-store/ServicesPage';
 import { CustomersPage } from './pages/admin-store/CustomersPage';
 import { SettingsPage } from './pages/admin-store/SettingsPage';
 import { StoreVisualEditor } from './pages/admin-store/StoreVisualEditor';
+import DocumentationPage from './pages/DocumentationPage';
 
 import { MasterDashboard } from './pages/admin-master/MasterDashboard';
 import { MasterStoresPage } from './pages/admin-master/MasterStoresPage';
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
             { index: true, element: <LandingPage /> }, // Main conversion landing page
             { path: 'login', element: <LoginPage /> },
             { path: 'register', element: <RegisterPage /> },
+            { path: 'ajuda', element: <DocumentationPage /> },
         ],
     },
     { path: ':slug', element: <StoreBookingPage /> },
