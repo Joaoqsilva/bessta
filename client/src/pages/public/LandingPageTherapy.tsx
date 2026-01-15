@@ -10,6 +10,7 @@ import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import { ClientDashboard } from '../../components/ClientDashboard';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { useAuth } from '../../context/AuthContext';
@@ -495,37 +496,33 @@ export const LandingPageTherapy = ({ store, customization, onBook, isEditorMode,
 
                 {/* 9. CONTACT / FOOTER */}
                 {customization?.visibleSections?.['contact'] !== false && (
-                    <footer className="therapy-footer">
-                        <div className="therapy-container">
-                            <div className="therapy-footer-cta">
-                                <EditableText id="th_ft_title" defaultText={d.footerTitle} className="text-3xl font-serif mb-4 block text-[var(--therapy-heading)]" tagName="h2" {...editProps} />
-                                <EditableText id="th_ft_text" defaultText={d.footerText} className="mb-8 block text-[var(--therapy-text)]" tagName="p" {...editProps} />
-                                <button onClick={onBook} className="therapy-btn therapy-btn-primary px-8 py-3 text-lg">
-                                    Agendar Horário
-                                </button>
+                    <>
+                        {/* CTA Section */}
+                        <section className="therapy-footer">
+                            <div className="therapy-container">
+                                <div className="therapy-footer-cta">
+                                    <EditableText id="th_ft_title" defaultText={d.footerTitle} className="text-3xl font-serif mb-4 block text-[var(--therapy-heading)]" tagName="h2" {...editProps} />
+                                    <EditableText id="th_ft_text" defaultText={d.footerText} className="mb-8 block text-[var(--therapy-text)]" tagName="p" {...editProps} />
+                                    <button onClick={onBook} className="therapy-btn therapy-btn-primary px-8 py-3 text-lg">
+                                        Agendar Horário
+                                    </button>
+                                </div>
                             </div>
+                        </section>
 
-                            <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm opacity-60">
-                                <div className="flex flex-col gap-2 items-start">
-                                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="th_footer_copy" defaultText="Direitos reservados." tagName="span" {...editProps} /></p>
-                                    <StoreFooterRating
-                                        storeId={store?.id || 'demo'}
-                                        rating={store?.rating}
-                                        totalReviews={store?.totalReviews}
-                                        color="#2dd4bf"
-                                        isEditorMode={isEditorMode}
-                                        textColor="rgba(0,0,0,0.6)" // assuming light bg? No, therapy footer has bg-[var(--therapy-bg)] 
-                                    // Wait, therapy footer usually has darker bg?
-                                    // Let's check styles, but standard is fine. "text-[var(--therapy-text)]" was used above.
-                                    />
-                                </div>
-                                <div className="flex gap-4">
-                                    <a href="#" className="hover:text-white"><EditableText id="th_footer_link1" defaultText="Instagram" tagName="span" {...editProps} /></a>
-                                    <a href="#" className="hover:text-white"><EditableText id="th_footer_link2" defaultText="WhatsApp" tagName="span" {...editProps} /></a>
-                                </div>
-                            </div>
-                        </div>
-                    </footer>
+                        {/* Standard Footer */}
+                        <StandardFooter
+                            storeName={d.name}
+                            storeId={store?.id}
+                            rating={store?.rating}
+                            totalReviews={store?.totalReviews}
+                            customization={customization}
+                            isEditorMode={isEditorMode}
+                            onEditAction={onEditAction}
+                            primaryColor={customization?.primaryColor || '#2dd4bf'}
+                            accentColor={customization?.accentColor || '#2dd4bf'}
+                        />
+                    </>
                 )}
 
             </div>

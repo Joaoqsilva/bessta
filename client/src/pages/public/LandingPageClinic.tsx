@@ -11,6 +11,7 @@ import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
 import { StarRating } from '../../components/StarRating';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
+import { StandardFooter } from '../../components/StandardFooter';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
 import { useAuth } from '../../context/AuthContext';
@@ -674,25 +675,18 @@ export const LandingPageClinic = ({ store, customization, onBook, isEditorMode, 
                 </footer>
             )}
 
-            <div className="clinic-footer">
-                <div className="clinic-container flex flex-col md:flex-row justify-between items-center text-sm">
-                    <div className="flex flex-col items-start gap-2">
-                        <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="cl_footer_copy" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
-                        <StoreFooterRating
-                            storeId={store?.id || 'demo'}
-                            rating={store?.rating}
-                            totalReviews={store?.totalReviews}
-                            color="#3b82f6"
-                            isEditorMode={isEditorMode}
-                            textColor="white" // clinic footer is likely dark
-                        />
-                    </div>
-                    <div className="flex gap-4 mt-4 md:mt-0">
-                        <a href="#" className="hover:text-white"><EditableText id="cl_footer_link1" defaultText="Política de Privacidade" tagName="span" {...editProps} /></a>
-                        <a href="#" className="hover:text-white"><EditableText id="cl_footer_link2" defaultText="Termos de Uso" tagName="span" {...editProps} /></a>
-                    </div>
-                </div>
-            </div>
+            {/* Standard Footer */}
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?.id}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor={customization?.primaryColor || '#3b82f6'}
+                accentColor={customization?.accentColor || '#3b82f6'}
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal

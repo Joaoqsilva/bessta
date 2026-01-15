@@ -211,22 +211,58 @@ export const SettingsPage = () => {
         setPaymentMessage({ type: 'error', text: `Erro no pagamento: ${error}` });
     };
 
-    // Handle Manage Subscription (Cancel)
-    const handleManageSubscription = async () => {
-        if (confirm('Tem certeza que deseja cancelar sua assinatura? Você voltará para o plano gratuito.')) {
-            setIsCheckoutLoading(true);
-            try {
-                const response = await paymentService.cancelSubscription();
-                if (response.success) {
-                    setCurrentPlan('start');
-                    setPaymentMessage({ type: 'success', text: 'Assinatura cancelada com sucesso.' });
-                }
-            } catch (error) {
-                console.error('Cancel error:', error);
-                setPaymentMessage({ type: 'error', text: 'Erro ao cancelar assinatura.' });
-            } finally {
+    // Cancel Subscription Modal State
+    const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState(false);
+    const [cancelPassword, setCancelPassword] = useState('');
+    const [cancelPasswordError, setCancelPasswordError] = useState('');
+
+    // Handle Manage Subscription (Cancel) - Opens modal
+    const handleManageSubscription = () => {
+        setCancelPassword('');
+        setCancelPasswordError('');
+        setIsCancelSubscriptionModalOpen(true);
+    };
+
+    // Confirm Cancel Subscription with Password
+    const confirmCancelSubscription = async () => {
+        if (!cancelPassword) {
+            setCancelPasswordError('Por favor, digite sua senha para confirmar.');
+            return;
+        }
+
+        setIsCheckoutLoading(true);
+        setCancelPasswordError('');
+
+        try {
+            // Verify password first
+            const verifyResponse = await fetch('/api/auth/verify-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({ password: cancelPassword })
+            });
+
+            if (!verifyResponse.ok) {
+                const errorData = await verifyResponse.json();
+                setCancelPasswordError(errorData.message || 'Senha incorreta.');
                 setIsCheckoutLoading(false);
+                return;
             }
+
+            // Password verified, proceed with cancellation
+            const response = await paymentService.cancelSubscription();
+            if (response.success) {
+                setCurrentPlan('start');
+                setPaymentMessage({ type: 'success', text: 'Assinatura cancelada com sucesso.' });
+                setIsCancelSubscriptionModalOpen(false);
+            }
+        } catch (error) {
+            console.error('Cancel error:', error);
+            setPaymentMessage({ type: 'error', text: 'Erro ao cancelar assinatura.' });
+        } finally {
+            setIsCheckoutLoading(false);
         }
     };
 
@@ -1382,6 +1418,69 @@ export const SettingsPage = () => {
                                     disabled={deleteConfirmText !== 'EXCLUIR'}
                                 >
                                     Excluir Permanentemente
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+
+                    {/* Cancel Subscription Modal */}
+                    <Modal
+                        isOpen={isCancelSubscriptionModalOpen}
+                        onClose={() => { setIsCancelSubscriptionModalOpen(false); setCancelPassword(''); setCancelPasswordError(''); }}
+                        title="Cancelar Assinatura"
+                        description="Confirme sua identidade para cancelar"
+                    >
+                        <div className="upgrade-modal-content">
+                            <div style={{
+                                background: 'var(--warning-50)',
+                                border: '1px solid var(--warning-200)',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                                marginBottom: '1.5rem'
+                            }}>
+                                <p style={{ color: 'var(--warning-700)', fontWeight: 500, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <AlertCircle size={18} />
+                                    Atenção
+                                </p>
+                                <p style={{ color: 'var(--warning-600)', fontSize: '0.875rem' }}>
+                                    Ao cancelar sua assinatura, você perderá acesso aos recursos premium e voltará para o plano gratuito.
+                                    Seus dados serão mantidos, mas funcionalidades como layouts exclusivos ficarão indisponíveis.
+                                </p>
+                            </div>
+
+                            <p style={{ marginBottom: '0.5rem', fontWeight: 500 }}>
+                                Para confirmar, digite sua senha:
+                            </p>
+                            <Input
+                                type="password"
+                                placeholder="Digite sua senha"
+                                value={cancelPassword}
+                                onChange={(e) => { setCancelPassword(e.target.value); setCancelPasswordError(''); }}
+                                error={cancelPasswordError}
+                            />
+                            {cancelPasswordError && (
+                                <p style={{ color: 'var(--error-600)', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                                    {cancelPasswordError}
+                                </p>
+                            )}
+
+                            <div className="modal-actions" style={{ marginTop: '1.5rem' }}>
+                                <Button variant="outline" onClick={() => { setIsCancelSubscriptionModalOpen(false); setCancelPassword(''); setCancelPasswordError(''); }}>
+                                    Voltar
+                                </Button>
+                                <Button
+                                    variant="danger"
+                                    onClick={confirmCancelSubscription}
+                                    disabled={!cancelPassword || isCheckoutLoading}
+                                >
+                                    {isCheckoutLoading ? (
+                                        <>
+                                            <Loader2 size={16} className="animate-spin" style={{ marginRight: '0.5rem' }} />
+                                            Cancelando...
+                                        </>
+                                    ) : (
+                                        'Confirmar Cancelamento'
+                                    )}
                                 </Button>
                             </div>
                         </div>

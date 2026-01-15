@@ -7,6 +7,7 @@ import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
 import { StarRating } from '../../components/StarRating';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 
 interface LandingPageProps {
@@ -453,7 +454,8 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                 </div>
             </section>
 
-            <footer style={{ backgroundColor: footerBg, color: footerText }} className="border-t border-gray-100 py-12 mt-12">
+            {/* CTA Section */}
+            <section style={{ backgroundColor: footerBg, color: footerText }} className="border-t border-gray-100 py-12 mt-12">
                 <div className="psy-container text-center">
                     <EditableText id="psy_footer_title" defaultText={d.footerTitle} className="font-serif text-2xl text-[var(--psy-primary)] mb-6 block" tagName="h3" {...editProps} />
                     <EditableText id="psy_footer_text" defaultText={d.footerText} className="text-gray-500 mb-8 max-w-md mx-auto block" tagName="p" {...editProps} />
@@ -469,17 +471,21 @@ export const LandingPagePsychology = ({ store, customization, onBook, isEditorMo
                             primaryColor="var(--psy-primary, #7c3aed)"
                         />
                     </div>
-
-                    <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 border-t border-gray-50 pt-8">
-                        <div>&copy; {new Date().getFullYear()} <EditableText id="psy_footer_copy" defaultText={d.name} tagName="span" {...editProps} /></div>
-                        <div className="flex gap-6 mt-4 md:mt-0">
-                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link1" defaultText="Instagram" tagName="span" {...editProps} /></a>
-                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link2" defaultText="LinkedIn" tagName="span" {...editProps} /></a>
-                            <a href="#" className="hover:text-gray-600"><EditableText id="psy_footer_link3" defaultText="WhatsApp" tagName="span" {...editProps} /></a>
-                        </div>
-                    </div>
                 </div>
-            </footer>
+            </section>
+
+            {/* Standard Footer */}
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?.id}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor={customization?.primaryColor || '#78866b'}
+                accentColor={customization?.accentColor || '#78866b'}
+            />
         </div>
     );
 };

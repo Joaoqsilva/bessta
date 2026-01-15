@@ -9,6 +9,7 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -536,19 +537,18 @@ export const LandingPageVitality = ({ store, customization, onBook, isEditorMode
                 </section>
             )}
 
-            <footer className="vit-footer">
-                <div className="vit-container flex flex-col items-center gap-4">
-                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="vt_footer_txt" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
-                    <StoreFooterRating
-                        storeId={store?.id || 'demo'}
-                        rating={store?.rating}
-                        totalReviews={store?.totalReviews}
-                        color="#10b981"
-                        isEditorMode={isEditorMode}
-                        textColor="#064e3b"
-                    />
-                </div>
-            </footer>
+            {/* Standard Footer */}
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?.id}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor={customization?.primaryColor || '#10b981'}
+                accentColor={customization?.accentColor || '#10b981'}
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal

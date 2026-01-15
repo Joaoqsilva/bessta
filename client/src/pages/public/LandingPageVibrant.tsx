@@ -10,6 +10,7 @@ import { StarRating } from '../../components/StarRating';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -502,36 +503,33 @@ export const LandingPageVibrant = ({ store, customization, onBook, isEditorMode,
 
             {/* 10. CONTACT / FOOTER */}
             {customization?.visibleSections?.['contact'] !== false && (
-                <footer className="vib-footer">
-                    <div className="vib-container">
-                        <div className="vib-bot-cta">
-                            <div className="absolute top-0 right-0 p-32 bg-[var(--vib-accent)] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
-                            <EditableText id="vb_cta_title" defaultText={d.ctaTitle} className="vib-heading text-5xl md:text-7xl mb-8 relative z-10" tagName="h2" {...editProps} />
-                            <button onClick={onBook} className="vib-btn vib-btn-glow text-xl px-12 py-4 relative z-10">
-                                <EditableText id="vb_footer_btn" defaultText="Iniciar Transformação" tagName="span" {...editProps} />
-                            </button>
+                <>
+                    {/* CTA Section */}
+                    <section className="vib-footer">
+                        <div className="vib-container">
+                            <div className="vib-bot-cta">
+                                <div className="absolute top-0 right-0 p-32 bg-[var(--vib-accent)] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+                                <EditableText id="vb_cta_title" defaultText={d.ctaTitle} className="vib-heading text-5xl md:text-7xl mb-8 relative z-10" tagName="h2" {...editProps} />
+                                <button onClick={onBook} className="vib-btn vib-btn-glow text-xl px-12 py-4 relative z-10">
+                                    <EditableText id="vb_footer_btn" defaultText="Iniciar Transformação" tagName="span" {...editProps} />
+                                </button>
+                            </div>
                         </div>
+                    </section>
 
-                        <div className="flex flex-col md:flex-row justify-between items-center text-white/40 text-sm">
-                            <div className="flex flex-col items-start gap-2">
-                                <p>&copy; 2026 {d.name}. <EditableText id="vb_footer_copy" defaultText="Built for the future." tagName="span" {...editProps} /></p>
-                                <StoreFooterRating
-                                    storeId={store?.id || 'demo'}
-                                    rating={store?.rating}
-                                    totalReviews={store?.totalReviews}
-                                    color="var(--vib-accent)"
-                                    isEditorMode={isEditorMode}
-                                    textColor="rgba(255,255,255,0.6)"
-                                />
-                            </div>
-                            <div className="flex gap-6 mt-4 md:mt-0">
-                                <Instagram className="hover:text-white cursor-pointer transition-colors" />
-                                <Twitter className="hover:text-white cursor-pointer transition-colors" />
-                                <Linkedin className="hover:text-white cursor-pointer transition-colors" />
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                    {/* Standard Footer */}
+                    <StandardFooter
+                        storeName={d.name}
+                        storeId={store?.id}
+                        rating={store?.rating}
+                        totalReviews={store?.totalReviews}
+                        customization={customization}
+                        isEditorMode={isEditorMode}
+                        onEditAction={onEditAction}
+                        primaryColor={customization?.primaryColor || '#0f101a'}
+                        accentColor={customization?.accentColor || '#00ffcc'}
+                    />
+                </>
             )}
 
             {/* Patient Auth Modal */}

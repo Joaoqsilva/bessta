@@ -1,6 +1,7 @@
 import { Instagram, Linkedin, MessageCircle, MapPin, Mail, Phone } from 'lucide-react';
 import { type ClinicaContent } from '../../data/clinicaContent';
 import { EditableText } from '../EditableText';
+import { EditableSocialLink } from '../EditableSocialLink';
 import { type StoreCustomization } from '../../context/StoreCustomizationService';
 import { StoreFooterRating } from '../StoreFooterRating';
 
@@ -43,28 +44,14 @@ export const ClinicaFooter = ({ content, navItems, isEditorMode, onEditAction, c
                             />
                         </div>
                         <div style={{ display: 'flex', gap: '1rem' }}>
-                            {content.social.map((social, idx) => (
-                                <a
-                                    key={idx}
-                                    href={social.url}
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        borderRadius: '50%',
-                                        background: 'rgba(255,255,255,0.1)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: 'white',
-                                        transition: 'background 0.3s'
-                                    }}
-                                    className="social-link"
-                                >
-                                    {social.platform === 'Instagram' && <Instagram size={20} />}
-                                    {social.platform === 'LinkedIn' && <Linkedin size={20} />}
-                                    {social.platform === 'WhatsApp' && <MessageCircle size={20} />}
-                                </a>
-                            ))}
+                            <EditableSocialLink
+                                id="clinica_social"
+                                links={customization?.socialLinks || []}
+                                isEditorMode={isEditorMode}
+                                onUpdateLinks={(links) => onEditAction?.('socialLinks', JSON.stringify(links))}
+                                iconSize={20}
+                                iconClassName="social-link"
+                            />
                         </div>
                         {storeId && (
                             <div className="mt-4">

@@ -661,4 +661,68 @@ router.patch('/update-password', authMiddleware, async (req: AuthRequest, res: R
     }
 });
 
+/**
+ * POST /api/auth/verify-password
+ * Verify user password (for sensitive actions like canceling subscription)
+ */
+router.post('/verify-password', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Senha é obrigatória'
+            });
+        }
+
+        // Get user with password
+        const user = await User.findById(req.userId).select('+password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuário não encontrado'
+            });
+        }
+
+        // Verify password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            // Log failed verification attempt
+            const ip = req.ip || req.socket.remoteAddress || 'unknown';
+            await AuditLogService.log({
+                userId: user._id.toString(),
+                action: 'PASSWORD_VERIFY_FAILED',
+                ip,
+                severity: 'warning'
+            });
+
+            return res.status(401).json({
+                success: false,
+                message: 'Senha incorreta'
+            });
+        }
+
+        // Log successful verification
+        const ip = req.ip || req.socket.remoteAddress || 'unknown';
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'PASSWORD_VERIFIED',
+            ip,
+            severity: 'info'
+        });
+
+        res.json({
+            success: true,
+            message: 'Senha verificada com sucesso'
+        });
+    } catch (error: any) {
+        console.error('Verify password error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao verificar senha'
+        });
+    }
+});
+
 export default router;

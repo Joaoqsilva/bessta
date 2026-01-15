@@ -6,6 +6,7 @@ import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableImage } from '../../components/EditableImage';
+import { EditableSocialLink } from '../../components/EditableSocialLink';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import './LandingPageBeautySalon.css';
 
@@ -458,13 +459,23 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
 
                     <div className="beauty-footer-bottom flex flex-col items-center gap-4">
                         <p>© {new Date().getFullYear()} <EditableText id="beauty_copy" defaultText={d.name} tagName="span" {...editProps} /> - <EditableText id="beauty_rights" defaultText="Todos os direitos reservados." tagName="span" {...editProps} /></p>
+                        <div className="flex gap-4">
+                            <EditableSocialLink
+                                id="beauty_social"
+                                links={customization?.socialLinks || []}
+                                isEditorMode={isEditorMode}
+                                onUpdateLinks={(links) => onEditAction?.('socialLinks', JSON.stringify(links))}
+                                iconSize={20}
+                                iconClassName="text-pink-200 hover:text-white transition-colors cursor-pointer"
+                            />
+                        </div>
                         <StoreFooterRating
                             storeId={store?.id || 'demo'}
                             rating={store?.rating}
                             totalReviews={store?.totalReviews}
                             color="#ec4899"
                             isEditorMode={isEditorMode}
-                            textColor="#fbcfe8" // Light pinkish text
+                            textColor="#fbcfe8"
                         />
                     </div>
                 </div>

@@ -9,6 +9,7 @@ import { StoreFooterRating } from '../../components/StoreFooterRating';
 import { EditableText } from '../../components/EditableText';
 import { EditableIcon } from '../../components/EditableIcon';
 import { EditableImage } from '../../components/EditableImage';
+import { StandardFooter } from '../../components/StandardFooter';
 import type { StoreCustomization } from '../../context/StoreCustomizationService';
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
@@ -468,19 +469,18 @@ export const LandingPageHarmony = ({ store, customization, onBook, isEditorMode,
                 </footer>
             )}
 
-            <div className="harmony-footer">
-                <div className="harmony-container flex flex-col items-center gap-4">
-                    <p>&copy; {new Date().getFullYear()} {d.name}. <EditableText id="hm_footer_txt" defaultText="Paz e equilíbrio." tagName="span" {...editProps} /></p>
-                    <StoreFooterRating
-                        storeId={store?.id || 'demo'}
-                        rating={store?.rating}
-                        totalReviews={store?.totalReviews}
-                        color="#a78bfa"
-                        isEditorMode={isEditorMode}
-                        textColor="#5b21b6"
-                    />
-                </div>
-            </div>
+            {/* Standard Footer */}
+            <StandardFooter
+                storeName={d.name}
+                storeId={store?.id}
+                rating={store?.rating}
+                totalReviews={store?.totalReviews}
+                customization={customization}
+                isEditorMode={isEditorMode}
+                onEditAction={onEditAction}
+                primaryColor={customization?.primaryColor || '#a78bfa'}
+                accentColor={customization?.accentColor || '#a78bfa'}
+            />
 
             {/* Patient Auth Modal */}
             <PatientAuthModal
