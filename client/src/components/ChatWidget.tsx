@@ -133,7 +133,7 @@ export const ChatWidget = ({
 
         const message = mode === 'store'
             ? `Olá ${storeName}, gostaria de tirar uma dúvida.`
-            : 'Olá, gostaria de saber mais sobre o BookMe.';
+            : 'Olá, gostaria de saber mais sobre o SimpliAgenda.';
 
         window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
     };

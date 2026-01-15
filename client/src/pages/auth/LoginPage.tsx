@@ -54,7 +54,7 @@ export const LoginPage = () => {
                                 <div className="auth-logo-icon">
                                     <Calendar size={20} />
                                 </div>
-                                <span className="auth-logo-text">BookMe</span>
+                                <span className="auth-logo-text">SimpliAgenda</span>
                             </Link>
                         </div>
 

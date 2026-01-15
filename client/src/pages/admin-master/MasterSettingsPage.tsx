@@ -31,9 +31,9 @@ interface PlatformSettings {
 }
 
 const defaultSettings: PlatformSettings = {
-    siteName: 'BookMe',
+    siteName: 'SimpliAgenda',
     siteDescription: 'Plataforma de agendamentos online para negócios locais',
-    supportEmail: 'suporte@bookme.com',
+    supportEmail: 'suporte@simpliagenda.com.br',
     supportPhone: '(11) 99999-9999',
     emailNotifications: true,
     newStoreAlerts: true,

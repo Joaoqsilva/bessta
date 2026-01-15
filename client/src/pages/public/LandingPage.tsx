@@ -94,7 +94,7 @@ const testimonials = [
         name: 'Carolina Silva',
         role: 'Dona - Studio de Beleza',
         avatar: 'CS',
-        content: 'O BookMe transformou meu negócio! Reduzi 80% do tempo que gastava no telefone marcando horários.',
+        content: 'O SimpliAgenda transformou meu negócio! Reduzi 80% do tempo que gastava no telefone marcando horários.',
         rating: 5,
     },
     {
@@ -177,7 +177,7 @@ export const LandingPage = () => {
                                     <div className="preview-dots">
                                         <span /><span /><span />
                                     </div>
-                                    <span className="preview-url">bookme.app/dashboard</span>
+                                    <span className="preview-url">simpliagenda.com.br/dashboard</span>
                                 </div>
                                 <div className="preview-body">
                                     <div className="preview-sidebar" />
@@ -381,7 +381,7 @@ export const LandingPage = () => {
                             <h2 className="cta-title">Pronto para transformar seu negócio?</h2>
                             <p className="cta-description">
                                 Junte-se a milhares de profissionais que estão economizando tempo e
-                                aumentando seus lucros com o BookMe.
+                                aumentando seus lucros com o SimpliAgenda.
                             </p>
                             <div className="cta-buttons">
                                 <Link to="/register">

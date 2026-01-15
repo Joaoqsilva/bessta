@@ -591,7 +591,7 @@ export const SettingsPage = () => {
     };
 
     const copyStoreLink = () => {
-        navigator.clipboard.writeText(`https://bookme.app/${storeData.slug}`);
+        navigator.clipboard.writeText(`https://simpliagenda.com.br/${storeData.slug}`);
         alert('Link copiado!');
     };
 
@@ -777,14 +777,14 @@ export const SettingsPage = () => {
                                                 color: 'var(--primary-600)',
                                                 fontWeight: 500
                                             }}>
-                                                bookme.app/{storeData.slug || 'sua-loja'}
+                                                simpliagenda.com.br/{storeData.slug || 'sua-loja'}
                                             </code>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 leftIcon={<Copy size={14} />}
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(`https://bookme.app/${storeData.slug}`);
+                                                    navigator.clipboard.writeText(`https://simpliagenda.com.br/${storeData.slug}`);
                                                     alert('Link copiado!');
                                                 }}
                                             >
@@ -1027,7 +1027,7 @@ export const SettingsPage = () => {
                                             </strong>
                                             <p style={{ fontSize: '0.85rem', color: 'var(--info-700)', margin: 0 }}>
                                                 Ao configurar um domínio personalizado, seus clientes poderão acessar <strong>seudominio.com</strong> diretamente,
-                                                em vez de bookme.app/sua-loja. Isso transmite mais profissionalismo e fortalece sua marca.
+                                                em vez de simpliagenda.com.br/sua-loja. Isso transmite mais profissionalismo e fortalece sua marca.
                                             </p>
                                         </div>
                                     </div>
@@ -1163,7 +1163,7 @@ export const SettingsPage = () => {
                                             <div className="store-link-info">
                                                 <span className="store-link-label">Seu link de agendamento:</span>
                                                 <a href={`/${storeData.slug}`} className="store-link" target="_blank">
-                                                    bookme.app/{storeData.slug}
+                                                    simpliagenda.com.br/{storeData.slug}
                                                     <ExternalLink size={14} />
                                                 </a>
                                             </div>

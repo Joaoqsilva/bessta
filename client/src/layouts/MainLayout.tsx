@@ -7,7 +7,7 @@ export const MainLayout = () => {
     return (
         <div className="flex flex-col min-h-screen" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
             <header className="flex justify-between items-center container" style={{ paddingBlock: '1rem', borderBottom: '1px solid var(--surface-200)' }}>
-                <Link to="/" className="font-bold text-lg" style={{ color: 'var(--primary-600)' }}>BookMe</Link>
+                <Link to="/" className="font-bold text-lg" style={{ color: 'var(--primary-600)' }}>SimpliAgenda</Link>
                 <nav className="flex gap-4 items-center">
                     {isAuthenticated ? (
                         <>
@@ -31,7 +31,7 @@ export const MainLayout = () => {
                 <Outlet />
             </main>
             <footer className="container text-center text-sm text-muted" style={{ paddingBlock: '2rem' }}>
-                &copy; {new Date().getFullYear()} BookMe. All rights reserved.
+                &copy; {new Date().getFullYear()} SimpliAgenda. All rights reserved.
             </footer>
         </div>
     );

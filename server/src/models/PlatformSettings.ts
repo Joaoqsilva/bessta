@@ -27,9 +27,9 @@ export interface IPlatformSettings extends Document {
 }
 
 const PlatformSettingsSchema = new Schema<IPlatformSettings>({
-    siteName: { type: String, default: 'BookMe' },
+    siteName: { type: String, default: 'SimpliAgenda' },
     siteDescription: { type: String, default: 'Plataforma de agendamentos online para negócios locais' },
-    supportEmail: { type: String, default: 'suporte@bookme.com' },
+    supportEmail: { type: String, default: 'suporte@simpliagenda.com.br' },
     supportPhone: { type: String, default: '(11) 99999-9999' },
     emailNotifications: { type: Boolean, default: true },
     newStoreAlerts: { type: Boolean, default: true },

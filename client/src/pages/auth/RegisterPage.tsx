@@ -197,7 +197,7 @@ export const RegisterPage = () => {
                     </div>
                     <div className="auth-visual-side auth-visual-register">
                         <div className="auth-visual-content">
-                            <h2 className="auth-visual-title">Bem-vindo ao BookMe!</h2>
+                            <h2 className="auth-visual-title">Bem-vindo ao SimpliAgenda!</h2>
                             <p className="auth-visual-description">
                                 Sua jornada para simplificar agendamentos começa agora.
                             </p>
@@ -219,7 +219,7 @@ export const RegisterPage = () => {
                                 <div className="auth-logo-icon">
                                     <Calendar size={20} />
                                 </div>
-                                <span className="auth-logo-text">BookMe</span>
+                                <span className="auth-logo-text">SimpliAgenda</span>
                             </Link>
                         </div>
 

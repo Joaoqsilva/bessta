@@ -186,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                             <Calendar size={20} />
                         </div>
                         <div className="sidebar-logo-text">
-                            <span className="sidebar-brand">BookMe</span>
+                            <span className="sidebar-brand">SimpliAgenda</span>
                             <span className="sidebar-type">{title}</span>
                             {type === 'store' && (
                                 <span className={`sidebar-plan-badge ${currentPlan === 'free' ? 'free' : 'pro'}`}>
@@ -348,7 +348,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                     </div>
                     <div className="help-section">
                         <h4>📧 Email</h4>
-                        <p>Envie um email para <strong>suporte@bookme.com.br</strong></p>
+                        <p>Envie um email para <strong>suporte@simpliagenda.com.br</strong></p>
                     </div>
                     <div className="help-section">
                         <h4>📱 WhatsApp</h4>
