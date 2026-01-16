@@ -1,251 +1,508 @@
-/* Barber Landing Page - Industrial & Vintage Design */
+/* ============================================================
+   LAYOUT: BARBER SHOP
+   Paleta: Preto, Dourado, Cinza escuro
+   Design: Masculino, Premium, Industrial
+   ============================================================ */
 
-:root {
-    --barb-bg: #0a0a0a;
-    /* Almost Black */
-    --barb-surface: #171717;
-    /* Dark Grey */
-    --barb-accent: #d4af37;
-    /* Metallic Gold */
-    --barb-text-main: #ffffff;
-    --barb-text-muted: #a3a3a3;
-    --barb-red: #ef4444;
-    /* Barber Pole Red */
-    --barb-blue: #3b82f6;
-    /* Barber Pole Blue */
+/* ------------------------------------------------------------
+   CSS VARIABLES
+   ------------------------------------------------------------ */
+.barber-wrapper {
+    --barber-dark: #0a0a0a;
+    --barber-darker: #050505;
+    --barber-gold: #c9a962;
+    --barber-gold-light: #dfc68a;
+    --barber-gray: #1a1a1a;
+    --barber-gray-light: #2a2a2a;
+    --barber-text: #ffffff;
+    --barber-text-muted: #888888;
 
-    --barb-font-head: 'Oswald', 'Impact', sans-serif;
-    --barb-font-body: 'Roboto', sans-serif;
-}
-
-.barb-wrapper {
-    background-color: var(--barb-bg);
-    color: var(--barb-text-main);
-    font-family: var(--barb-font-body);
-    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--barber-dark);
+    color: var(--barber-text);
     min-height: 100vh;
 }
 
-/* Typography */
-.barb-title {
-    font-family: var(--barb-font-head);
-    text-transform: uppercase;
-    font-size: 5rem;
-    line-height: 0.9;
-    letter-spacing: 2px;
-    color: white;
-    margin-bottom: 2rem;
+/* ------------------------------------------------------------
+   CONTAINER
+   ------------------------------------------------------------ */
+.barber-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
-.barb-title span {
-    color: var(--barb-accent);
-    display: block;
-}
-
-.barb-section-title {
-    font-family: var(--barb-font-head);
-    text-transform: uppercase;
-    font-size: 3rem;
-    text-align: center;
-    margin-bottom: 3rem;
-    letter-spacing: 2px;
-    position: relative;
-}
-
-.barb-section-title::after {
-    content: '';
-    display: block;
-    width: 50px;
-    height: 4px;
-    background: var(--barb-accent);
-    margin: 1rem auto;
-}
-
-/* Texture Overlay */
-.barb-texture {
+/* ------------------------------------------------------------
+   NAVBAR
+   ------------------------------------------------------------ */
+.barber-nav {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 50;
-    opacity: 0.4;
-}
-
-/* Navbar */
-.barb-nav {
-    padding: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(10, 10, 10, 0.9);
-    backdrop-filter: blur(5px);
-    position: fixed;
-    width: 100%;
-    z-index: 40;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.barb-logo {
-    font-family: var(--barb-font-head);
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    border: 2px solid var(--barb-text-main);
-    padding: 0.25rem 0.75rem;
-}
-
-/* Hero */
-.barb-hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    position: relative;
-    background: radial-gradient(circle at center, #1f1f1f 0%, #0a0a0a 100%);
-    padding-top: 80px;
-}
-
-.barb-hero-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 4rem;
-}
-
-.barb-pole-stripe {
-    position: absolute;
     right: 0;
-    top: 0;
-    height: 100%;
-    width: 10px;
-    background: repeating-linear-gradient(45deg,
-            var(--barb-red),
-            var(--barb-red) 10px,
-            var(--barb-text-main) 10px,
-            var(--barb-text-main) 20px,
-            var(--barb-blue) 20px,
-            var(--barb-blue) 30px,
-            var(--barb-text-main) 30px,
-            var(--barb-text-main) 40px);
-    opacity: 0.5;
+    z-index: 100;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201, 169, 98, 0.1);
 }
 
-/* Buttons */
-.barb-btn {
-    padding: 1rem 3rem;
-    font-family: var(--barb-font-head);
+.barber-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+}
+
+.barber-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 1.1rem;
-    background: var(--barb-button-bg, var(--barb-accent));
-    color: var(--barb-button-text, black);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 700;
+    background: linear-gradient(135deg, var(--barber-gold), var(--barber-gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.barber-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.barber-nav-link {
+    color: var(--barber-text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.barber-nav-link:hover {
+    color: var(--barber-gold);
+}
+
+/* ------------------------------------------------------------
+   BUTTONS
+   ------------------------------------------------------------ */
+.barber-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
-.barb-btn:hover {
-    background: white;
-    transform: skewX(-10deg);
+.barber-btn-primary {
+    background: var(--barber-gold);
+    color: var(--barber-dark);
 }
 
-/* Services Menu */
-.barb-menu-bg {
-    background: var(--barb-surface);
-    padding: 5rem 2rem;
+.barber-btn-primary:hover {
+    background: var(--barber-gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 169, 98, 0.3);
 }
 
-.barb-menu-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.barber-btn-outline {
+    background: transparent;
+    color: var(--barber-text);
+    border: 2px solid var(--barber-gray-light);
 }
 
-.barb-menu-name {
-    font-family: var(--barb-font-head);
-    font-size: 1.5rem;
-    letter-spacing: 1px;
+.barber-btn-outline:hover {
+    border-color: var(--barber-gold);
+    color: var(--barber-gold);
 }
 
-.barb-menu-price {
-    font-family: var(--barb-font-head);
-    font-size: 1.5rem;
-    color: var(--barb-accent);
+.barber-btn-gold {
+    background: linear-gradient(135deg, var(--barber-gold), var(--barber-gold-light));
+    color: var(--barber-dark);
 }
 
-.barb-menu-desc {
-    color: var(--barb-text-muted);
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
+.barber-btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201, 169, 98, 0.4);
 }
 
-/* Booking Card */
-.barb-booking-card {
-    background: var(--barb-accent);
-    color: black;
-    padding: 4rem;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    transform: translateY(-50%);
+.barber-btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
 }
 
-/* Gallery Grid */
-.barb-gallery {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-}
-
-.barb-photo {
-    aspect-ratio: 1;
-    background: #333;
-    overflow: hidden;
+/* ------------------------------------------------------------
+   HERO SECTION
+   ------------------------------------------------------------ */
+.barber-hero {
     position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
 }
 
-.barb-photo img {
+.barber-hero-bg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s;
-    filter: grayscale(100%);
+    filter: brightness(0.3);
 }
 
-.barb-photo:hover img {
-    transform: scale(1.1);
-    filter: grayscale(0%);
+.barber-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+            rgba(10, 10, 10, 0.7) 0%,
+            rgba(10, 10, 10, 0.4) 50%,
+            rgba(10, 10, 10, 0.9) 100%);
+    z-index: 1;
+}
+
+.barber-hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 6rem 0;
+    max-width: 800px;
+}
+
+.barber-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(201, 169, 98, 0.15);
+    border: 1px solid var(--barber-gold);
+    border-radius: 4px;
+    color: var(--barber-gold);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+}
+
+.barber-hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.barber-hero-sub {
+    font-size: 1.25rem;
+    color: var(--barber-text-muted);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+}
+
+.barber-hero-ctas {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+}
+
+.barber-hero-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.barber-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.barber-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--barber-gold);
+}
+
+.barber-stat-label {
+    font-size: 0.875rem;
+    color: var(--barber-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.barber-stat-divider {
+    width: 1px;
+    height: 50px;
+    background: var(--barber-gray-light);
+}
+
+/* ------------------------------------------------------------
+   SECTION LABELS & TITLES
+   ------------------------------------------------------------ */
+.barber-section-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--barber-gold);
+    margin-bottom: 0.75rem;
+}
+
+.barber-section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+/* ------------------------------------------------------------
+   ABOUT SECTION
+   ------------------------------------------------------------ */
+.barber-about {
+    padding: 8rem 0;
+    background: var(--barber-darker);
+}
+
+.barber-about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
-    .barb-title {
-        font-size: 3rem;
-    }
-
-    .barb-hero-content {
+    .barber-about-grid {
         grid-template-columns: 1fr;
-        text-align: center;
+    }
+}
+
+.barber-about-images {
+    position: relative;
+}
+
+.barber-about-img-main {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.barber-about-img-accent {
+    position: absolute;
+    bottom: -2rem;
+    right: -2rem;
+    width: 200px;
+    height: 200px;
+    border: 4px solid var(--barber-gold);
+    border-radius: 8px;
+    z-index: -1;
+}
+
+.barber-about-text {
+    font-size: 1.125rem;
+    color: var(--barber-text-muted);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.barber-about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.barber-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   SERVICES SECTION
+   ------------------------------------------------------------ */
+.barber-services {
+    padding: 8rem 0;
+    background: var(--barber-dark);
+}
+
+.barber-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.barber-service-card {
+    position: relative;
+    background: var(--barber-gray);
+    border: 1px solid var(--barber-gray-light);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.barber-service-card:hover {
+    border-color: var(--barber-gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.barber-service-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--barber-gold), var(--barber-gold-light));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--barber-dark);
+    margin-bottom: 1.5rem;
+}
+
+.barber-service-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.barber-service-desc {
+    font-size: 0.9rem;
+    color: var(--barber-text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.barber-service-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--barber-gold);
+}
+
+.barber-add-card {
+    border: 2px dashed var(--barber-gray-light);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--barber-text-muted);
+    cursor: pointer;
+    min-height: 280px;
+}
+
+.barber-add-card:hover {
+    border-color: var(--barber-gold);
+    color: var(--barber-gold);
+}
+
+/* ------------------------------------------------------------
+   TEAM SECTION
+   ------------------------------------------------------------ */
+.barber-team {
+    padding: 8rem 0;
+    background: var(--barber-darker);
+}
+
+.barber-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.barber-team-card {
+    background: var(--barber-gray);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.barber-team-card:hover {
+    transform: translateY(-4px);
+}
+
+.barber-team-img {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.barber-team-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.barber-team-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.barber-team-role {
+    font-size: 0.875rem;
+    color: var(--barber-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ------------------------------------------------------------
+   CTA SECTION
+   ------------------------------------------------------------ */
+.barber-cta {
+    padding: 8rem 0;
+    background: linear-gradient(135deg, var(--barber-gray), var(--barber-dark));
+    border-top: 1px solid var(--barber-gold);
+    border-bottom: 1px solid var(--barber-gold);
+}
+
+.barber-cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.barber-cta-sub {
+    font-size: 1.125rem;
+    color: var(--barber-text-muted);
+    margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .barber-hero-title {
+        font-size: 2rem;
     }
 
-    .barb-gallery {
-        grid-template-columns: repeat(2, 1fr);
+    .barber-hero-stats {
+        gap: 1rem;
     }
 
-    .barb-booking-card {
-        margin: 1rem;
-        width: auto;
-        transform: none;
-        margin-top: -2rem;
+    .barber-stat-divider {
+        display: none;
+    }
+
+    .barber-section-title {
+        font-size: 1.75rem;
     }
 }

@@ -21,6 +21,10 @@ import { LandingPageHarmony } from './LandingPageHarmony';
 import { LandingPageVibrant } from './LandingPageVibrant';
 import { LandingPageSunny } from './LandingPageSunny';
 import { LandingPageVitality } from './LandingPageVitality';
+// Layouts Segmentados
+import { LandingPageBarber } from './LandingPageBarber';
+import { LandingPageNails } from './LandingPageNails';
+import { LandingPageDental } from './LandingPageDental';
 import { BookingWizard } from '../../components/BookingWizard';
 
 const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -283,6 +287,12 @@ export const StoreBookingPage = ({
         LayoutComponent = LandingPageSunny; // Layout Sunny (Novo)
     } else if (customization.layout === 'vitality-new') {
         LayoutComponent = LandingPageVitality; // Layout Vitality (Novo)
+    } else if (customization.layout === 'barber-new') {
+        LayoutComponent = LandingPageBarber; // Layout Barbearia
+    } else if (customization.layout === 'nails-new') {
+        LayoutComponent = LandingPageNails; // Layout Nail Salon
+    } else if (customization.layout === 'dental-new') {
+        LayoutComponent = LandingPageDental; // Layout Odontologia
     }
 
     return (
