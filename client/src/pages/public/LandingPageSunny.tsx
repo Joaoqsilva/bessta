@@ -31,35 +31,35 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
     const [isClientDashboardOpen, setIsClientDashboardOpen] = useState(false);
 
     const d = {
-        name: store?.name || "Espaço Solar",
+        name: store?.name || "Psicóloga Mariana Costa",
 
         // 1. Hero
-        heroTitle: customization?.welcomeTitle || "Ilumine sua jornada interior",
-        heroSub: customization?.welcomeMessage || "Psicologia positiva e acolhedora para transformar sua vida.",
+        heroTitle: customization?.welcomeTitle || "Encontre seu equilíbrio emocional",
+        heroSub: customization?.welcomeMessage || "Atendimento psicológico humanizado e acolhedor. Juntas, vamos cuidar da sua saúde mental.",
 
         // 2. Focus
-        focTitle: "O que você busca?",
+        focTitle: "Como posso te ajudar?",
 
         // 3. About
-        abtTitle: "Olá, sou a Dra. Ana",
+        abtTitle: "Olá, sou a Mariana",
 
         // 4. Services
-        srvTitle: "Como posso ajudar",
+        srvTitle: "Meus Serviços",
 
         // 5. Method
         metTitle: "Minha Abordagem",
 
         // 6. Benefits
-        benTitle: "Por que começar hoje?",
+        benTitle: "Por que fazer terapia?",
 
         // 7. Testimonials
-        tstTitle: "Histórias Felizes",
+        tstTitle: "O que dizem sobre mim",
 
         // 8. FAQ
-        faqTitle: "Ficou com dúvida?",
+        faqTitle: "Dúvidas Frequentes",
 
         // 9. Contact
-        ctaTitle: "Vamos conversar?",
+        ctaTitle: "Vamos começar sua jornada?",
     };
 
     const editProps = { isEditorMode, onEditAction, customization };
@@ -72,24 +72,25 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
     const toggleFaq = (i: number) => setOpenFaq(openFaq === i ? null : i);
 
     const DEFAULT_SERVICES = [
-        { title: "Terapia Individual", description: "Sessões de 50 minutos focadas nas suas questões." },
-        { title: "Aconselhamento", description: "Orientação pontual para tomadas de decisão." },
-        { title: "Workshops", description: "Vivências em grupo para desenvolvimento socioemocional." }
+        { title: "Terapia Individual", description: "Sessões personalizadas de 50 minutos para trabalhar suas questões emocionais." },
+        { title: "Terapia de Casal", description: "Espaço seguro para melhorar a comunicação e fortalecer o relacionamento." },
+        { title: "Orientação Parental", description: "Suporte especializado para os desafios da maternidade e paternidade." }
     ];
 
     const DEFAULT_TESTIMONIALS = {
         testimonials: [
-            { text: '"Ambiente maravilhoso e profissionais excelentes."', author: "Mariana S.", role: "Cliente", rating: 5 },
-            { text: '"Me sinto renovada a cada sessão."', author: "Fernanda L.", role: "Cliente", rating: 5 },
-            { text: '"A melhor clínica da região."', author: "Carla P.", role: "Cliente", rating: 5 }
+            { text: '"A Mariana me ajudou a superar minha ansiedade de uma forma que nunca imaginei ser possível. Recomendo demais!"', author: "Carolina M.", role: "Paciente há 1 ano", rating: 5 },
+            { text: '"Finalmente encontrei uma profissional que me escuta de verdade. As sessões são transformadoras."', author: "Rafael S.", role: "Paciente há 8 meses", rating: 5 },
+            { text: '"Depois de anos tentando, foi com a Mariana que consegui entender e trabalhar minha autoestima."', author: "Juliana P.", role: "Paciente há 2 anos", rating: 5 }
         ],
         images: ["", "", ""]
     };
 
     const DEFAULT_FAQ = [
-        { question: "Como funciona o pagamento?", answer: "Aceitamos pix, cartão e transferência. Emitimos recibo para reembolso." },
-        { question: "Qual a abordagem utilizada?", answer: "Trabalho com a Psicologia Positiva e Terapia Cognitivo-Comportamental." },
-        { question: "Atende plano de saúde?", answer: "Não atendemos diretamente, mas fornecemos documentação para reembolso." }
+        { question: "Como funciona a primeira sessão?", answer: "Na primeira sessão, conversamos sobre suas expectativas, histórico e principais demandas. É um momento de acolhimento e sem compromisso." },
+        { question: "Qual a duração e valor das sessões?", answer: "As sessões de terapia individual têm 50 minutos e custam R$ 180. Terapia de casal tem duração de 1h15 por R$ 280." },
+        { question: "Você atende por plano de saúde?", answer: "Não atendo diretamente por convênio, mas emito nota fiscal e documentação completa para você solicitar reembolso ao seu plano." },
+        { question: "Posso fazer terapia online?", answer: "Sim! Atendo presencialmente em Blumenau/SC e também online, com a mesma qualidade e sigilo profissional." }
     ];
 
     useEffect(() => {
@@ -208,9 +209,9 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="sunny-card text-center border-t-4 border-t-[var(--sunny-primary)]">
                                     <h3 className="font-bold text-xl mb-2">
-                                        <EditableText id={`sn_foc_t${i}`} defaultText={i === 1 ? "Autoconhecimento" : i === 2 ? "Relacionamentos" : "Propósito"} tagName="span" {...editProps} />
+                                        <EditableText id={`sn_foc_t${i}`} defaultText={i === 1 ? "Ansiedade" : i === 2 ? "Autoestima" : "Relacionamentos"} tagName="span" {...editProps} />
                                     </h3>
-                                    <EditableText id={`sn_foc_d${i}`} defaultText="Entenda melhor quem você é e o que deseja." className="text-sm text-gray-500" tagName="div" {...editProps} />
+                                    <EditableText id={`sn_foc_d${i}`} defaultText={i === 1 ? "Aprenda técnicas para lidar com crises e recuperar sua paz interior." : i === 2 ? "Desenvolva uma relação mais saudável consigo mesma." : "Melhore sua comunicação e conexão com quem você ama."} className="text-sm text-gray-500" tagName="div" {...editProps} />
                                 </div>
                             ))}
                         </div>
@@ -236,15 +237,15 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                         <div>
                             <h4 className="text-[var(--sunny-primary)] font-bold uppercase tracking-wider text-sm mb-2"><EditableText id="sn_abt_pre" defaultText="Sobre Mim" tagName="span" {...editProps} /></h4>
                             <EditableText id="sn_abt_title" defaultText={d.abtTitle} className="sunny-heading text-4xl mb-6" tagName="h2" {...editProps} />
-                            <EditableText id="sn_abt_txt" defaultText="Acredito que todos merecem uma vida plena e feliz. Meu consultório é um espaço seguro onde você pode ser você mesmo, sem julgamentos." className="text-lg text-gray-600 mb-8 leading-relaxed" tagName="p" {...editProps} />
+                            <EditableText id="sn_abt_txt" defaultText="Sou psicóloga clínica formada pela FURB, com especialização em Terapia Cognitivo-Comportamental. Há mais de 8 anos ajudo pessoas a superarem ansiedade, baixa autoestima e dificuldades nos relacionamentos. Meu consultório é um espaço acolhedor onde você pode se expressar livremente, sem julgamentos." className="text-lg text-gray-600 mb-8 leading-relaxed" tagName="p" {...editProps} />
                             <div className="flex gap-8">
                                 <div>
-                                    <h5 className="font-bold text-2xl text-[var(--sunny-primary)]"><EditableText id="sn_stat_1_num" defaultText="10+" tagName="span" {...editProps} /></h5>
-                                    <span className="text-sm text-gray-500"><EditableText id="sn_stat_1_txt" defaultText="Anos" tagName="span" {...editProps} /></span>
+                                    <h5 className="font-bold text-2xl text-[var(--sunny-primary)]"><EditableText id="sn_stat_1_num" defaultText="8+" tagName="span" {...editProps} /></h5>
+                                    <span className="text-sm text-gray-500"><EditableText id="sn_stat_1_txt" defaultText="Anos de Experiência" tagName="span" {...editProps} /></span>
                                 </div>
                                 <div>
                                     <h5 className="font-bold text-2xl text-[var(--sunny-primary)]"><EditableText id="sn_stat_2_lbl" defaultText="CRP" tagName="span" {...editProps} /></h5>
-                                    <span className="text-sm text-gray-500"><EditableText id="sn_stat_2_val" defaultText="00/12345" tagName="span" {...editProps} /></span>
+                                    <span className="text-sm text-gray-500"><EditableText id="sn_stat_2_val" defaultText="12/18547" tagName="span" {...editProps} /></span>
                                 </div>
                             </div>
                         </div>
@@ -299,23 +300,23 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                 <section className="sunny-method">
                     <div className="sunny-container">
                         <EditableText id="sn_met_title" defaultText={d.metTitle} className="font-bold text-3xl mb-4 block" tagName="h2" {...editProps} />
-                        <p className="opacity-90 mb-8"><EditableText id="sn_met_sub" defaultText="Um processo transparente e colaborativo." tagName="span" {...editProps} /></p>
+                        <p className="opacity-90 mb-8"><EditableText id="sn_met_sub" defaultText="Conheça as etapas do nosso trabalho juntos." tagName="span" {...editProps} /></p>
 
                         <div className="sunny-timeline">
                             <div className="sunny-step">
                                 <span className="text-4xl font-bold opacity-30 block mb-2">01</span>
-                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_1_t" defaultText="Avaliação" tagName="span" {...editProps} /></h3>
-                                <p className="text-sm opacity-80"><EditableText id="sn_step_1_d" defaultText="Entendendo sua história." tagName="span" {...editProps} /></p>
+                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_1_t" defaultText="Acolhimento" tagName="span" {...editProps} /></h3>
+                                <p className="text-sm opacity-80"><EditableText id="sn_step_1_d" defaultText="Primeira sessão para nos conhecermos e entender suas necessidades." tagName="span" {...editProps} /></p>
                             </div>
                             <div className="sunny-step">
                                 <span className="text-4xl font-bold opacity-30 block mb-2">02</span>
-                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_2_t" defaultText="Plano" tagName="span" {...editProps} /></h3>
-                                <p className="text-sm opacity-80"><EditableText id="sn_step_2_d" defaultText="Definindo objetivos claros." tagName="span" {...editProps} /></p>
+                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_2_t" defaultText="Planejamento" tagName="span" {...editProps} /></h3>
+                                <p className="text-sm opacity-80"><EditableText id="sn_step_2_d" defaultText="Definimos metas terapêuticas personalizadas para você." tagName="span" {...editProps} /></p>
                             </div>
                             <div className="sunny-step">
                                 <span className="text-4xl font-bold opacity-30 block mb-2">03</span>
-                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_3_t" defaultText="Evolução" tagName="span" {...editProps} /></h3>
-                                <p className="text-sm opacity-80"><EditableText id="sn_step_3_d" defaultText="Caminhando juntos." tagName="span" {...editProps} /></p>
+                                <h3 className="font-bold text-xl mb-2"><EditableText id="sn_step_3_t" defaultText="Transformação" tagName="span" {...editProps} /></h3>
+                                <p className="text-sm opacity-80"><EditableText id="sn_step_3_d" defaultText="Sessões semanais com técnicas comprovadas para sua evolução." tagName="span" {...editProps} /></p>
                             </div>
                         </div>
                     </div>
@@ -331,7 +332,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                             {[1, 2, 3, 4].map(i => (
                                 <div key={i} className="sunny-benefit-item">
                                     <CheckCircle className="text-[var(--sunny-primary)]" />
-                                    <EditableText id={`sn_ben_t${i}`} defaultText="Melhora na qualidade do sono e bem-estar físico." tagName="span" {...editProps} />
+                                    <EditableText id={`sn_ben_t${i}`} defaultText={i === 1 ? "Redução da ansiedade e ataques de pânico" : i === 2 ? "Melhora na autoestima e autoconfiança" : i === 3 ? "Relacionamentos mais saudáveis e comunicativos" : "Clareza mental e foco nos seus objetivos"} tagName="span" {...editProps} />
                                 </div>
                             ))}
                         </div>
@@ -453,7 +454,7 @@ export const LandingPageSunny = ({ store, customization, onBook, isEditorMode, o
                     <div className="sunny-container text-center">
                         <div className="max-w-2xl mx-auto">
                             <EditableText id="sn_cta_title" defaultText={d.ctaTitle} className="sunny-heading text-4xl mb-6" tagName="h2" {...editProps} />
-                            <p className="text-gray-500 mb-8"><EditableText id="sn_cta_desc" defaultText="Estou aqui para ouvir você. Agende sua sessão e vamos começar." tagName="span" {...editProps} /></p>
+                            <p className="text-gray-500 mb-8"><EditableText id="sn_cta_desc" defaultText="O primeiro passo é o mais importante. Agende uma sessão de acolhimento sem compromisso." tagName="span" {...editProps} /></p>
                             <button onClick={onBook} className="sunny-btn sunny-btn-primary px-8 py-3 text-lg shadow-lg">
                                 <EditableText id="sn_cta_btn" defaultText="Agendar Agora" tagName="span" {...editProps} /> <Calendar className="ml-2" size={20} />
                             </button>

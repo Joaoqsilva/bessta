@@ -447,7 +447,7 @@ export const LandingPageBeautySalon = ({ store, customization, onBook, isEditorM
                         </div>
                         <div>
                             <h4 className="beauty-footer-title"><EditableText id="beauty_ft_title_2" defaultText="Contato" tagName="span" {...editProps} /></h4>
-                            <EditableText id="beauty_footer_phone" defaultText="(11) 99999-9999" className="beauty-footer-link" tagName="div" {...editProps} />
+                            <EditableText id="beauty_footer_phone" defaultText="(47) 99139-4589" className="beauty-footer-link" tagName="div" {...editProps} />
                             <EditableText id="beauty_footer_email" defaultText="contato@beleza.com" className="beauty-footer-link" tagName="div" {...editProps} />
                         </div>
                         <div>

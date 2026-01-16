@@ -127,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
     }, [type]);
 
     // Get store slug from auth context
-    const storeSlug = store?.slug || 'urban-styles';
+    const storeSlug = store?.slug || 'psicologa-mariana';
 
     // unreadCount is now in state
 
@@ -353,15 +353,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ type }) => {
                     <div className="help-section">
                         <h4>💬 Suporte ao Vivo</h4>
                         <p>Precisa de ajuda urgente? Fale com nossa equipe de suporte.</p>
-                        <Button variant="outline" size="sm">Iniciar Chat</Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open('https://wa.me/5547991394589', '_blank')}
+                        >
+                            Iniciar Chat
+                        </Button>
                     </div>
                     <div className="help-section">
                         <h4>📧 Email</h4>
-                        <p>Envie um email para <strong>suporte@simpliagenda.com.br</strong></p>
+                        <p>Envie um email para <a href="mailto:suporte@simpliagenda.com.br" className="text-blue-600 hover:underline">suporte@simpliagenda.com.br</a></p>
                     </div>
                     <div className="help-section">
                         <h4>📱 WhatsApp</h4>
-                        <p>Atendimento via WhatsApp: <strong>(11) 99999-9999</strong></p>
+                        <p>Atendimento via WhatsApp: <a href="https://wa.me/5547991394589" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">(47) 99139-4589</a></p>
                     </div>
                 </div>
             </Modal>

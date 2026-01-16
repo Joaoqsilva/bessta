@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChatWidget } from '../../components/ChatWidget';
+// import { ChatWidget } from '../../components/ChatWidget'; // Temporariamente desabilitado
 
 // ... existing imports ...
 
@@ -116,6 +116,29 @@ const testimonials = [
 export const LandingPage = () => {
     return (
         <div className="landing-page">
+            {/* Header */}
+            <header className="landing-header">
+                <div className="container header-container">
+                    <Link to="/" className="landing-logo">
+                        <Calendar size={28} className="logo-icon" />
+                        <span className="logo-text">SimpliAgenda</span>
+                    </Link>
+
+                    <nav className="landing-nav">
+                        <a href="#features">Recursos</a>
+                        <a href="#pricing">Planos</a>
+                        <Link to="/ajuda">Ajuda</Link>
+                    </nav>
+
+                    <div className="header-actions">
+                        <Link to="/login" className="login-btn">Entrar</Link>
+                        <Link to="/register">
+                            <Button variant="primary" size="sm">Começar Agora</Button>
+                        </Link>
+                    </div>
+                </div>
+            </header>
+
             {/* Hero Section */}
             <section className="hero">
                 <div className="hero-bg-gradient" />
@@ -144,7 +167,7 @@ export const LandingPage = () => {
                                     Começar Gratuitamente
                                 </Button>
                             </Link>
-                            <Link to="/urban-styles">
+                            <Link to="/psicologa-mariana">
                                 <Button variant="outline" size="xl">
                                     Ver Demonstração
                                 </Button>
@@ -418,7 +441,7 @@ export const LandingPage = () => {
                             <ul>
                                 <li><Link to="/ajuda">Central de Ajuda</Link></li>
                                 <li><Link to="/ajuda">Documentação</Link></li>
-                                <li><Link to="/contato">Contato</Link></li>
+                                <li><a href="https://wa.me/5547991394589" target="_blank" rel="noopener noreferrer">Contato</a></li>
                             </ul>
                         </div>
                     </div>
@@ -428,7 +451,7 @@ export const LandingPage = () => {
                 </div>
             </footer>
 
-            <ChatWidget mode="saas" />
+            {/* <ChatWidget mode="saas" /> */} {/* Temporariamente desabilitado para redesign */}
         </div>
     );
 };

@@ -758,7 +758,7 @@ export const CalendarPage = () => {
                     />
                     <Input
                         label="Telefone"
-                        placeholder="Ex: (11) 99999-9999"
+                        placeholder="Ex: (47) 99139-4589"
                         value={newPhone}
                         onChange={(e) => setNewPhone(e.target.value)}
                         required

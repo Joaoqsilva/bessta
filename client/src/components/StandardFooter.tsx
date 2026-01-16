@@ -91,32 +91,32 @@ export const StandardFooter = ({
                                     iconSize={22}
                                     iconClassName="footer-social-icon"
                                 />
-                            ) : (
-                                // Default icons when no links configured
+                            ) : isEditorMode ? (
+                                // Default icons only in editor mode to encourage configuration
                                 <div className="flex gap-3">
                                     <button
                                         className="footer-social-icon"
-                                        onClick={isEditorMode ? () => onEditAction?.('socialLinks', '[]') : undefined}
-                                        title={isEditorMode ? "Configurar Redes Sociais" : "Instagram"}
+                                        onClick={() => onEditAction?.('socialLinks', '[]')}
+                                        title="Configurar Redes Sociais"
                                     >
                                         <Instagram size={22} />
                                     </button>
                                     <button
                                         className="footer-social-icon"
-                                        onClick={isEditorMode ? () => onEditAction?.('socialLinks', '[]') : undefined}
-                                        title={isEditorMode ? "Configurar Redes Sociais" : "LinkedIn"}
+                                        onClick={() => onEditAction?.('socialLinks', '[]')}
+                                        title="Configurar Redes Sociais"
                                     >
                                         <Linkedin size={22} />
                                     </button>
                                     <button
                                         className="footer-social-icon"
-                                        onClick={isEditorMode ? () => onEditAction?.('socialLinks', '[]') : undefined}
-                                        title={isEditorMode ? "Configurar Redes Sociais" : "WhatsApp"}
+                                        onClick={() => onEditAction?.('socialLinks', '[]')}
+                                        title="Configurar Redes Sociais"
                                     >
                                         <MessageCircle size={22} />
                                     </button>
                                 </div>
-                            )}
+                            ) : null}
                         </div>
 
                         {/* Rating */}
@@ -183,7 +183,7 @@ export const StandardFooter = ({
                                 <Phone size={18} style={{ color: accent }} />
                                 <EditableText
                                     id="footer_phone"
-                                    defaultText="(11) 99999-9999"
+                                    defaultText="(47) 99139-4589"
                                     tagName="span"
                                     {...editProps}
                                 />

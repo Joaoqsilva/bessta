@@ -11,8 +11,8 @@ const SOCIAL_NETWORKS = [
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, prefix: 'https://twitter.com/', placeholder: '@usuario', color: '#1DA1F2' },
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin, prefix: 'https://linkedin.com/in/', placeholder: 'perfil', color: '#0A66C2' },
     { id: 'youtube', name: 'YouTube', icon: Youtube, prefix: 'https://youtube.com/@', placeholder: '@canal', color: '#FF0000' },
-    { id: 'whatsapp', name: 'WhatsApp', icon: MessageCircle, prefix: 'https://wa.me/', placeholder: '5511999999999', color: '#25D366' },
-    { id: 'phone', name: 'Telefone', icon: Phone, prefix: 'tel:', placeholder: '+5511999999999', color: '#4CAF50' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: MessageCircle, prefix: 'https://wa.me/', placeholder: '5547991394589', color: '#25D366' },
+    { id: 'phone', name: 'Telefone', icon: Phone, prefix: 'tel:', placeholder: '+5547991394589', color: '#4CAF50' },
     { id: 'email', name: 'Email', icon: Mail, prefix: 'mailto:', placeholder: 'email@dominio.com', color: '#EA4335' },
     { id: 'website', name: 'Website', icon: Globe, prefix: 'https://', placeholder: 'www.site.com', color: '#6B7280' },
 ];
@@ -192,8 +192,8 @@ export const EditableSocialLink = ({
                                             key={idx}
                                             onClick={() => setActiveTab(idx)}
                                             className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${activeTab === idx
-                                                    ? 'border-blue-500 text-blue-600 bg-white'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                                ? 'border-blue-500 text-blue-600 bg-white'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                                                 }`}
                                         >
                                             <IconComponent size={16} style={{ color: info.color }} />
@@ -253,8 +253,8 @@ export const EditableSocialLink = ({
                                                                 key={net.id}
                                                                 onClick={() => handleUpdateLink(idx, 'network', net.id)}
                                                                 className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${isSelected
-                                                                        ? 'border-blue-500 bg-blue-50'
-                                                                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                                                    ? 'border-blue-500 bg-blue-50'
+                                                                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                                                     }`}
                                                             >
                                                                 <NetIcon size={18} style={{ color: net.color }} />

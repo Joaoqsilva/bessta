@@ -453,7 +453,10 @@ const DocumentationPage = () => {
                     <h2 className="text-3xl font-extrabold mb-4 relative z-10">Ainda tem dúvidas?</h2>
                     <p className="text-blue-100 mb-8 max-w-xl mx-auto relative z-10">Nossa equipe de especialistas está pronta para ajudar você a decolar o seu negócio.</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-                        <button className="px-10 py-4 bg-white text-blue-600 rounded-2xl font-extrabold hover:bg-blue-50 transition-all shadow-xl">
+                        <button
+                            onClick={() => window.open('https://wa.me/5547991394589', '_blank')}
+                            className="px-10 py-4 bg-white text-blue-600 rounded-2xl font-extrabold hover:bg-blue-50 transition-all shadow-xl"
+                        >
                             Falar com Suporte No WhatsApp
                         </button>
                     </div>
@@ -465,9 +468,9 @@ const DocumentationPage = () => {
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-gray-400 text-xs font-medium uppercase tracking-widest">&copy; {new Date().getFullYear()} SimpliAgenda Hub. Todos os direitos reservados.</p>
                     <div className="flex gap-6">
-                        <Link to="/" className="text-xs font-bold text-gray-400 hover:text-blue-600">Termos</Link>
-                        <Link to="/" className="text-xs font-bold text-gray-400 hover:text-blue-600">Privacidade</Link>
-                        <Link to="/" className="text-xs font-bold text-gray-400 hover:text-blue-600">Cookies</Link>
+                        <button onClick={() => setActiveSection('faq')} className="text-xs font-bold text-gray-400 hover:text-blue-600">Termos</button>
+                        <button onClick={() => setActiveSection('faq')} className="text-xs font-bold text-gray-400 hover:text-blue-600">Privacidade</button>
+                        <button onClick={() => setActiveSection('faq')} className="text-xs font-bold text-gray-400 hover:text-blue-600">Cookies</button>
                     </div>
                 </div>
             </footer>

@@ -129,7 +129,7 @@ export const ChatWidget = ({
     const startWhatsAppChat = () => {
         const phoneNumber = mode === 'store' && storePhone
             ? storePhone.replace(/\D/g, '')
-            : '5511999999999'; // SaaS default
+            : '5547991394589'; // SaaS default
 
         const message = mode === 'store'
             ? `Olá ${storeName}, gostaria de tirar uma dúvida.`

@@ -102,7 +102,7 @@ export const LoginPage = () => {
                                         <input type="checkbox" />
                                         <span>Lembrar-me</span>
                                     </label>
-                                    <a href="#" className="auth-forgot">Esqueceu a senha?</a>
+                                    <a href="https://wa.me/5547991394589" target="_blank" rel="noopener noreferrer" className="auth-forgot">Esqueceu a senha?</a>
                                 </div>
 
                                 <Button

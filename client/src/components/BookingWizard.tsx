@@ -528,7 +528,7 @@ export const BookingWizard = ({ store, customization, isOpen, onClose }: Booking
                                                 />
                                                 <Input
                                                     label="Telefone"
-                                                    placeholder="(11) 99999-9999"
+                                                    placeholder="(47) 99139-4589"
                                                     value={customerData.phone}
                                                     onChange={e => setCustomerData({ ...customerData, phone: formatPhone(e.target.value) })}
                                                     leftIcon={<Phone size={18} />}

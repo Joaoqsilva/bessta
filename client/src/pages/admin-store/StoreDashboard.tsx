@@ -400,7 +400,7 @@ export const StoreDashboard = () => {
                                 </div>
                                 <span>Novo Agendamento</span>
                             </button>
-                            <button className="quick-action-btn" onClick={() => setIsBlockModalOpen(true)}>
+                            <button className="quick-action-btn" onClick={() => navigate('/app/calendar')}>
                                 <div className="quick-action-icon">
                                     <Ban size={18} />
                                 </div>
@@ -550,7 +550,7 @@ export const StoreDashboard = () => {
                     />
                     <Input
                         label="Telefone"
-                        placeholder="(11) 99999-9999"
+                        placeholder="(47) 99139-4589"
                         value={newPhone}
                         onChange={(e) => setNewPhone(e.target.value)}
                     />

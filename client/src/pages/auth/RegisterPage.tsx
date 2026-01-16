@@ -280,7 +280,7 @@ export const RegisterPage = () => {
                                         <Input
                                             label="Telefone"
                                             type="tel"
-                                            placeholder="(11) 99999-9999"
+                                            placeholder="(47) 99139-4589"
                                             leftIcon={<Phone size={18} />}
                                             value={formData.phone}
                                             onChange={(e) => updateField('phone', e.target.value)}
@@ -379,8 +379,8 @@ export const RegisterPage = () => {
 
                             <p className="auth-terms">
                                 Ao criar uma conta, você concorda com nossos{' '}
-                                <a href="#">Termos de Serviço</a> e{' '}
-                                <a href="#">Política de Privacidade</a>.
+                                <Link to="/ajuda">Termos de Serviço</Link> e{' '}
+                                <Link to="/ajuda">Política de Privacidade</Link>.
                             </p>
                         </div>
                     </div>

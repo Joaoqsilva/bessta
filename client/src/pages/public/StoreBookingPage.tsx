@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loader } from 'lucide-react';
-import { ChatWidget } from '../../components/ChatWidget';
+// import { ChatWidget } from '../../components/ChatWidget'; // Temporariamente desabilitado
 import { useStoreBySlug, type UserStore } from '../../context/AuthContext';
 import {
     getCustomizationBySlug,
@@ -28,34 +28,34 @@ const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Jul
 
 
 
-// Demo store for urban-styles (works independently)
+
+// Demo store - Psicóloga Mariana Costa (Sunny Day Layout)
 const DEMO_STORE: Store = {
-    id: 'demo-urban-styles',
-    slug: 'urban-styles',
-    name: 'Urban Styles Barbearia',
-    description: 'A melhor barbearia urbana da cidade. Cortes modernos e atendimento de primeira.',
-    category: 'Barbearia',
-    address: 'Rua das Flores, 123 - Centro, São Paulo',
-    phone: '(11) 99999-9999',
-    email: 'contato@urbanstyles.com',
-    image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800',
-    coverImage: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200',
+    id: 'demo-mariana-psi',
+    slug: 'psicologa-mariana',
+    name: 'Psicóloga Mariana Costa',
+    description: 'Psicóloga clínica especializada em ansiedade, autoestima e desenvolvimento pessoal. Atendimento humanizado e acolhedor para você encontrar seu equilíbrio.',
+    category: 'Psicologia',
+    address: 'Av. Brasil, 2500 - Sala 401, Centro - Blumenau/SC',
+    phone: '(47) 99139-4589',
+    email: 'contato@psicologamariana.com.br',
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800', // Foto profissional da psicóloga
+    coverImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200', // Consultório moderno
     ownerId: 'demo',
-    ownerName: 'Demo Owner',
+    ownerName: 'Mariana Costa',
     services: [],
     workingHours: [],
     rating: 4.9,
-    totalReviews: 127,
+    totalReviews: 87,
     status: 'active',
     createdAt: new Date().toISOString(),
 };
 
 const DEMO_SERVICES: Service[] = [
-    { id: 1, name: 'Corte Clássico', description: 'Corte tradicional com acabamento perfeito', duration: 30, durationDisplay: '30 min', price: 45, currency: 'BRL', isActive: true },
-    { id: 2, name: 'Corte + Barba', description: 'Combo completo para o homem moderno', duration: 60, durationDisplay: '60 min', price: 75, currency: 'BRL', isActive: true },
-    { id: 3, name: 'Barba Completa', description: 'Modelagem e hidratação da barba', duration: 30, durationDisplay: '30 min', price: 35, currency: 'BRL', isActive: true },
-    { id: 4, name: 'Corte Degradê', description: 'Fade moderno com design personalizado', duration: 45, durationDisplay: '45 min', price: 55, currency: 'BRL', isActive: true },
-    { id: 5, name: 'Tratamento Capilar', description: 'Hidratação profunda e massagem', duration: 45, durationDisplay: '45 min', price: 65, currency: 'BRL', isActive: true },
+    { id: 1, name: 'Terapia Individual', description: 'Sessões de 50 minutos focadas no seu desenvolvimento pessoal e bem-estar emocional', duration: 50, durationDisplay: '50 min', price: 180, currency: 'BRL', isActive: true },
+    { id: 2, name: 'Terapia de Casal', description: 'Sessões para fortalecer a comunicação e resolver conflitos no relacionamento', duration: 75, durationDisplay: '1h15', price: 280, currency: 'BRL', isActive: true },
+    { id: 3, name: 'Orientação Parental', description: 'Suporte e estratégias para desafios na criação dos filhos', duration: 50, durationDisplay: '50 min', price: 180, currency: 'BRL', isActive: true },
+    { id: 4, name: 'Avaliação Psicológica', description: 'Avaliação completa para autoconhecimento e direcionamento terapêutico', duration: 90, durationDisplay: '1h30', price: 350, currency: 'BRL', isActive: true },
 ];
 
 interface StoreBookingPageProps {
@@ -74,7 +74,7 @@ export const StoreBookingPage = ({
     const { slug: paramsSlug } = useParams();
     // If we have an override, use its slug, otherwise use params
     const slug = storeOverride?.slug || paramsSlug;
-    const isDemo = slug === 'urban-styles';
+    const isDemo = slug === 'psicologa-mariana';
 
     // Only fetch if we don't have an override AND it's not the special demo case (unless we want to try fetching demo from backend too)
     // Actually, 'urban-styles' is hardcoded demo in frontend, so we can skip fetch or ignore error
@@ -108,12 +108,48 @@ export const StoreBookingPage = ({
                         if (saved) {
                             setCustomization(saved);
                         } else {
-                            // Fallback default
-                            setCustomization({
+                            // Fallback default - Sunny Day Layout para demo com conteúdo completo
+                            const demoCustomization = {
                                 storeId: store?.id || '',
                                 ...DEFAULT_CUSTOMIZATION,
-                                layout: 'therapy-new'
-                            });
+                                layout: 'sunny-new',
+                                // Fotos profissionais realistas
+                                coverImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200', // Consultório moderno e acolhedor
+                                aboutImage: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800', // Mulher profissional sorrindo
+                                // Textos personalizados
+                                welcomeTitle: 'Encontre seu equilíbrio emocional',
+                                welcomeMessage: 'Atendimento psicológico humanizado e acolhedor. Juntas, vamos cuidar da sua saúde mental.',
+                                // Serviços
+                                servicesList: [
+                                    { title: "Terapia Individual", description: "Sessões personalizadas de 50 minutos para trabalhar suas questões emocionais." },
+                                    { title: "Terapia de Casal", description: "Espaço seguro para melhorar a comunicação e fortalecer o relacionamento." },
+                                    { title: "Orientação Parental", description: "Suporte especializado para os desafios da maternidade e paternidade." }
+                                ],
+                                // Depoimentos com fotos reais
+                                testimonials: [
+                                    { text: '"A Mariana me ajudou a superar minha ansiedade de uma forma que nunca imaginei ser possível. Recomendo demais!"', author: "Carolina M.", role: "Paciente há 1 ano", rating: 5 },
+                                    { text: '"Finalmente encontrei uma profissional que me escuta de verdade. As sessões são transformadoras."', author: "Rafael S.", role: "Paciente há 8 meses", rating: 5 },
+                                    { text: '"Depois de anos tentando, foi com a Mariana que consegui entender e trabalhar minha autoestima."', author: "Juliana P.", role: "Paciente há 2 anos", rating: 5 }
+                                ],
+                                testimonialImages: [
+                                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150', // Mulher jovem sorrindo natural
+                                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', // Homem casual sorrindo
+                                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'  // Mulher natural retrato
+                                ],
+                                // FAQ
+                                faq: [
+                                    { question: "Como funciona a primeira sessão?", answer: "Na primeira sessão, conversamos sobre suas expectativas, histórico e principais demandas. É um momento de acolhimento e sem compromisso." },
+                                    { question: "Qual a duração e valor das sessões?", answer: "As sessões de terapia individual têm 50 minutos e custam R$ 180. Terapia de casal tem duração de 1h15 por R$ 280." },
+                                    { question: "Você atende por plano de saúde?", answer: "Não atendo diretamente por convênio, mas emito nota fiscal e documentação completa para você solicitar reembolso ao seu plano." },
+                                    { question: "Posso fazer terapia online?", answer: "Sim! Atendo presencialmente em Blumenau/SC e também online, com a mesma qualidade e sigilo profissional." }
+                                ],
+                                // Redes sociais
+                                socialLinks: [
+                                    { platform: 'instagram', url: 'https://instagram.com/psimarianacosta' },
+                                    { platform: 'whatsapp', url: 'https://wa.me/5547991394589' }
+                                ]
+                            };
+                            setCustomization(demoCustomization as any);
                         }
                     }
                 } else if (store?.id) {
@@ -267,12 +303,14 @@ export const StoreBookingPage = ({
                 onClose={() => setIsBookingWizardOpen(false)}
             />
 
+            {/* ChatWidget temporariamente desabilitado para redesign
             <ChatWidget
                 mode="store"
                 storeId={store.id}
                 storeName={store.name}
                 storePhone={store.phone}
             />
+            */}
         </div>
     );
 };

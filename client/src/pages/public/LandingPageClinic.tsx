@@ -640,7 +640,7 @@ export const LandingPageClinic = ({ store, customization, onBook, isEditorMode, 
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold uppercase text-gray-400"><EditableText id="cl_ct_lbl_phone" defaultText="Telefone" tagName="span" {...editProps} /></p>
-                                            <EditableText id="cl_ct_phone" defaultText="(11) 99999-9999" className="font-bold text-lg" tagName="p" {...editProps} />
+                                            <EditableText id="cl_ct_phone" defaultText="(47) 99139-4589" className="font-bold text-lg" tagName="p" {...editProps} />
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">

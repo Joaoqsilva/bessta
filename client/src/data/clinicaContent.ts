@@ -147,7 +147,7 @@ export const clinicaData: ClinicaContent = {
         logo: "Instituto Lacan",
         description: "Clínica de referência em psicanálise e saúde mental.",
         contact: {
-            phone: "(11) 99999-9999",
+            phone: "(47) 99139-4589",
             email: "contato@institutolacan.com.br",
             address: "Av. Paulista, 1000 - Bela Vista, São Paulo - SP",
         },

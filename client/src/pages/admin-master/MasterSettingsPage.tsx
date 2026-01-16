@@ -34,7 +34,7 @@ const defaultSettings: PlatformSettings = {
     siteName: 'SimpliAgenda',
     siteDescription: 'Plataforma de agendamentos online para negócios locais',
     supportEmail: 'suporte@simpliagenda.com.br',
-    supportPhone: '(11) 99999-9999',
+    supportPhone: '(47) 99139-4589',
     emailNotifications: true,
     newStoreAlerts: true,
     complaintAlerts: true,

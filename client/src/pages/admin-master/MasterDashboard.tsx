@@ -244,34 +244,15 @@ export const MasterDashboard = () => {
                                                         </button>
 
                                                         {activeMenu === store.id && (
-                                                            <div
-                                                                className="dropdown-menu"
-                                                                style={{
-                                                                    border: '4px solid red',
-                                                                    backgroundColor: 'yellow',
-                                                                    color: 'black',
-                                                                    zIndex: 9999,
-                                                                    display: 'block',
-                                                                    opacity: 1,
-                                                                    visibility: 'visible',
-                                                                    minHeight: '100px'
-                                                                }}
-                                                            >
-                                                                {(() => { console.log('DROPDOWN IS RENDERING FOR:', store.id); return null; })()}
-                                                                <button onClick={() => {
-                                                                    console.log('Toggle status clicked');
-                                                                    handleToggleStatus(store);
-                                                                }} className="dropdown-item" style={{ backgroundColor: 'yellow', color: 'black' }}>
+                                                            <div className="dropdown-menu">
+                                                                <button onClick={() => handleToggleStatus(store)} className="dropdown-item">
                                                                     {store.status === 'suspended' ? (
                                                                         <><CheckCircle size={14} /> Ativar Site</>
                                                                     ) : (
                                                                         <><Ban size={14} /> Desativar Site</>
                                                                     )}
                                                                 </button>
-                                                                <button onClick={() => {
-                                                                    console.log('Delete store clicked');
-                                                                    handleDeleteStore(store);
-                                                                }} className="dropdown-item delete" style={{ backgroundColor: 'yellow', color: 'red' }}>
+                                                                <button onClick={() => handleDeleteStore(store)} className="dropdown-item delete">
                                                                     <Trash2 size={14} /> Excluir Loja
                                                                 </button>
                                                             </div>

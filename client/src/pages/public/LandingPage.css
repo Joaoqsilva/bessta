@@ -20,6 +20,89 @@
     overflow: hidden;
 }
 
+/* Header & Navigation */
+.landing-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.landing-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.025em;
+}
+
+.logo-icon {
+    color: var(--primary-600);
+}
+
+.landing-nav {
+    display: flex;
+    gap: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .landing-nav {
+        display: none;
+    }
+}
+
+.landing-nav a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.landing-nav a:hover {
+    color: var(--primary-600);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.login-btn {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.login-btn:hover {
+    color: var(--primary-600);
+}
+
+/* Adjust hero for fixed header */
+.hero {
+    padding-top: 8rem;
+    position: relative;
+    overflow: hidden;
+}
+
 .hero-bg-gradient {
     position: absolute;
     inset: 0;
