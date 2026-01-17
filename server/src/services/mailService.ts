@@ -1,39 +1,28 @@
 
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { IAppointment } from '../models/Appointment';
 import { IStore } from '../models/Store';
 
 dotenv.config();
 
 // ========================================
-// EMAIL SERVICE - Supports Resend API or SMTP
+// EMAIL SERVICE - Using Resend API
 // ========================================
-
-// Check which provider to use
-const useResend = !!process.env.RESEND_API_KEY;
-
-// SMTP Transporter (fallback if no Resend)
-const transporter = !useResend ? nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    tls: {
-        rejectUnauthorized: false
-    }
-}) : null;
 
 /**
  * Send email via Resend API
  */
-const sendViaResend = async (to: string, subject: string, html: string): Promise<boolean> => {
+export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
+    // Check for API key
+    if (!process.env.RESEND_API_KEY) {
+        console.log(`[Mock Email - No RESEND_API_KEY] To: ${to}, Subject: ${subject}`);
+        // In dev, log the code if present
+        if (process.env.NODE_ENV !== 'production') {
+            const codeMatch = html.match(/>(\d{6})</);
+            if (codeMatch) console.log(`🔐 CODE: ${codeMatch[1]}`);
+        }
+        return true; // Return true in dev for testing
+    }
+
     try {
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -62,54 +51,6 @@ const sendViaResend = async (to: string, subject: string, html: string): Promise
         console.error('Error sending email via Resend:', error);
         return false;
     }
-};
-
-/**
- * Send email via SMTP (nodemailer)
- */
-const sendViaSMTP = async (to: string, subject: string, html: string): Promise<boolean> => {
-    if (!transporter || !process.env.SMTP_USER) {
-        console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
-        return true;
-    }
-
-    try {
-        const info = await transporter.sendMail({
-            from: `"${process.env.SMTP_FROM_NAME || 'Simpliagenda'}" <${process.env.SMTP_USER}>`,
-            to,
-            subject,
-            html,
-        });
-        console.log("Email sent via SMTP:", info.messageId);
-        return true;
-    } catch (error) {
-        console.error("Error sending email via SMTP:", error);
-        return false;
-    }
-};
-
-/**
- * Main send email function - uses Resend if available, otherwise SMTP
- */
-export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
-    // Check for credentials
-    if (!process.env.RESEND_API_KEY && !process.env.SMTP_USER) {
-        console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
-        // In dev, log the code if present
-        if (process.env.NODE_ENV !== 'production') {
-            const codeMatch = html.match(/>(\d{6})</);
-            if (codeMatch) console.log(`🔐 CODE: ${codeMatch[1]}`);
-        }
-        return true;
-    }
-
-    // Use Resend if configured
-    if (useResend) {
-        return await sendViaResend(to, subject, html);
-    }
-
-    // Otherwise use SMTP
-    return await sendViaSMTP(to, subject, html);
 };
 
 export const sendAppointmentConfirmation = async (appointment: any, store: IStore) => {
