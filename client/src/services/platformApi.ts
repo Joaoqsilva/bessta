@@ -284,6 +284,18 @@ export const platformManagementApi = {
             message: response.data.message,
             plan: response.data.plan
         };
+    },
+
+    sendTestEmail: async (email: string) => {
+        try {
+            const response = await api.post('/platform/test-email', { email });
+            return response.data;
+        } catch (error: any) {
+            return {
+                success: false,
+                error: error.response?.data?.error || 'Erro ao enviar email de teste'
+            };
+        }
     }
 };
 

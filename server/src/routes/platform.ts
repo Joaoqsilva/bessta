@@ -483,4 +483,51 @@ router.put('/users/:id/plan', authMiddleware, adminMiddleware, async (req, res) 
     }
 });
 
+/**
+ * POST /api/platform/test-email
+ * Send a test email to verify SMTP configuration (admin only)
+ */
+router.post('/test-email', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, error: 'Email é obrigatório' });
+        }
+
+        // Import sendEmail
+        const { sendEmail } = require('../services/mailService');
+
+        const subject = 'Teste de Configuração - Simpliagenda';
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #4f46e5;">✅ Configuração de Email Funcionando!</h2>
+                <p>Este é um email de teste enviado pelo painel administrativo do Simpliagenda.</p>
+                <p>Se você está recebendo esta mensagem, significa que as configurações SMTP estão corretas.</p>
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                <p style="font-size: 12px; color: #6b7280;">
+                    Enviado em: ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+                </p>
+            </div>
+        `;
+
+        const result = await sendEmail(email, subject, html);
+
+        if (result) {
+            res.json({ success: true, message: 'Email de teste enviado com sucesso!' });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Falha ao enviar email. Verifique as configurações SMTP no servidor.'
+            });
+        }
+    } catch (error: any) {
+        console.error('Error sending test email:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao enviar email de teste: ' + error.message
+        });
+    }
+});
+
 export default router;

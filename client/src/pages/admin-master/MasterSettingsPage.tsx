@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { platformSettingsApi } from '../../services/platformApi';
+import { platformSettingsApi, platformManagementApi } from '../../services/platformApi';
 import type { PlatformSettings as IPlatformSettings } from '../../services/platformApi';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -69,6 +69,10 @@ export const MasterSettingsPage = () => {
     });
     const [accountMessage, setAccountMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [isAccountSaving, setIsAccountSaving] = useState(false);
+
+    // Email test state
+    const [testEmail, setTestEmail] = useState('');
+    const [testEmailStatus, setTestEmailStatus] = useState<{ type: 'success' | 'error' | 'loading', text: string } | null>(null);
 
     useEffect(() => {
         loadSettings();
@@ -148,6 +152,22 @@ export const MasterSettingsPage = () => {
 
     const updateSetting = <K extends keyof PlatformSettings>(key: K, value: PlatformSettings[K]) => {
         setSettings(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleTestEmail = async () => {
+        if (!testEmail) {
+            setTestEmailStatus({ type: 'error', text: 'Digite um email para teste' });
+            return;
+        }
+        setTestEmailStatus({ type: 'loading', text: 'Enviando email de teste...' });
+
+        const result = await platformManagementApi.sendTestEmail(testEmail);
+
+        if (result.success) {
+            setTestEmailStatus({ type: 'success', text: result.message || 'Email enviado com sucesso!' });
+        } else {
+            setTestEmailStatus({ type: 'error', text: result.error || 'Falha ao enviar email' });
+        }
     };
 
     const tabs = [
@@ -431,6 +451,49 @@ export const MasterSettingsPage = () => {
                                         />
                                         <span className="toggle-slider"></span>
                                     </label>
+                                </div>
+
+                                {/* Test Email Section */}
+                                <div className="test-email-section" style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                                    <h3 style={{ margin: '0 0 0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <Mail size={18} />
+                                        Testar Configuração de Email
+                                    </h3>
+                                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+                                        Envie um email de teste para verificar se o SMTP está configurado corretamente.
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                                        <Input
+                                            type="email"
+                                            value={testEmail}
+                                            onChange={(e) => setTestEmail(e.target.value)}
+                                            placeholder="Digite seu email para teste"
+                                            leftIcon={<Mail size={18} />}
+                                            style={{ flex: 1 }}
+                                        />
+                                        <Button
+                                            variant="primary"
+                                            onClick={handleTestEmail}
+                                            disabled={testEmailStatus?.type === 'loading'}
+                                        >
+                                            {testEmailStatus?.type === 'loading' ? 'Enviando...' : 'Enviar Teste'}
+                                        </Button>
+                                    </div>
+                                    {testEmailStatus && testEmailStatus.type !== 'loading' && (
+                                        <div style={{
+                                            marginTop: '1rem',
+                                            padding: '0.75rem 1rem',
+                                            borderRadius: '8px',
+                                            background: testEmailStatus.type === 'success' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                            color: testEmailStatus.type === 'success' ? '#22c55e' : '#ef4444',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem'
+                                        }}>
+                                            {testEmailStatus.type === 'success' ? <CheckCircle size={18} /> : <Shield size={18} />}
+                                            {testEmailStatus.text}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
