@@ -258,7 +258,7 @@ export const LandingPageDental = ({ store, customization, onBook, isEditorMode, 
             {customization?.visibleSections?.['services'] !== false && (
                 <section id="services" className="dental-services">
                     <div className="dental-container">
-                        <div className="text-center mb-12">
+                        <div className="dental-section-header">
                             <span className="dental-section-label"><EditableText id="dental_srv_pre" defaultText="ESPECIALIDADES" tagName="span" {...editProps} /></span>
                             <EditableText id="dental_srv_title" defaultText={d.servicesTitle} className="dental-section-title" tagName="h2" {...editProps} />
                         </div>
@@ -305,7 +305,7 @@ export const LandingPageDental = ({ store, customization, onBook, isEditorMode, 
             {customization?.visibleSections?.['team'] !== false && (
                 <section id="team" className="dental-team">
                     <div className="dental-container">
-                        <div className="text-center mb-12">
+                        <div className="dental-section-header">
                             <span className="dental-section-label"><EditableText id="dental_team_pre" defaultText="PROFISSIONAIS" tagName="span" {...editProps} /></span>
                             <EditableText id="dental_team_title" defaultText={d.teamTitle} className="dental-section-title" tagName="h2" {...editProps} />
                         </div>
