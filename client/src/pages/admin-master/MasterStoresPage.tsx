@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Store, Search, Filter, Eye, Trash2, Ban, CheckCircle,
-    MoreVertical, ChevronLeft, ChevronRight, Plus
+    MoreVertical, ChevronLeft, ChevronRight, Plus, UserX, Power, PowerOff
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -20,6 +20,7 @@ export const MasterStoresPage = () => {
 
     const [selectedStore, setSelectedStore] = useState<RegisteredStore | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteUserToo, setDeleteUserToo] = useState(false);
     const [showActionsMenu, setShowActionsMenu] = useState<string | null>(null);
 
     // Debounce search
@@ -77,10 +78,11 @@ export const MasterStoresPage = () => {
 
     const handleDelete = async () => {
         if (selectedStore) {
-            await deleteStore(selectedStore.id);
+            await deleteStore(selectedStore.id, deleteUserToo);
             loadStores();
             setShowDeleteModal(false);
             setSelectedStore(null);
+            setDeleteUserToo(false);
         }
     };
 
@@ -235,8 +237,14 @@ export const MasterStoresPage = () => {
                                                         <div className="dropdown-menu">
                                                             {store.status !== 'active' && (
                                                                 <button onClick={() => handleStatusChange(store.id, 'active')}>
-                                                                    <CheckCircle size={14} />
+                                                                    <Power size={14} />
                                                                     Ativar
+                                                                </button>
+                                                            )}
+                                                            {store.status === 'active' && (
+                                                                <button onClick={() => handleStatusChange(store.id, 'suspended')}>
+                                                                    <PowerOff size={14} />
+                                                                    Desativar
                                                                 </button>
                                                             )}
                                                             {store.status !== 'suspended' && (
@@ -254,7 +262,19 @@ export const MasterStoresPage = () => {
                                                                 }}
                                                             >
                                                                 <Trash2 size={14} />
-                                                                Excluir
+                                                                Excluir Loja
+                                                            </button>
+                                                            <button
+                                                                className="danger"
+                                                                onClick={() => {
+                                                                    setSelectedStore(store);
+                                                                    setDeleteUserToo(true);
+                                                                    setShowDeleteModal(true);
+                                                                    setShowActionsMenu(null);
+                                                                }}
+                                                            >
+                                                                <UserX size={14} />
+                                                                Excluir Loja + Conta
                                                             </button>
                                                         </div>
                                                     )}
@@ -299,18 +319,36 @@ export const MasterStoresPage = () => {
             {/* Delete Confirmation Modal */}
             <Modal
                 isOpen={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
+                onClose={() => { setShowDeleteModal(false); setDeleteUserToo(false); }}
                 title="Excluir Loja"
             >
                 <div className="delete-modal-content">
                     <p>Tem certeza que deseja excluir a loja <strong>{selectedStore?.name}</strong>?</p>
-                    <p className="warning">Esta ação não pode ser desfeita. Todos os dados da loja serão removidos permanentemente.</p>
+
+                    <div style={{ margin: '1rem 0', padding: '1rem', background: '#fef3c7', borderRadius: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={deleteUserToo}
+                                onChange={(e) => setDeleteUserToo(e.target.checked)}
+                                style={{ width: '18px', height: '18px' }}
+                            />
+                            <span style={{ fontWeight: 500 }}>Também excluir a conta do proprietário ({selectedStore?.ownerEmail})</span>
+                        </label>
+                    </div>
+
+                    <p className="warning">
+                        {deleteUserToo
+                            ? '⚠️ A loja E a conta do proprietário serão removidos permanentemente. Esta ação não pode ser desfeita.'
+                            : 'A loja será removida, mas a conta do proprietário será mantida. Esta ação não pode ser desfeita.'
+                        }
+                    </p>
                     <div className="modal-actions">
-                        <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+                        <Button variant="outline" onClick={() => { setShowDeleteModal(false); setDeleteUserToo(false); }}>
                             Cancelar
                         </Button>
                         <Button variant="secondary" onClick={handleDelete} className="danger-btn">
-                            Excluir Loja
+                            {deleteUserToo ? 'Excluir Loja e Conta' : 'Excluir Apenas Loja'}
                         </Button>
                     </div>
                 </div>

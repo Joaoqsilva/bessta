@@ -133,10 +133,10 @@ export const updateStoreStatus = async (storeId: string, status: 'active' | 'pen
     }
 };
 
-// Delete store
-export const deleteStore = async (storeId: string): Promise<boolean> => {
+// Delete store (and optionally the owner account)
+export const deleteStore = async (storeId: string, deleteUser: boolean = false): Promise<boolean> => {
     try {
-        const result = await platformManagementApi.deleteStore(storeId);
+        const result = await platformManagementApi.deleteStore(storeId, deleteUser);
         return result.success;
     } catch (error) {
         console.error('Error deleting store:', error);

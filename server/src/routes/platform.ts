@@ -328,34 +328,49 @@ router.patch('/stores/:id/status', authMiddleware, adminMiddleware, async (req, 
 
 /**
  * DELETE /api/platform/stores/:id
- * Delete a store
+ * Delete a store (and optionally the owner account)
+ * Query params:
+ *   - deleteUser=true: Also delete the owner's user account
  */
 router.delete('/stores/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
-        // This is a destructive operation. In a real app we might soft-delete or archive.
-        // For this migration, we delete related data.
+        const deleteUser = req.query.deleteUser === 'true';
 
         const store = await Store.findById(id);
         if (!store) {
-            return res.status(404).json({ error: 'Loja não encontrada' });
+            return res.status(404).json({ success: false, error: 'Loja não encontrada' });
         }
+
+        // Find owner user
+        const owner = await User.findOne({ storeId: id });
 
         // Delete related data (cascade)
         await Promise.all([
-            Store.findByIdAndDelete(id),
-            // User.deleteOne({ _id: store.ownerId }), // Option: keep user or delete? Let's keep user for now or delete if requested
+            // Delete appointments
             Appointment.deleteMany({ storeId: id }),
-            // Service.deleteMany({ storeId: id }),
-            // Customer.deleteMany({ storeId: id }),
-            // Complaint.deleteMany({ targetStoreId: id }),
-            // Review.deleteMany({ storeId: id })
+            // Delete complaints related to this store
+            Complaint.deleteMany({ targetStoreId: id }),
+            // Delete support tickets for this store
+            SupportTicket.deleteMany({ storeId: id }),
+            // Delete the store itself
+            Store.findByIdAndDelete(id),
         ]);
 
-        res.json({ message: 'Loja removida com sucesso' });
+        // Optionally delete the owner account
+        if (deleteUser && owner) {
+            await User.findByIdAndDelete(owner._id);
+        }
+
+        res.json({
+            success: true,
+            message: deleteUser
+                ? 'Loja e conta do proprietário removidos com sucesso'
+                : 'Loja removida com sucesso (conta do proprietário mantida)'
+        });
     } catch (error) {
         console.error('Error deleting store:', error);
-        res.status(500).json({ error: 'Erro ao excluir loja' });
+        res.status(500).json({ success: false, error: 'Erro ao excluir loja' });
     }
 });
 

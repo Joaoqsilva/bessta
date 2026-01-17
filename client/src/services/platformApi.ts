@@ -246,8 +246,8 @@ export const platformManagementApi = {
         };
     },
 
-    deleteStore: async (storeId: string) => {
-        await api.delete(`/platform/stores/${storeId}`);
+    deleteStore: async (storeId: string, deleteUser: boolean = false) => {
+        await api.delete(`/platform/stores/${storeId}`, { params: { deleteUser } });
         return {
             success: true
         };
