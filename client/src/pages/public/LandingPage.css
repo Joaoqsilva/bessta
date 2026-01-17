@@ -489,6 +489,7 @@
     border-radius: var(--radius-2xl);
     border: 1px solid var(--surface-100);
     transition: all var(--transition-base);
+    text-align: center;
 }
 
 .feature-card:hover {
@@ -507,7 +508,7 @@
     background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-200) 100%);
     color: var(--primary-600);
     border-radius: var(--radius-xl);
-    margin-bottom: var(--spacing-5);
+    margin: 0 auto var(--spacing-5);
 }
 
 .feature-title {
