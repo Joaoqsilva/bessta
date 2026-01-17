@@ -63,6 +63,7 @@ const plans = [
             'Até 30 agendamentos/mês',
             '1 serviço cadastrado',
             'Dashboard básico',
+            'Notificações por Email',
             'Suporte por email',
         ],
         cta: 'Começar Grátis',
@@ -78,6 +79,7 @@ const plans = [
             'Serviços ilimitados',
             'Layouts exclusivos',
             // 'Lembretes via WhatsApp',
+            'Notificações por Email',
             'Relatórios avançados',
             'Página personalizada',
             // 'Domínio personalizado', // Disabled temporarily
@@ -245,9 +247,9 @@ export const LandingPage = () => {
             </section>
 
             {/* Features Section */}
-            <section className="features-section">
+            <section className="features-section" id="features">
                 <div className="container">
-                    <div className="section-header">
+                    <div className="section-header" style={{ textAlign: 'center' }}>
                         <span className="section-badge">Recursos</span>
                         <h2 className="section-title">Tudo que você precisa para crescer</h2>
                         <p className="section-description">
@@ -276,7 +278,7 @@ export const LandingPage = () => {
             {/* How it Works Section */}
             <section className="how-it-works-section">
                 <div className="container">
-                    <div className="section-header">
+                    <div className="section-header" style={{ textAlign: 'center' }}>
                         <span className="section-badge">Como Funciona</span>
                         <h2 className="section-title">Simples como 1, 2, 3</h2>
                     </div>
@@ -316,7 +318,7 @@ export const LandingPage = () => {
             {/* Testimonials Section */}
             <section className="testimonials-section">
                 <div className="container">
-                    <div className="section-header">
+                    <div className="section-header" style={{ textAlign: 'center' }}>
                         <span className="section-badge">Depoimentos</span>
                         <h2 className="section-title">O que dizem nossos clientes</h2>
                     </div>
@@ -348,9 +350,9 @@ export const LandingPage = () => {
             </section>
 
             {/* Pricing Section */}
-            <section className="pricing-section">
+            <section className="pricing-section" id="pricing">
                 <div className="container">
-                    <div className="section-header">
+                    <div className="section-header" style={{ textAlign: 'center' }}>
                         <span className="section-badge">Planos</span>
                         <h2 className="section-title">Escolha o plano ideal para você</h2>
                         <p className="section-description">
