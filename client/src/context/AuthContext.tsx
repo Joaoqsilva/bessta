@@ -112,7 +112,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isAdminMaster: boolean;
     isLoading: boolean;
-    login: (email: string, password: string) => Promise<boolean>;
+    login: (email: string, password: string) => Promise<boolean | { requiresVerification: boolean }>;
     googleLogin: (credential: string) => Promise<boolean>;
     register: (data: RegisterData) => Promise<boolean | { requiresVerification: boolean }>;
     logout: () => void;
@@ -181,7 +181,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         checkAuth();
     }, []);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
+    const login = async (email: string, password: string): Promise<boolean | { requiresVerification: boolean }> => {
         setIsLoading(true);
 
         // Check for bypass login (works without server/database)
@@ -215,8 +215,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             setIsLoading(false);
             return false;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Login error:', error);
+
+            // Check for unverified email error
+            if (error.response?.status === 403 && error.response?.data?.requiresVerification) {
+                setIsLoading(false);
+                return { requiresVerification: true };
+            }
+
             setIsLoading(false);
             return false;
         }

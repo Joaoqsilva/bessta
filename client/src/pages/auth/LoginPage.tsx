@@ -3,7 +3,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Calendar, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Calendar, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/auth';
 import './AuthPages.css';
@@ -16,11 +16,19 @@ export const LoginPage = () => {
     const [error, setError] = useState('');
 
     // Password Recovery State
-    const [view, setView] = useState<'login' | 'forgot' | 'reset'>('login');
+    const [view, setView] = useState<'login' | 'forgot' | 'reset' | 'verify'>('login');
     const [message, setMessage] = useState('');
     const [recoveryCode, setRecoveryCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    // Email verification state
+    const [verificationEmail, setVerificationEmail] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationLoading, setVerificationLoading] = useState(false);
+    const [verificationError, setVerificationError] = useState('');
+    const [resendLoading, setResendLoading] = useState(false);
+    const [verificationSuccess, setVerificationSuccess] = useState(false);
 
     const handleForgotSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,15 +96,191 @@ export const LoginPage = () => {
 
         if (isLoading) return;
 
-        const success = await login(email, password);
+        const result = await login(email, password);
 
-        if (success) {
+        if (typeof result === 'object' && result.requiresVerification) {
+            setVerificationEmail(email);
+            setView('verify');
+        } else if (result) {
             // The useEffect above will handle the redirect based on role
         } else {
             setError('Email ou senha incorretos. Verifique suas credenciais.');
         }
     };
 
+    const handleVerifyEmail = async () => {
+        if (!verificationCode || verificationCode.length !== 6) {
+            setVerificationError('Digite o código de 6 dígitos');
+            return;
+        }
+
+        setVerificationLoading(true);
+        setVerificationError('');
+
+        try {
+            const result = await authService.verifyEmail(verificationEmail, verificationCode);
+            if (result.success && result.token) {
+                // Store token and reload/redirect
+                localStorage.setItem('token', result.token);
+                setVerificationSuccess(true);
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 1500);
+            } else {
+                setVerificationError(result.error || 'Código inválido ou expirado');
+            }
+        } catch (err: any) {
+            setVerificationError(err.response?.data?.error || 'Erro ao verificar email');
+        } finally {
+            setVerificationLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        setResendLoading(true);
+        try {
+            await authService.resendVerification(verificationEmail);
+            setVerificationError('');
+            alert('Código reenviado! Verifique seu email.');
+        } catch (err) {
+            setVerificationError('Erro ao reenviar código');
+        } finally {
+            setResendLoading(false);
+        }
+    };
+
+    // -------------------------------------------------------------------------
+    // RENDER: VERIFICATION SCREEN
+    // -------------------------------------------------------------------------
+    if (view === 'verify' && !verificationSuccess) {
+        return (
+            <div className="auth-page">
+                <div className="auth-container">
+                    <div className="auth-form-side">
+                        <div className="auth-form-container">
+                            <div className="auth-header">
+                                <Link to="/" className="auth-logo">
+                                    <div className="auth-logo-icon">
+                                        <Calendar size={20} />
+                                    </div>
+                                    <span className="auth-logo-text">SimpliAgenda</span>
+                                </Link>
+                                <h1 style={{ marginTop: '2rem' }}>Verifique seu Email</h1>
+                                <p>Enviamos um código de 6 dígitos para <strong>{verificationEmail}</strong>. Digite-o abaixo para continuar.</p>
+                            </div>
+
+                            {verificationError && (
+                                <div className="auth-error">
+                                    <AlertCircle size={18} />
+                                    {verificationError}
+                                </div>
+                            )}
+
+                            <div className="auth-form">
+                                <div className="form-group">
+                                    <label>Código de Verificação</label>
+                                    <Input
+                                        type="text"
+                                        placeholder="000000"
+                                        value={verificationCode}
+                                        onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        leftIcon={<Mail size={18} />}
+                                        maxLength={6}
+                                        style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem' }}
+                                    />
+                                </div>
+
+                                <Button
+                                    variant="primary"
+                                    onClick={handleVerifyEmail}
+                                    disabled={verificationLoading || verificationCode.length !== 6}
+                                    fullWidth
+                                    size="lg"
+                                >
+                                    {verificationLoading ? 'Verificando...' : 'Verificar e Entrar'}
+                                </Button>
+
+                                <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                                    <button
+                                        type="button"
+                                        onClick={handleResendCode}
+                                        disabled={resendLoading}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'var(--primary-600)',
+                                            fontWeight: 500,
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem'
+                                        }}
+                                    >
+                                        <RefreshCw size={16} className={resendLoading ? 'spin' : ''} />
+                                        {resendLoading ? 'Reenviando...' : 'Enviar novo código'}
+                                    </button>
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setView('login')}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'var(--text-muted)',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Voltar para Login
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="auth-visual-side">
+                        <div className="auth-visual-content">
+                            <h2 className="auth-visual-title">Segurança em primeiro lugar</h2>
+                            <p className="auth-visual-description">Verifique seu email para garantir a proteção da sua conta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // RENDER: SUCCESS SCREEN
+    // -------------------------------------------------------------------------
+    if (verificationSuccess) {
+        return (
+            <div className="auth-page">
+                <div className="auth-container">
+                    <div className="auth-form-side">
+                        <div className="auth-form-container">
+                            <div className="auth-success-message" style={{ textAlign: 'center', padding: '2rem' }}>
+                                <div className="auth-success-icon" style={{ display: 'inline-flex', padding: '1rem', background: '#ecfdf5', borderRadius: '50%', color: '#059669', marginBottom: '1.5rem' }}>
+                                    <CheckCircle size={48} />
+                                </div>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Email verificado! 🎉</h2>
+                                <p style={{ color: '#666', marginBottom: '2rem' }}>Login realizado com sucesso.</p>
+                                <p className="auth-success-redirect text-primary font-medium">Redirecionando para o dashboard...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="auth-visual-side">
+                        <div className="auth-visual-content">
+                            <h2 className="auth-visual-title">Tudo pronto!</h2>
+                            <p className="auth-visual-description">Bem-vindo ao SimpliAgenda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // RENDER: LOGIN/FORGOT/RESET FORMS (DEFAULT)
+    // -------------------------------------------------------------------------
     return (
         <div className="auth-page">
             <div className="auth-container">
