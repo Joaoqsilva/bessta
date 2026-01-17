@@ -931,14 +931,25 @@ router.post('/forgot-password', async (req, res) => {
         await user.save();
 
         // Send email
-        await sendPasswordResetEmail(user.email, code, user.ownerName || user.name || 'Usuário');
+        const emailSent = await sendPasswordResetEmail(user.email, code, user.ownerName || user.name || 'Usuário');
 
-        await AuditLogService.log({
-            userId: user._id.toString(),
-            action: 'PASSWORD_RESET_REQUEST',
-            ip,
-            severity: 'info'
-        });
+        if (emailSent) {
+            await AuditLogService.log({
+                userId: user._id.toString(),
+                action: 'PASSWORD_RESET_REQUEST',
+                ip,
+                severity: 'info'
+            });
+        } else {
+            console.error('Failed to send reset email to:', user.email);
+            await AuditLogService.log({
+                userId: user._id.toString(),
+                action: 'PASSWORD_RESET_EMAIL_FAILED',
+                ip,
+                severity: 'error',
+                details: { email: user.email }
+            });
+        }
 
         res.json({ success: true, message: 'Se o email existir, um código será enviado.' });
     } catch (error) {

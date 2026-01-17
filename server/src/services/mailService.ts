@@ -17,11 +17,11 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendEmail = async (to: string, subject: string, html: string) => {
+export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
     // If no credentials, just log (Mock mode for dev)
     if (!process.env.SMTP_USER) {
         console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
-        return { messageId: 'mock-id' };
+        return true;
     }
 
     try {
@@ -32,7 +32,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
             html,
         });
         console.log("Message sent: %s", info.messageId);
-        return info;
+        return true;
     } catch (error) {
         console.error("Error sending email: ", error);
 
@@ -44,10 +44,10 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
             const codeMatch = html.match(/>(\d{6})</);
             if (codeMatch) console.log(`🔐 CODE: ${codeMatch[1]}`);
             console.log('------------------------------');
-            return { messageId: 'fallback-log' };
+            return true;
         }
 
-        return null;
+        return false;
     }
 };
 
@@ -85,7 +85,7 @@ export const sendAppointmentConfirmation = async (appointment: any, store: IStor
         </div>
     `;
 
-    await sendEmail(appointment.customerEmail, subject, html);
+    return await sendEmail(appointment.customerEmail, subject, html);
 };
 
 export const sendPasswordResetEmail = async (email: string, code: string, name: string) => {
@@ -111,7 +111,7 @@ export const sendPasswordResetEmail = async (email: string, code: string, name: 
         </div>
     `;
 
-    await sendEmail(email, subject, html);
+    return await sendEmail(email, subject, html);
 };
 
 export const sendAppointmentReminder = async (appointment: any, store: IStore) => {
@@ -144,5 +144,5 @@ export const sendAppointmentReminder = async (appointment: any, store: IStore) =
         </div>
     `;
 
-    await sendEmail(appointment.customerEmail, subject, html);
+    return await sendEmail(appointment.customerEmail, subject, html);
 };
