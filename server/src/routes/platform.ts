@@ -485,7 +485,7 @@ router.put('/users/:id/plan', authMiddleware, adminMiddleware, async (req, res) 
 
 /**
  * POST /api/platform/test-email
- * Send a test email to verify SMTP configuration (admin only)
+ * Send a test email to verify email configuration (admin only)
  */
 router.post('/test-email', authMiddleware, adminMiddleware, async (req, res) => {
     try {
@@ -503,7 +503,7 @@ router.post('/test-email', authMiddleware, adminMiddleware, async (req, res) => 
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #4f46e5;">✅ Configuração de Email Funcionando!</h2>
                 <p>Este é um email de teste enviado pelo painel administrativo do Simpliagenda.</p>
-                <p>Se você está recebendo esta mensagem, significa que as configurações SMTP estão corretas.</p>
+                <p>Se você está recebendo esta mensagem, significa que as configurações de email estão corretas.</p>
                 <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
                 <p style="font-size: 12px; color: #6b7280;">
                     Enviado em: ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
@@ -518,7 +518,7 @@ router.post('/test-email', authMiddleware, adminMiddleware, async (req, res) => 
         } else {
             res.status(500).json({
                 success: false,
-                error: 'Falha ao enviar email. Verifique as configurações SMTP no servidor.'
+                error: 'Falha ao enviar email. Verifique as variáveis RESEND_API_KEY ou SMTP no servidor.'
             });
         }
     } catch (error: any) {
