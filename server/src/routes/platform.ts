@@ -518,7 +518,7 @@ router.post('/test-email', authMiddleware, adminMiddleware, async (req, res) => 
         } else {
             res.status(500).json({
                 success: false,
-                error: 'Falha ao enviar email. Verifique a variável RESEND_API_KEY no servidor.'
+                error: 'Falha ao enviar email. Verifique a variável BREVO_API_KEY no servidor.'
             });
         }
     } catch (error: any) {

@@ -460,7 +460,7 @@ export const MasterSettingsPage = () => {
                                         Testar Configuração de Email
                                     </h3>
                                     <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-                                        Envie um email de teste para verificar se o Resend está configurado corretamente.
+                                        Envie um email de teste para verificar se o Brevo está configurado corretamente.
                                     </p>
                                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                                         <Input

@@ -5,16 +5,16 @@ import { IStore } from '../models/Store';
 dotenv.config();
 
 // ========================================
-// EMAIL SERVICE - Using Resend API
+// EMAIL SERVICE - Using Brevo (Sendinblue) API
 // ========================================
 
 /**
- * Send email via Resend API
+ * Send email via Brevo API
  */
 export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
     // Check for API key
-    if (!process.env.RESEND_API_KEY) {
-        console.log(`[Mock Email - No RESEND_API_KEY] To: ${to}, Subject: ${subject}`);
+    if (!process.env.BREVO_API_KEY) {
+        console.log(`[Mock Email - No BREVO_API_KEY] To: ${to}, Subject: ${subject}`);
         // In dev, log the code if present
         if (process.env.NODE_ENV !== 'production') {
             const codeMatch = html.match(/>(\d{6})</);
@@ -24,31 +24,35 @@ export const sendEmail = async (to: string, subject: string, html: string): Prom
     }
 
     try {
-        const response = await fetch('https://api.resend.com/emails', {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
+                'api-key': process.env.BREVO_API_KEY,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
-                from: `${process.env.EMAIL_FROM_NAME || 'Simpliagenda'} <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
-                to: [to],
+                sender: {
+                    name: process.env.EMAIL_FROM_NAME || 'Simpliagenda',
+                    email: process.env.EMAIL_FROM || 'simpliagenda@gmail.com'
+                },
+                to: [{ email: to }],
                 subject,
-                html
+                htmlContent: html
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('Resend API error:', errorData);
+            console.error('Brevo API error:', errorData);
             return false;
         }
 
         const data = await response.json();
-        console.log('Email sent via Resend:', data.id);
+        console.log('Email sent via Brevo:', data.messageId);
         return true;
     } catch (error) {
-        console.error('Error sending email via Resend:', error);
+        console.error('Error sending email via Brevo:', error);
         return false;
     }
 };
