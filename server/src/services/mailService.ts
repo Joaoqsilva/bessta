@@ -6,28 +6,69 @@ import { IStore } from '../models/Store';
 
 dotenv.config();
 
-// Create reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
+// ========================================
+// EMAIL SERVICE - Supports Resend API or SMTP
+// ========================================
+
+// Check which provider to use
+const useResend = !!process.env.RESEND_API_KEY;
+
+// SMTP Transporter (fallback if no Resend)
+const transporter = !useResend ? nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: process.env.SMTP_SECURE === "true", // true for 465, false for other ports
+    secure: process.env.SMTP_SECURE === "true",
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
-    // Timeout settings to prevent hanging
-    connectionTimeout: 10000, // 10 seconds
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
-    // TLS settings for compatibility
     tls: {
-        rejectUnauthorized: false // Allow self-signed certificates
+        rejectUnauthorized: false
     }
-});
+}) : null;
 
-export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
-    // If no credentials, just log (Mock mode for dev)
-    if (!process.env.SMTP_USER) {
+/**
+ * Send email via Resend API
+ */
+const sendViaResend = async (to: string, subject: string, html: string): Promise<boolean> => {
+    try {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: `${process.env.EMAIL_FROM_NAME || 'Simpliagenda'} <${process.env.EMAIL_FROM || 'onboarding@resend.dev'}>`,
+                to: [to],
+                subject,
+                html
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Resend API error:', errorData);
+            return false;
+        }
+
+        const data = await response.json();
+        console.log('Email sent via Resend:', data.id);
+        return true;
+    } catch (error) {
+        console.error('Error sending email via Resend:', error);
+        return false;
+    }
+};
+
+/**
+ * Send email via SMTP (nodemailer)
+ */
+const sendViaSMTP = async (to: string, subject: string, html: string): Promise<boolean> => {
+    if (!transporter || !process.env.SMTP_USER) {
         console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
         return true;
     }
@@ -39,24 +80,36 @@ export const sendEmail = async (to: string, subject: string, html: string): Prom
             subject,
             html,
         });
-        console.log("Message sent: %s", info.messageId);
+        console.log("Email sent via SMTP:", info.messageId);
         return true;
     } catch (error) {
-        console.error("Error sending email: ", error);
-
-        // Fallback for DEV: Log the content
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('--- FALLBACK EMAIL PREVIEW ---');
-            console.log(`To: ${to}`);
-            console.log(`Subject: ${subject}`);
-            const codeMatch = html.match(/>(\d{6})</);
-            if (codeMatch) console.log(`🔐 CODE: ${codeMatch[1]}`);
-            console.log('------------------------------');
-            return true;
-        }
-
+        console.error("Error sending email via SMTP:", error);
         return false;
     }
+};
+
+/**
+ * Main send email function - uses Resend if available, otherwise SMTP
+ */
+export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
+    // Check for credentials
+    if (!process.env.RESEND_API_KEY && !process.env.SMTP_USER) {
+        console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
+        // In dev, log the code if present
+        if (process.env.NODE_ENV !== 'production') {
+            const codeMatch = html.match(/>(\d{6})</);
+            if (codeMatch) console.log(`🔐 CODE: ${codeMatch[1]}`);
+        }
+        return true;
+    }
+
+    // Use Resend if configured
+    if (useResend) {
+        return await sendViaResend(to, subject, html);
+    }
+
+    // Otherwise use SMTP
+    return await sendViaSMTP(to, subject, html);
 };
 
 export const sendAppointmentConfirmation = async (appointment: any, store: IStore) => {
@@ -129,7 +182,6 @@ export const sendAppointmentReminder = async (appointment: any, store: IStore) =
         timeStyle: 'short',
         timeZone: 'America/Sao_Paulo'
     });
-    // For "Today at 15:00" logic if needed, but let's stick to simple "Lembra-te do agendamento"
 
     const subject = `Lembrete: Agendamento Hoje - ${store.name}`;
     const html = `
