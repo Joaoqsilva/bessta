@@ -33,11 +33,12 @@ export const MasterAnalyticsPage = () => {
 
     const loadData = async () => {
         try {
-            const [allStores, platformStats] = await Promise.all([
-                getAllRegisteredStores(),
+            const [result, platformStats] = await Promise.all([
+                getAllRegisteredStores(1, 1000), // Fetch many for client-side stats for now
                 getPlatformStats()
             ]);
 
+            const allStores = result.stores;
             setStores(allStores);
             setStats(platformStats);
 

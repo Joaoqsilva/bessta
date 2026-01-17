@@ -28,8 +28,8 @@ const features = [
     },
     {
         icon: Bell,
-        title: 'Lembretes Automáticos',
-        description: 'Notificações via WhatsApp e email para reduzir faltas e cancelamentos em até 70%.',
+        title: 'Notificações em Tempo Real',
+        description: 'Acompanhe todos os agendamentos e atualizações diretamente no painel de controle.',
     },
     {
         icon: Users,
@@ -62,7 +62,7 @@ const plans = [
         features: [
             'Até 30 agendamentos/mês',
             '1 serviço cadastrado',
-            'Lembretes por email',
+            'Dashboard básico',
             'Suporte por email',
         ],
         cta: 'Começar Grátis',
@@ -108,7 +108,7 @@ const testimonials = [
         name: 'Dr. Patricia Mendes',
         role: 'Psicóloga',
         avatar: 'PM',
-        content: 'A organização e os lembretes automáticos praticamente eliminaram as faltas dos pacientes.',
+        content: 'A organização do sistema praticamente eliminou as faltas dos pacientes. Recomendo muito!',
         rating: 5,
     },
 ];

@@ -401,7 +401,7 @@ export const RegisterPage = () => {
 
                         <ul className="auth-visual-features">
                             <li>✓ Agendamento online 24/7</li>
-                            <li>✓ Lembretes automáticos</li>
+                            <li>✓ Gestão de clientes</li>
                             <li>✓ Dashboard completo</li>
                             <li>✓ Relatórios de performance</li>
                         </ul>

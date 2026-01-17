@@ -5,6 +5,7 @@ import { Modal, ConfirmDialog } from '../../components/Modal';
 import { Input, TextArea } from '../../components/Input';
 import { useAuth, type Service } from '../../context/AuthContext';
 import { serviceApi } from '../../services/serviceApi';
+import { showSuccess, showError } from '../../utils/toast';
 import './ServicesPage.css';
 
 export const ServicesPage = () => {
@@ -75,11 +76,11 @@ export const ServicesPage = () => {
                 setIsAddModalOpen(false);
                 resetForm();
             } else {
-                alert('Erro ao criar serviço');
+                showError('Erro ao criar serviço');
             }
         } catch (error) {
             console.error('Create service error:', error);
-            alert('Erro ao criar serviço');
+            showError('Erro ao criar serviço');
         } finally {
             setIsProcessing(false);
         }
@@ -104,11 +105,11 @@ export const ServicesPage = () => {
                 setSelectedService(null);
                 resetForm();
             } else {
-                alert('Erro ao atualizar serviço');
+                showError('Erro ao atualizar serviço');
             }
         } catch (error) {
             console.error('Update service error:', error);
-            alert('Erro ao atualizar serviço');
+            showError('Erro ao atualizar serviço');
         } finally {
             setIsProcessing(false);
         }
@@ -125,11 +126,11 @@ export const ServicesPage = () => {
                 setIsDeleteDialogOpen(false);
                 setSelectedService(null);
             } else {
-                alert('Erro ao excluir serviço');
+                showError('Erro ao excluir serviço');
             }
         } catch (error) {
             console.error('Delete service error:', error);
-            alert('Erro ao excluir serviço');
+            showError('Erro ao excluir serviço');
         } finally {
             setIsProcessing(false);
         }

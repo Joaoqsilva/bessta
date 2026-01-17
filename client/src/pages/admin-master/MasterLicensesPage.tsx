@@ -3,6 +3,7 @@ import { Button } from '../../components/Button';
 import { Modal } from '../../components/Modal';
 import { licenseApi } from '../../services/licenseApi';
 import { Plus, Key, Copy, Trash, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { showSuccess, showError } from '../../utils/toast';
 import './MasterLicensesPage.css';
 
 interface LicenseKey {
@@ -57,7 +58,7 @@ export const MasterLicensesPage = () => {
             }
         } catch (error) {
             console.error('Error generating keys:', error);
-            alert('Erro ao gerar chaves');
+            showError('Erro ao gerar chaves');
         } finally {
             setIsGenerating(false);
         }

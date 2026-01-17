@@ -9,6 +9,7 @@ import { platformSettingsApi } from '../../services/platformApi';
 import type { PlatformSettings as IPlatformSettings } from '../../services/platformApi';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import { showError } from '../../utils/toast';
 import './MasterSettingsPage.css';
 
 interface PlatformSettings {
@@ -97,7 +98,7 @@ export const MasterSettingsPage = () => {
             setTimeout(() => setShowSaved(false), 3000);
         } catch (error) {
             console.error('Error saving settings:', error);
-            alert('Erro ao salvar configurações');
+            showError('Erro ao salvar configurações');
         } finally {
             setIsSaving(false);
         }

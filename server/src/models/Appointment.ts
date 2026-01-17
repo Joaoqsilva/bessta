@@ -14,6 +14,7 @@ export interface IAppointment extends Document {
     duration: number; // Duration in minutes
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
     notes?: string;
+    reminderSent: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -71,6 +72,10 @@ const appointmentSchema = new Schema<IAppointment>({
     },
     notes: {
         type: String,
+    },
+    reminderSent: {
+        type: Boolean,
+        default: false,
     },
 }, {
     timestamps: true,

@@ -12,6 +12,7 @@ import type { StoreCustomization } from '../../context/StoreCustomizationService
 import { PatientAuthModal } from '../../components/auth/PatientAuthModal';
 import { ClientDashboard } from '../../components/ClientDashboard';
 import { useAuth } from '../../context/AuthContext';
+import { getWhatsAppLink, getTelLink } from '../../utils/phone';
 import './LandingPageDental.css';
 
 /* ============================================================
@@ -145,7 +146,7 @@ export const LandingPageDental = ({ store, customization, onBook, isEditorMode, 
                                 <button onClick={onBook} className="dental-btn dental-btn-primary dental-btn-lg">
                                     <Calendar size={20} /> Agendar Consulta
                                 </button>
-                                <a href="tel:+5547991394589" className="dental-btn dental-btn-outline">
+                                <a href={getTelLink(store?.phone) || 'tel:+5500000000000'} className="dental-btn dental-btn-outline">
                                     <Phone size={20} /> Ligar Agora
                                 </a>
                             </div>
@@ -346,7 +347,7 @@ export const LandingPageDental = ({ store, customization, onBook, isEditorMode, 
                                 <button onClick={onBook} className="dental-btn dental-btn-white dental-btn-lg">
                                     <Calendar size={20} /> Agendar Online
                                 </button>
-                                <a href="https://wa.me/5547991394589" target="_blank" rel="noopener noreferrer" className="dental-btn dental-btn-outline-white dental-btn-lg">
+                                <a href={getWhatsAppLink(store?.phone || customization?.whatsapp) || 'https://wa.me/5500000000000'} target="_blank" rel="noopener noreferrer" className="dental-btn dental-btn-outline-white dental-btn-lg">
                                     <Phone size={20} /> WhatsApp
                                 </a>
                             </div>

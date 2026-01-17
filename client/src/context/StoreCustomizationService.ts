@@ -61,24 +61,32 @@ export const FONT_OPTIONS = [
     { id: 'outfit', name: 'Outfit', preview: 'font-family: Outfit, sans-serif' },
 ];
 
+export const LAYOUT_CATEGORIES = [
+    { id: 'all', name: 'Todos os Layouts' },
+    { id: 'therapy', name: 'Terapia / Psicologia' },
+    { id: 'clinic', name: 'Clínica / Saúde' },
+    // { id: 'beauty', name: 'Beleza / Estética' },
+    // { id: 'dental', name: 'Odontologia' },
+];
+
 export const LAYOUT_OPTIONS = [
     // ===== LAYOUTS ORIGINAIS =====
-    { id: 'sophisticated-therapy', name: 'Sofisticado (Original)', description: 'Design premium com efeitos de vidro', isPremium: false },
-    { id: 'modern-therapy', name: 'Moderno (Original)', description: 'Glassmorphism e Design Sofisticado', isPremium: false },
-    { id: 'lacanian-clinic', name: 'Minimalista (Original)', description: 'Estilo clássico e misterioso com glassmorfismo', isPremium: true },
+    { id: 'sophisticated-therapy', name: 'Sofisticado (Original)', description: 'Design premium com efeitos de vidro', isPremium: false, category: 'therapy' },
+    { id: 'modern-therapy', name: 'Moderno (Original)', description: 'Glassmorphism e Design Sofisticado', isPremium: false, category: 'therapy' },
+    { id: 'lacanian-clinic', name: 'Minimalista (Original)', description: 'Estilo clássico e misterioso com glassmorfismo', isPremium: true, category: 'clinic' },
 
     // ===== LAYOUTS DE TERAPIA/SAÚDE =====
-    { id: 'therapy-new', name: 'Terapia (Novo)', description: 'Azul e profissional (8 seções)', isPremium: true },
-    { id: 'clinic-new', name: 'Clínica Acolhedora', description: 'Tons terrosos e institucional (9 seções)', isPremium: true },
-    { id: 'harmony-new', name: 'Harmony Zen', description: 'Verde sálvia e mindfulness (9 seções)', isPremium: true },
-    { id: 'sunny-new', name: 'Sunny Day', description: 'Laranja e otimista (9 seções)', isPremium: true },
-    { id: 'vitality-new', name: 'Vitality Performance', description: 'Verde esmeralda e alta performance (10 seções)', isPremium: true },
-    { id: 'vibrant-new', name: 'Vibrant Future', description: 'Cores neon e design 2026 (9 seções)', isPremium: true },
+    { id: 'therapy-new', name: 'Terapia (Novo)', description: 'Azul e profissional (8 seções)', isPremium: true, category: 'therapy' },
+    { id: 'clinic-new', name: 'Clínica Acolhedora', description: 'Tons terrosos e institucional (9 seções)', isPremium: true, category: 'clinic' },
+    { id: 'harmony-new', name: 'Harmony Zen', description: 'Verde sálvia e mindfulness (9 seções)', isPremium: true, category: 'therapy' },
+    { id: 'sunny-new', name: 'Sunny Day', description: 'Laranja e otimista (9 seções)', isPremium: true, category: 'therapy' },
+    { id: 'vitality-new', name: 'Vitality Performance', description: 'Verde esmeralda e alta performance (10 seções)', isPremium: true, category: 'clinic' },
+    { id: 'vibrant-new', name: 'Vibrant Future', description: 'Cores neon e design 2026 (9 seções)', isPremium: true, category: 'therapy' },
 
-    // ===== LAYOUTS SEGMENTADOS =====
-    { id: 'barber-new', name: 'Barbearia Premium', description: 'Dark/Gold para barbearias masculinas', isPremium: true },
-    { id: 'nails-new', name: 'Nail Salon', description: 'Rosa/Roxo para salões de manicure', isPremium: true },
-    { id: 'dental-new', name: 'Clínica Odontológica', description: 'Azul/Ciano para dentistas', isPremium: true },
+    // ===== LAYOUTS SEGMENTADOS (TEMPORARIAMENTE DESABILITADOS) =====
+    // { id: 'barber-new', name: 'Barbearia Premium', description: 'Dark/Gold para barbearias masculinas', isPremium: true, category: 'beauty' },
+    // { id: 'nails-new', name: 'Nail Salon', description: 'Rosa/Roxo para salões de manicure', isPremium: true, category: 'beauty' },
+    // { id: 'dental-new', name: 'Clínica Odontológica', description: 'Azul/Ciano para dentistas', isPremium: true, category: 'dental' },
 ];
 
 export const BUTTON_STYLES = [

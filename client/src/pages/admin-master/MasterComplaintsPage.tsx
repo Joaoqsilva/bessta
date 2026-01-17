@@ -7,6 +7,7 @@ import { Button } from '../../components/Button';
 import { Modal } from '../../components/Modal';
 import { complaintsApi } from '../../services/platformApi';
 import type { Complaint as IComplaint } from '../../services/platformApi';
+import { showError } from '../../utils/toast';
 import './MasterComplaintsPage.css';
 
 interface Complaint {
@@ -91,7 +92,7 @@ export const MasterComplaintsPage = () => {
             ));
         } catch (error) {
             console.error('Error updating complaint status:', error);
-            alert('Erro ao atualizar status');
+            showError('Erro ao atualizar status');
         }
     };
 
@@ -119,7 +120,7 @@ export const MasterComplaintsPage = () => {
             setResolution('');
         } catch (error) {
             console.error('Error resolving complaint:', error);
-            alert('Erro ao resolver reclamação');
+            showError('Erro ao resolver reclamação');
         }
     };
 

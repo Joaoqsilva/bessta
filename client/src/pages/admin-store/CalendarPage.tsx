@@ -8,6 +8,7 @@ import { appointmentApi } from '../../services/appointmentApi';
 import { serviceApi } from '../../services/serviceApi';
 import { storeApi } from '../../services/storeApi';
 import type { Appointment, Service } from '../../types';
+import { showSuccess, showError, showWarning } from '../../utils/toast';
 import './CalendarPage.css';
 
 const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -113,7 +114,7 @@ export const CalendarPage = () => {
                 await storeApi.updateWeeklySlots(store.id, newWeeklySlots);
             } catch (error) {
                 console.error("Failed to save slots", error);
-                alert("Erro ao salvar horários. Tente novamente.");
+                showError("Erro ao salvar horários. Tente novamente.");
             }
         }
     };
@@ -261,7 +262,7 @@ export const CalendarPage = () => {
         e.preventDefault();
 
         if (!selectedDate || !newCustomer || !newServiceId || !newTime || !store?.id) {
-            alert('Por favor, preencha todos os campos');
+            showWarning('Por favor, preencha todos os campos');
             return;
         }
 
@@ -290,12 +291,12 @@ export const CalendarPage = () => {
                 setNewPhone('');
                 setNewServiceId('');
                 setNewTime('');
-                alert('Agendamento criado com sucesso!');
+                showSuccess('Agendamento criado com sucesso!');
             }
         } catch (error: any) {
             console.error('Create appointment error:', error);
             const errorMessage = error.response?.data?.error || error.message || 'Erro desconhecido ao criar agendamento';
-            alert(`Erro: ${errorMessage}`);
+            showError(`Erro: ${errorMessage}`);
         } finally {
             setIsProcessing(false);
         }

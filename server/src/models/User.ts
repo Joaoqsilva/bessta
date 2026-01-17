@@ -26,6 +26,10 @@ export interface IUser {
     subscriptionStartDate?: Date;
     subscriptionEndDate?: Date;
     mpPaymentId?: string;
+    // Google OAuth
+    googleId?: string;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
@@ -100,6 +104,19 @@ const userSchema = new mongoose.Schema({
     mpPaymentId: {
         type: String,
         default: null,
+    },
+    // Google OAuth
+    googleId: {
+        type: String,
+        sparse: true, // Allows null but unique when set
+    },
+    resetPasswordToken: {
+        type: String,
+        select: false,
+    },
+    resetPasswordExpires: {
+        type: Date,
+        select: false,
     },
 }, {
     timestamps: true,

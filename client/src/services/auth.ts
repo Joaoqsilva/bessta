@@ -33,6 +33,12 @@ export const authService = {
         return response.data;
     },
 
+    // Login with Google OAuth
+    googleLogin: async (credential: string): Promise<AuthResponse & { isNewUser?: boolean }> => {
+        const response = await api.post('/auth/google', { credential });
+        return response.data;
+    },
+
     // Get current user profile
     getProfile: async (): Promise<AuthResponse> => {
         const response = await api.get('/auth/me');
@@ -42,6 +48,16 @@ export const authService = {
     // Update user profile
     updateProfile: async (data: Partial<User>): Promise<AuthResponse> => {
         const response = await api.put('/auth/profile', data);
+        return response.data;
+    },
+
+    forgotPassword: async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+        const response = await api.post('/auth/forgot-password', { email });
+        return response.data;
+    },
+
+    resetPassword: async (data: { email: string; code: string; newPassword: string }): Promise<{ success: boolean; message?: string; error?: string }> => {
+        const response = await api.post('/auth/reset-password', data);
         return response.data;
     }
 };

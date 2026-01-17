@@ -219,11 +219,22 @@ export const platformManagementApi = {
         };
     },
 
-    getStores: async () => {
-        const response = await api.get('/platform/stores');
+    getStores: async (params?: { page?: number; limit?: number; search?: string; status?: string }) => {
+        const response = await api.get('/platform/stores', { params });
+        // Response format is { stores: [], pagination: {} } if paginated, or [] if old format (handled for backward compat if needed)
+        // New format:
+        if (response.data.stores && response.data.pagination) {
+            return {
+                success: true,
+                stores: response.data.stores,
+                pagination: response.data.pagination
+            };
+        }
+        // Fallback for old API format if running against old server for some reason, though we updated it.
         return {
             success: true,
-            stores: response.data
+            stores: response.data,
+            pagination: { page: 1, limit: 1000, totalPages: 1, totalStores: response.data.length }
         };
     },
 

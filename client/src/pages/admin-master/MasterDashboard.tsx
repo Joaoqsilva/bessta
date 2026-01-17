@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Store, Users, AlertCircle, TrendingUp, DollarSign, Calendar, Star, ArrowUpRight, ArrowDownRight, Eye, MoreVertical, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { getPlatformStats, getAllRegisteredStores, updateStoreStatus, deleteStore, type PlatformStats, type RegisteredStore } from '../../context/AdminMasterService';
+import { showError } from '../../utils/toast';
 import './MasterDashboard.css';
 
 const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }: any) => (
@@ -37,12 +38,12 @@ export const MasterDashboard = () => {
     const loadData = async () => {
         setIsLoading(true);
         try {
-            const [platformStats, allStores] = await Promise.all([
+            const [platformStats, result] = await Promise.all([
                 getPlatformStats(),
-                getAllRegisteredStores()
+                getAllRegisteredStores(1, 10)
             ]);
             setStats(platformStats);
-            setStores(allStores);
+            setStores(result.stores);
         } catch (error) {
             console.error('Error loading master data:', error);
         } finally {
@@ -62,7 +63,7 @@ export const MasterDashboard = () => {
                 loadData();
                 setActiveMenu(null);
             } else {
-                alert('Erro ao atualizar status da loja');
+                showError('Erro ao atualizar status da loja');
             }
         }
     };
@@ -74,7 +75,7 @@ export const MasterDashboard = () => {
                 loadData();
                 setActiveMenu(null);
             } else {
-                alert('Erro ao excluir loja');
+                showError('Erro ao excluir loja');
             }
         }
     };

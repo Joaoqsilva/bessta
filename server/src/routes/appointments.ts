@@ -6,6 +6,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { Store } from '../models/Store';
 import { User } from '../models/User';
 import NotificationService from '../services/NotificationService';
+import { sendAppointmentConfirmation } from '../services/mailService';
 
 const router = express.Router();
 
@@ -171,6 +172,11 @@ router.post('/', appointmentLimiter, async (req, res) => {
                 `/app/appointments`
             );
         }
+
+        // Send email confirmation to customer
+        sendAppointmentConfirmation(appointment, store).catch(err =>
+            console.error('Failed to send confirmation email', err)
+        );
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

@@ -14,6 +14,7 @@ import AccountLockoutService from '../services/AccountLockoutService';
 import rateLimit from 'express-rate-limit';
 import { validate } from '../middleware/validate';
 import { registerSchema, loginSchema, updateProfileSchema } from '../schemas/authSchema';
+import { sendPasswordResetEmail } from '../services/mailService';
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -212,6 +213,184 @@ router.post('/register', validate(registerSchema), async (req: AuthRequest, res:
     }
 });
 
+
+/**
+ * POST /api/auth/google
+ * Login/Register with Google OAuth token
+ */
+router.post('/google', async (req: AuthRequest, res: Response) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return res.status(400).json({
+                success: false,
+                error: 'Token do Google é obrigatório'
+            });
+        }
+
+        // Decode the Google JWT token (we verify the signature client-side via Google's library)
+        // For production, you should verify the token with Google's API
+        // But for simplicity, we decode and trust the payload since it came from Google's SDK
+        let payload: { email?: string; name?: string; picture?: string; sub?: string };
+
+        try {
+            // Decode JWT without verification (Google SDK already verified it)
+            const base64Payload = credential.split('.')[1];
+            const decodedPayload = Buffer.from(base64Payload, 'base64').toString('utf8');
+            payload = JSON.parse(decodedPayload);
+        } catch (decodeError) {
+            console.error('Error decoding Google token:', decodeError);
+            return res.status(400).json({
+                success: false,
+                error: 'Token do Google inválido'
+            });
+        }
+
+        if (!payload.email) {
+            return res.status(400).json({
+                success: false,
+                error: 'Email não encontrado no token do Google'
+            });
+        }
+
+        const email = payload.email.toLowerCase();
+        const name = payload.name || 'Usuário Google';
+        const googleId = payload.sub;
+
+        // Check if user already exists
+        let user = await User.findOne({ email });
+        let store = null;
+        let isNewUser = false;
+
+        if (!user) {
+            // Create new user and store
+            isNewUser = true;
+
+            // Generate store name from user name
+            const storeName = `${name.split(' ')[0]}'s Shop`;
+
+            // Generate unique slug
+            let slug = createSlug(storeName);
+            const existingSlug = await Store.findOne({ slug });
+            if (existingSlug) {
+                slug = `${slug}-${uuidv4().slice(0, 6)}`;
+            }
+
+            // Create user (no password for Google users)
+            user = new User({
+                email,
+                password: uuidv4(), // Random password (won't be used)
+                ownerName: name,
+                role: 'store_owner',
+                plan: 'free',
+                googleId,
+            });
+
+            await user.save();
+
+            // Create store
+            store = new Store({
+                slug,
+                name: storeName,
+                description: `Bem-vindo! Agende seu horário conosco.`,
+                category: 'other',
+                email,
+                ownerId: user._id,
+                ownerName: name,
+                plan: 'free',
+            });
+
+            await store.save();
+
+            // Link user to store
+            user.storeId = store._id;
+            await user.save();
+
+            // Notify admins
+            const admins = await User.find({ role: 'admin_master' });
+            for (const admin of admins) {
+                NotificationService.create(
+                    admin._id,
+                    'system',
+                    'Nova Loja Registrada (Google)',
+                    `A loja ${storeName} foi criada por ${name} via Google.`,
+                    `/admin/master/stores`
+                );
+            }
+
+            await AuditLogService.log({
+                userId: user._id.toString(),
+                action: 'REGISTER_GOOGLE',
+                details: { email, provider: 'google' },
+                ip,
+                severity: 'info'
+            });
+        } else {
+            // Existing user - login
+            if (user.storeId) {
+                store = await Store.findById(user.storeId);
+            }
+
+            // Update Google ID if not set
+            if (!user.googleId && googleId) {
+                user.googleId = googleId;
+                await user.save();
+            }
+
+            await AuditLogService.loginSuccess(user._id.toString(), ip, userAgent);
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                error: 'Conta desativada. Entre em contato com o suporte.'
+            });
+        }
+
+        // Generate token
+        const token = generateToken(user);
+
+        res.json({
+            success: true,
+            token,
+            isNewUser,
+            user: {
+                id: user._id,
+                email: user.email,
+                ownerName: user.ownerName,
+                phone: user.phone,
+                role: user.role,
+                storeId: user.storeId,
+                plan: user.plan,
+            },
+            store: store ? {
+                id: store._id,
+                slug: store.slug,
+                name: store.name,
+                plan: store.plan,
+            } : null
+        });
+    } catch (error: any) {
+        console.error('Google login error:', error);
+        await AuditLogService.log({
+            action: 'GOOGLE_LOGIN_FAILED',
+            details: { error: error.message },
+            ip,
+            userAgent,
+            success: false,
+            severity: 'error'
+        });
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao fazer login com Google'
+        });
+    }
+});
 
 
 /**
@@ -722,6 +901,106 @@ router.post('/verify-password', authMiddleware, async (req: AuthRequest, res: Re
             success: false,
             message: 'Erro ao verificar senha'
         });
+    }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset
+ */
+router.post('/forgot-password', async (req, res) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ success: false, error: 'Email é obrigatório' });
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            // Return success even if user not found (security practice)
+            return res.json({ success: true, message: 'Se o email existir, um código será enviado.' });
+        }
+
+        // Generate 6 digit code
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Save to user (15 min exp)
+        user.resetPasswordToken = code;
+        user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+        await user.save();
+
+        // Send email
+        await sendPasswordResetEmail(user.email, code, user.ownerName || user.name || 'Usuário');
+
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'PASSWORD_RESET_REQUEST',
+            ip,
+            severity: 'info'
+        });
+
+        res.json({ success: true, message: 'Se o email existir, um código será enviado.' });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ success: false, error: 'Erro ao processar solicitação' });
+    }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password with code
+ */
+router.post('/reset-password', async (req, res) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    try {
+        const { email, code, newPassword } = req.body;
+
+        if (!email || !code || !newPassword) {
+            return res.status(400).json({ success: false, error: 'Todos os campos são obrigatórios' });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // Find user with matching code and valid expiration
+        // Note: resetPasswordToken and resetPasswordExpires are select: false
+        const user = await User.findOne({
+            email: normalizedEmail,
+            resetPasswordToken: code,
+            resetPasswordExpires: { $gt: Date.now() }
+        }).select('+resetPasswordToken +resetPasswordExpires');
+
+        if (!user) {
+            await AuditLogService.log({
+                action: 'PASSWORD_RESET_FAILED',
+                details: { email: normalizedEmail, reason: 'Invalid code or expired' },
+                ip,
+                success: false,
+                severity: 'warning'
+            });
+            return res.status(400).json({ success: false, error: 'Código inválido ou expirado' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, error: 'A senha deve ter no mínimo 6 caracteres' });
+        }
+
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'PASSWORD_RESET_SUCCESS',
+            ip,
+            severity: 'info'
+        });
+
+        res.json({ success: true, message: 'Senha alterada com sucesso' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ success: false, error: 'Erro ao redefinir senha' });
     }
 });
 

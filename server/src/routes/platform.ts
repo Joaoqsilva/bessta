@@ -206,6 +206,23 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
             });
         }
 
+        // Calculate revenue for this month from completed appointments
+        const revenueThisMonthResult = await Appointment.aggregate([
+            {
+                $match: {
+                    date: { $gte: startOfMonth },
+                    status: 'completed'
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: '$servicePrice' }
+                }
+            }
+        ]);
+        const monthlyRevenue = revenueThisMonthResult[0]?.total || 0;
+
         res.json({
             totalStores,
             activeStores,
@@ -216,7 +233,7 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
             totalAppointments,
             appointmentsToday,
             totalRevenue: `R$ ${totalRevenue.toLocaleString('pt-BR')}`,
-            revenueThisMonth: 0, // Todo: calculate
+            revenueThisMonth: `R$ ${monthlyRevenue.toLocaleString('pt-BR')}`,
             openComplaints,
             pendingSupport: openSupportTickets,
             openSupportTickets,
@@ -236,8 +253,29 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
  */
 router.get('/stores', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        // Todo: Add pagination
-        const stores = await Store.find().sort({ createdAt: -1 });
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+
+        const query: any = {};
+        if (req.query.status && req.query.status !== 'all') {
+            query.status = req.query.status;
+        }
+
+        if (req.query.search) {
+            const searchRegex = new RegExp(req.query.search as string, 'i');
+            query.$or = [
+                { name: searchRegex },
+                { slug: searchRegex },
+                { ownerName: searchRegex },
+                { email: searchRegex }
+            ];
+        }
+
+        const [stores, totalStores] = await Promise.all([
+            Store.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+            Store.countDocuments(query)
+        ]);
 
         // Enrich stores with appointment count
         const storesWithExtraInfo = await Promise.all(stores.map(async (s: any) => {
@@ -249,7 +287,15 @@ router.get('/stores', authMiddleware, adminMiddleware, async (req, res) => {
             };
         }));
 
-        res.json(storesWithExtraInfo);
+        res.json({
+            stores: storesWithExtraInfo,
+            pagination: {
+                page,
+                limit,
+                totalPages: Math.ceil(totalStores / limit),
+                totalStores
+            }
+        });
     } catch (error) {
         console.error('Error listing stores:', error);
         res.status(500).json({ error: 'Erro ao listar lojas' });

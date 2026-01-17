@@ -9,6 +9,7 @@ import { appointmentApi } from '../../services/appointmentApi';
 import { serviceApi } from '../../services/serviceApi';
 import { paymentService } from '../../services/paymentService';
 import { getStoreAverageRating, getRecentReviews, type StoreReview } from '../../context/StoreReviewService';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 import type { Appointment, Service } from '../../types';
 import './StoreDashboard.css';
 
@@ -125,14 +126,32 @@ export const StoreDashboard = () => {
                 const todayAppointments = storeAppointments.filter(a => a.date.startsWith(today));
                 const pendingCount = storeAppointments.filter(a => a.status === 'pending').length;
                 const completedCount = storeAppointments.filter(a => a.status === 'completed').length;
-                const totalRevenue = storeAppointments
-                    .filter(a => a.status === 'completed')
+                const completedAppointments = storeAppointments.filter(a => a.status === 'completed');
+
+                // Calculate revenue metrics
+                const totalRevenue = completedAppointments.reduce((sum, a) => sum + (a.servicePrice || 0), 0);
+
+                // Week revenue (last 7 days)
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const revenueWeek = completedAppointments
+                    .filter(a => new Date(a.date) >= weekAgo)
+                    .reduce((sum, a) => sum + (a.servicePrice || 0), 0);
+
+                // Month revenue (current month)
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                const revenueMonth = completedAppointments
+                    .filter(a => {
+                        const date = new Date(a.date);
+                        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                    })
                     .reduce((sum, a) => sum + (a.servicePrice || 0), 0);
 
                 // Estimate unique customers from appointments
                 const uniqueCustomers = new Set(storeAppointments.map(a => a.customerName)).size;
 
-                // TODO: Replace with real review API
+                // Fetch reviews from API
                 const { average, total } = await getStoreAverageRating(store.id);
                 const recentReviews = await getRecentReviews(store.id);
                 setReviews(recentReviews);
@@ -142,8 +161,8 @@ export const StoreDashboard = () => {
                     pendingRequests: pendingCount,
                     totalCustomers: uniqueCustomers,
                     totalRevenue: totalRevenue,
-                    revenueWeek: totalRevenue, // Mock: showing total as week for demo
-                    revenueMonth: totalRevenue, // Mock
+                    revenueWeek: revenueWeek,
+                    revenueMonth: revenueMonth,
                     averageRating: average || 5.0,
                     ratingCount: total,
                     completionRate: storeAppointments.length > 0 ? Math.round((completedCount / storeAppointments.length) * 100) : 100,
@@ -206,11 +225,11 @@ export const StoreDashboard = () => {
                 setIsAddModalOpen(false);
                 resetForm();
             } else {
-                alert('Erro ao criar agendamento');
+                showError('Erro ao criar agendamento');
             }
         } catch (error) {
             console.error('Error creating appointment:', error);
-            alert('Erro ao criar agendamento');
+            showError('Erro ao criar agendamento');
         } finally {
             setIsProcessing(false);
         }
@@ -238,7 +257,7 @@ export const StoreDashboard = () => {
         } catch (error) {
             console.error('Error updating status:', error);
             setAppointments(originalAppointments); // Revert
-            alert('Erro ao atualizar status');
+            showError('Erro ao atualizar status');
         }
     };
 
@@ -610,7 +629,7 @@ export const StoreDashboard = () => {
                 title="Bloquear Horário"
                 description="Selecione o período que deseja bloquear"
             >
-                <form onSubmit={(e) => { e.preventDefault(); setIsBlockModalOpen(false); alert('Horário bloqueado com sucesso!'); }}>
+                <form onSubmit={(e) => { e.preventDefault(); setIsBlockModalOpen(false); showSuccess('Horário bloqueado com sucesso!'); }}>
                     <Input
                         label="Motivo do Bloqueio"
                         placeholder="Ex: Almoço, Reunião, Folga..."

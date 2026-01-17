@@ -14,6 +14,98 @@ import type { User, Store as UserStore, Service, WorkingHours as WorkingHour } f
 // Re-export UserStore as it was used locally
 export type { UserStore, User, Service, WorkingHour };
 
+// ===============================
+// BYPASS LOGIN CONFIGURATION
+// ===============================
+// This allows access to the system without needing the backend/database
+const BYPASS_CREDENTIALS = {
+    email: 'bypass@store',
+    password: 'bypass123',
+};
+
+const BYPASS_USER: User = {
+    id: 'bypass-user-001',
+    email: 'bypass@store',
+    name: 'Usuário Bypass',
+    ownerName: 'Admin Bypass',
+    phone: '(00) 00000-0000',
+    role: 'store_owner',
+    createdAt: new Date().toISOString(),
+    isActive: true,
+    plan: 'pro',
+};
+
+const BYPASS_STORE: UserStore = {
+    id: 'bypass-store-001',
+    slug: 'bypass-store',
+    name: 'Loja Bypass',
+    description: 'Loja de demonstração para testes offline',
+    category: 'health',
+    address: 'Rua Demo, 123 - Centro',
+    phone: '(00) 00000-0000',
+    email: 'bypass@store',
+    image: '',
+    ownerId: 'bypass-user-001',
+    ownerName: 'Admin Bypass',
+    services: [
+        {
+            id: 'bypass-service-1',
+            name: 'Serviço Demo 1',
+            description: 'Serviço de demonstração',
+            duration: 60,
+            durationDisplay: '1h',
+            price: 100,
+            currency: 'BRL',
+            isActive: true,
+        },
+        {
+            id: 'bypass-service-2',
+            name: 'Serviço Demo 2',
+            description: 'Outro serviço de demonstração',
+            duration: 30,
+            durationDisplay: '30min',
+            price: 50,
+            currency: 'BRL',
+            isActive: true,
+        },
+    ],
+    workingHours: [
+        { dayOfWeek: 0, isOpen: false, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 1, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 2, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 3, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 4, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 5, isOpen: true, openTime: '09:00', closeTime: '18:00' },
+        { dayOfWeek: 6, isOpen: false, openTime: '09:00', closeTime: '18:00' },
+    ],
+    status: 'active',
+    createdAt: new Date().toISOString(),
+    plan: 'pro',
+    weeklyTimeSlots: {
+        0: [],
+        1: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+        2: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+        3: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+        4: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+        5: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+        6: [],
+    },
+};
+
+const BYPASS_TOKEN = 'bypass-local-token-no-server';
+
+const isBypassLogin = (email: string, password: string): boolean => {
+    return email === BYPASS_CREDENTIALS.email && password === BYPASS_CREDENTIALS.password;
+};
+
+const handleBypassLogin = (): { user: User; store: UserStore; token: string } => {
+    return {
+        user: BYPASS_USER,
+        store: BYPASS_STORE,
+        token: BYPASS_TOKEN,
+    };
+};
+
 interface AuthContextType {
     user: User | null;
     store: UserStore | null;
@@ -57,6 +149,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 return;
             }
 
+            // Check if it's a bypass token (no server needed)
+            if (token === BYPASS_TOKEN) {
+                console.log('🔓 Sessão bypass restaurada - usando dados locais');
+                setUser(BYPASS_USER);
+                setStore(BYPASS_STORE);
+                setIsLoading(false);
+                return;
+            }
+
             try {
                 // Verify token and get profile from backend
                 const data = await authService.getProfile();
@@ -82,6 +183,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (email: string, password: string): Promise<boolean> => {
         setIsLoading(true);
+
+        // Check for bypass login (works without server/database)
+        if (isBypassLogin(email, password)) {
+            console.log('🔓 Bypass login ativado - usando dados locais');
+            const bypassData = handleBypassLogin();
+            localStorage.setItem(STORAGE_KEYS.TOKEN, bypassData.token);
+            setUser(bypassData.user);
+            setStore(bypassData.store);
+            setIsLoading(false);
+            return true;
+        }
 
         try {
             const data = await authService.login(email, password);
@@ -111,10 +223,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const googleLogin = async (credential: string): Promise<boolean> => {
-        // Todo: Implement Google Login with backend
-        // For now this might need to be adjusted to send token to backend
-        console.warn('Google login not yet implemented on backend');
-        return false;
+        setIsLoading(true);
+        try {
+            const response = await authService.googleLogin(credential);
+
+            if (response.success && response.token) {
+                localStorage.setItem(STORAGE_KEYS.TOKEN, response.token);
+
+                // Initialize features for new users
+                if (response.isNewUser && response.store?.id) {
+                    const storeId = response.store.id;
+                    try {
+                        await resetStoreCustomization(storeId);
+                    } catch (e) {
+                        console.warn('Failed to initialize customization:', e);
+                    }
+                }
+
+                setUser(response.user);
+                if (response.store) {
+                    setStore({
+                        ...response.store,
+                        phone: response.user.phone || '',
+                        ownerName: response.user.ownerName || '',
+                    });
+                }
+
+                setIsLoading(false);
+                return true;
+            }
+
+            setIsLoading(false);
+            return false;
+        } catch (error: any) {
+            console.error('Google login error:', error);
+            setIsLoading(false);
+            return false;
+        }
     };
 
     const register = async (data: RegisterData): Promise<boolean> => {

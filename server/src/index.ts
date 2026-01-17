@@ -24,6 +24,10 @@ async function startServer() {
         await connectDB();
         console.log('✅ Database is ready and accepting requests');
 
+        // Start Cron Jobs
+        const { startReminderJob } = require('./cron/reminderJob');
+        startReminderJob();
+
         // Seed Admin User if not exists
         const { User } = require('./models/User');
         // Simple retry logic or just run once

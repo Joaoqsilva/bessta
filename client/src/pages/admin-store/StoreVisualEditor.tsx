@@ -18,10 +18,12 @@ import {
     PRESET_COLORS,
     FONT_OPTIONS,
     LAYOUT_OPTIONS,
+    LAYOUT_CATEGORIES,
     BUTTON_STYLES,
     LAYOUT_SECTIONS,
     imageToBase64
 } from '../../context/StoreCustomizationService';
+import { showSuccess, showError } from '../../utils/toast';
 import type { FAQItem, TestimonialItem, ServiceItem, TeamMember } from '../../types';
 import './StoreVisualEditor.css';
 
@@ -56,6 +58,9 @@ export const StoreVisualEditor = () => {
 
     // Premium Upgrade Modal
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+    // Layout Category Filter
+    const [selectedLayoutCategory, setSelectedLayoutCategory] = useState<string>('all');
 
     // Pro plan check - fetched from backend subscription
     const [isPro, setIsPro] = useState<boolean>(() => {
@@ -142,11 +147,11 @@ export const StoreVisualEditor = () => {
             if (success) {
                 setHasChanges(false);
             } else {
-                alert('Erro ao salvar alterações. Tente novamente.');
+                showError('Erro ao salvar alterações. Tente novamente.');
             }
         } catch (error) {
             console.error('Save error:', error);
-            alert('Erro ao salvar alterações.');
+            showError('Erro ao salvar alterações.');
         } finally {
             setIsSaving(false);
         }
@@ -159,7 +164,7 @@ export const StoreVisualEditor = () => {
             updateCustomization(key, base64);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Erro ao carregar imagem. Tente novamente.');
+            showError('Erro ao carregar imagem. Tente novamente.');
         }
     };
 
@@ -700,58 +705,100 @@ export const StoreVisualEditor = () => {
                                 {/* LAYOUT TAB */}
                                 {activeTab === 'layout' && (
                                     <div className="config-group">
+                                        {/* Category Filter */}
+                                        <label>Tipo de Landing Page</label>
+                                        <select
+                                            value={selectedLayoutCategory}
+                                            onChange={(e) => setSelectedLayoutCategory(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 12px',
+                                                marginBottom: '16px',
+                                                borderRadius: '8px',
+                                                border: '1px solid var(--border-color, #e5e7eb)',
+                                                background: 'var(--bg-secondary, #fff)',
+                                                color: 'var(--text-primary, #1f2937)',
+                                                fontSize: '0.9rem',
+                                                fontWeight: 500,
+                                                cursor: 'pointer',
+                                                outline: 'none',
+                                                transition: 'border-color 0.2s, box-shadow 0.2s',
+                                            }}
+                                            onFocus={(e) => {
+                                                e.target.style.borderColor = 'var(--primary-color, #7c3aed)';
+                                                e.target.style.boxShadow = '0 0 0 3px rgba(124, 58, 237, 0.1)';
+                                            }}
+                                            onBlur={(e) => {
+                                                e.target.style.borderColor = 'var(--border-color, #e5e7eb)';
+                                                e.target.style.boxShadow = 'none';
+                                            }}
+                                        >
+                                            {LAYOUT_CATEGORIES.map(category => (
+                                                <option key={category.id} value={category.id}>
+                                                    {category.name}
+                                                </option>
+                                            ))}
+                                        </select>
+
                                         <label>Estilo do Layout</label>
                                         <div className="grid-options">
-                                            {LAYOUT_OPTIONS.map(layout => {
-                                                const isPremiumLayout = layout.isPremium && !isPro;
-                                                return (
-                                                    <div
-                                                        key={layout.id}
-                                                        className={`card-option ${customization.layout === layout.id ? 'selected' : ''}`}
-                                                        onClick={() => updateCustomization('layout', layout.id)}
-                                                        style={isPremiumLayout ? { borderColor: 'rgba(255, 193, 7, 0.3)' } : {}}
-                                                    >
-                                                        <span className="option-name">{layout.name}</span>
-                                                        {layout.isPremium && (
-                                                            isPro ? (
-                                                                <span style={{
-                                                                    display: 'inline-flex',
-                                                                    alignItems: 'center',
-                                                                    gap: '4px',
-                                                                    marginLeft: '8px',
-                                                                    fontSize: '0.65rem',
-                                                                    fontWeight: 600,
-                                                                    color: '#10b981',
-                                                                    background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-                                                                    padding: '2px 6px',
-                                                                    borderRadius: '4px',
-                                                                    border: '1px solid #a7f3d0'
-                                                                }}>
-                                                                    <Unlock size={10} />
-                                                                    Desbloqueado
-                                                                </span>
-                                                            ) : (
-                                                                <span style={{
-                                                                    display: 'inline-flex',
-                                                                    alignItems: 'center',
-                                                                    gap: '4px',
-                                                                    marginLeft: '8px',
-                                                                    fontSize: '0.7rem',
-                                                                    fontWeight: 600,
-                                                                    color: '#FFC107',
-                                                                    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                                                                    padding: '2px 6px',
-                                                                    borderRadius: '4px'
-                                                                }}>
-                                                                    <Crown size={10} />
-                                                                    PRO
-                                                                </span>
-                                                            )
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
+                                            {LAYOUT_OPTIONS
+                                                .filter(layout => selectedLayoutCategory === 'all' || layout.category === selectedLayoutCategory)
+                                                .map(layout => {
+                                                    const isPremiumLayout = layout.isPremium && !isPro;
+                                                    return (
+                                                        <div
+                                                            key={layout.id}
+                                                            className={`card-option ${customization.layout === layout.id ? 'selected' : ''}`}
+                                                            onClick={() => updateCustomization('layout', layout.id)}
+                                                            style={isPremiumLayout ? { borderColor: 'rgba(255, 193, 7, 0.3)' } : {}}
+                                                        >
+                                                            <span className="option-name">{layout.name}</span>
+                                                            {layout.isPremium && (
+                                                                isPro ? (
+                                                                    <span style={{
+                                                                        display: 'inline-flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px',
+                                                                        marginLeft: '8px',
+                                                                        fontSize: '0.65rem',
+                                                                        fontWeight: 600,
+                                                                        color: '#10b981',
+                                                                        background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                                                                        padding: '2px 6px',
+                                                                        borderRadius: '4px',
+                                                                        border: '1px solid #a7f3d0'
+                                                                    }}>
+                                                                        <Unlock size={10} />
+                                                                        Desbloqueado
+                                                                    </span>
+                                                                ) : (
+                                                                    <span style={{
+                                                                        display: 'inline-flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '4px',
+                                                                        marginLeft: '8px',
+                                                                        fontSize: '0.7rem',
+                                                                        fontWeight: 600,
+                                                                        color: '#FFC107',
+                                                                        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                                                                        padding: '2px 6px',
+                                                                        borderRadius: '4px'
+                                                                    }}>
+                                                                        <Crown size={10} />
+                                                                        PRO
+                                                                    </span>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                         </div>
+                                        {LAYOUT_OPTIONS.filter(layout => selectedLayoutCategory === 'all' || layout.category === selectedLayoutCategory).length === 0 && (
+                                            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '12px', textAlign: 'center' }}>
+                                                Nenhum layout encontrado para esta categoria.
+                                            </p>
+                                        )}
                                         {!isPro && (
                                             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '12px', fontStyle: 'italic' }}>
                                                 💡 Você pode visualizar todos os layouts! Faça upgrade para PRO para salvar com layouts premium.
@@ -1214,7 +1261,7 @@ export const StoreVisualEditor = () => {
                                                                                 newImages.push(base64);
                                                                                 updateCustomization('galleryImages', newImages);
                                                                             } catch (err) {
-                                                                                alert('Erro ao carregar imagem');
+                                                                                showError('Erro ao carregar imagem');
                                                                             }
                                                                         }
                                                                     }}
@@ -1412,7 +1459,7 @@ export const StoreVisualEditor = () => {
                                                 setEditingImageKey(null);
                                             } catch (err) {
                                                 console.error(err);
-                                                alert('Erro ao processar imagem');
+                                                showError('Erro ao processar imagem');
                                             }
                                         }
                                     }}

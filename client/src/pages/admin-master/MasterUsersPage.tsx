@@ -7,6 +7,7 @@ import { Button } from '../../components/Button';
 import { Modal } from '../../components/Modal';
 import { Input } from '../../components/Input';
 import { getAllUsers, updatePlatformUser, resetUserPassword, updateUserPlan } from '../../context/AdminMasterService';
+import { showSuccess, showError } from '../../utils/toast';
 import './MasterUsersPage.css';
 
 interface PlatformUser {
@@ -141,11 +142,11 @@ export const MasterUsersPage = () => {
         setIsLoading(false);
 
         if (success) {
-            alert('Usuário atualizado com sucesso!');
+            showSuccess('Usuário atualizado com sucesso!');
             setShowEditModal(false);
             loadUsers(); // Reload to see changes
         } else {
-            alert('Erro ao atualizar usuário.');
+            showError('Erro ao atualizar usuário.');
         }
     };
 
@@ -158,10 +159,10 @@ export const MasterUsersPage = () => {
         setIsLoading(false);
 
         if (success) {
-            alert('Senha redefinida com sucesso!');
+            showSuccess('Senha redefinida com sucesso!');
             setShowPasswordModal(false);
         } else {
-            alert('Erro ao redefinir senha.');
+            showError('Erro ao redefinir senha.');
         }
     };
 
@@ -181,11 +182,11 @@ export const MasterUsersPage = () => {
         setIsLoading(false);
 
         if (success) {
-            alert('Plano atualizado com sucesso!');
+            showSuccess('Plano atualizado com sucesso!');
             setShowPlanModal(false);
             loadUsers(); // Reload to see changes
         } else {
-            alert('Erro ao atualizar plano.');
+            showError('Erro ao atualizar plano.');
         }
     };
 

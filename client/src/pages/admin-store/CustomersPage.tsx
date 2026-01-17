@@ -6,6 +6,7 @@ import { Modal } from '../../components/Modal';
 import { useAuth } from '../../context/AuthContext';
 import { customerApi } from '../../services/customerApi';
 import type { Customer, Appointment } from '../../types';
+import { showInfo } from '../../utils/toast';
 import './CustomersPage.css';
 
 // Extended Customer for UI with additional fields
@@ -222,7 +223,7 @@ export const CustomersPage = () => {
                         </div>
 
                         <div className="detail-actions">
-                            <Button variant="primary" leftIcon={<Calendar size={16} />} onClick={() => alert('Vá para a Agenda para criar um novo agendamento.')}>
+                            <Button variant="primary" leftIcon={<Calendar size={16} />} onClick={() => showInfo('Vá para a Agenda para criar um novo agendamento.')}>
                                 Novo Agendamento
                             </Button>
                             <Button variant="outline" leftIcon={<Phone size={16} />}>

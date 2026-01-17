@@ -8,6 +8,7 @@ import { serviceApi } from '../services/serviceApi';
 import { appointmentApi } from '../services/appointmentApi';
 import type { Service, Appointment, Store } from '../types';
 import type { StoreCustomization } from '../context/StoreCustomizationService';
+import { showError } from '../utils/toast';
 import { formatPhone } from '../utils/formatters';
 
 // Reusing styles from StoreBookingPage is the best way to ensure consistency
@@ -264,11 +265,11 @@ export const BookingWizard = ({ store, customization, isOpen, onClose }: Booking
             if (result.success) {
                 setStep('confirmation');
             } else {
-                alert('Ocorreu um erro ao realizar o agendamento. Tente novamente.');
+                showError('Ocorreu um erro ao realizar o agendamento. Tente novamente.');
             }
         } catch (error) {
             console.error('Error creating appointment:', error);
-            alert('Ocorreu um erro ao realizar o agendamento. Tente novamente.');
+            showError('Ocorreu um erro ao realizar o agendamento. Tente novamente.');
         } finally {
             setIsSubmitting(false);
         }

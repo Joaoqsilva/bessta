@@ -52,11 +52,16 @@ export interface PlatformStats {
 }
 
 // Get all registered stores from API
-export const getAllRegisteredStores = async (): Promise<RegisteredStore[]> => {
+export const getAllRegisteredStores = async (
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: string
+): Promise<{ stores: RegisteredStore[]; pagination: any }> => {
     try {
-        const result = await platformManagementApi.getStores();
+        const result = await platformManagementApi.getStores({ page, limit, search, status });
         if (result.success) {
-            return result.stores.map((store: any) => ({
+            const stores = result.stores.map((store: any) => ({
                 id: String(store._id || store.id),
                 slug: store.slug,
                 name: store.name,
@@ -69,16 +74,21 @@ export const getAllRegisteredStores = async (): Promise<RegisteredStore[]> => {
                 plan: store.plan || 'free',
                 rating: store.rating || 0,
                 totalReviews: store.totalReviews || 0,
-                totalCustomers: store.totalCustomers || 0, // Backend needs to provide this or we fetch separately? Backend provides simpler stats for now.
+                totalCustomers: store.totalCustomers || 0,
                 totalAppointments: store.totalAppointments || 0,
                 totalRevenue: store.totalRevenue || 0,
                 createdAt: store.createdAt,
             }));
+
+            return {
+                stores,
+                pagination: result.pagination
+            };
         }
-        return [];
+        return { stores: [], pagination: { page: 1, limit: 10, totalPages: 0, totalStores: 0 } };
     } catch (error) {
         console.error('Error fetching stores:', error);
-        return [];
+        return { stores: [], pagination: { page: 1, limit: 10, totalPages: 0, totalStores: 0 } };
     }
 };
 

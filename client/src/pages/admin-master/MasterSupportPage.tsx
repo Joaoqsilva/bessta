@@ -7,6 +7,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { supportApi } from '../../services/platformApi';
 import type { SupportTicket as ISupportTicket } from '../../services/platformApi';
+import { showError } from '../../utils/toast';
 import './MasterSupportPage.css';
 
 interface SupportTicket {
@@ -109,7 +110,7 @@ export const MasterSupportPage = () => {
             ));
         } catch (error) {
             console.error('Error updating ticket status:', error);
-            alert('Erro ao atualizar status');
+            showError('Erro ao atualizar status');
         }
     };
 
@@ -145,7 +146,7 @@ export const MasterSupportPage = () => {
             setNewResponse('');
         } catch (error) {
             console.error('Error sending response:', error);
-            alert('Erro ao enviar resposta');
+            showError('Erro ao enviar resposta');
         }
     };
 

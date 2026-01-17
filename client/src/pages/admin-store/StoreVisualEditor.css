@@ -19,7 +19,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 var(--spacing-6);
-    z-index: 50;
+    z-index: 9999;
+    /* Higher than landing page headers (z-index: 100) */
+    position: relative;
     box-shadow: var(--shadow-sm);
 }
 
@@ -112,7 +114,9 @@
     background: var(--surface-0);
     border-right: 1px solid var(--surface-200);
     display: flex;
-    z-index: 40;
+    z-index: 9998;
+    /* Higher than landing page headers (z-index: 100) */
+    position: relative;
 }
 
 .sidebar-nav {
@@ -168,6 +172,8 @@
     flex-direction: column;
     animation: slideInLeft 0.2s ease-out;
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.05);
+    z-index: 9997;
+    /* Higher than landing page headers (z-index: 100) */
 }
 
 @keyframes slideInLeft {

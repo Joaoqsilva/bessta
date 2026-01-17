@@ -25,6 +25,7 @@ import * as domainApi from '../../services/domainApi';
 import { paymentService, PLANS as MP_PLANS } from '../../services/paymentService';
 import { storeApi } from '../../services/storeApi';
 import MercadoPagoCheckout from '../../components/payment/MercadoPagoCheckout';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 import './SettingsPage.css';
 
 const PLANS = [
@@ -278,15 +279,15 @@ export const SettingsPage = () => {
         try {
             const result = await storeApi.updateStatus(store.id, 'suspended');
             if (result.success) {
-                alert('Sua conta foi desativada. Você pode reativá-la entrando em contato com o suporte.');
+                showSuccess('Sua conta foi desativada. Você pode reativá-la entrando em contato com o suporte.');
                 logout();
                 navigate('/');
             } else {
-                alert('Erro ao desativar conta.');
+                showError('Erro ao desativar conta.');
             }
         } catch (error) {
             console.error('Error deactivating account:', error);
-            alert('Erro ao desativar conta.');
+            showError('Erro ao desativar conta.');
         }
     };
 
@@ -297,15 +298,15 @@ export const SettingsPage = () => {
         try {
             const result = await storeApi.deleteStore(store.id);
             if (result.success) {
-                alert('Sua conta e todos os dados foram excluídos permanentemente.');
+                showSuccess('Sua conta e todos os dados foram excluídos permanentemente.');
                 logout();
                 navigate('/');
             } else {
-                alert('Erro ao excluir conta.');
+                showError('Erro ao excluir conta.');
             }
         } catch (error) {
             console.error('Error deleting account:', error);
-            alert('Erro ao excluir conta.');
+            showError('Erro ao excluir conta.');
         }
     };
 
@@ -491,13 +492,13 @@ export const SettingsPage = () => {
         try {
             const success = await saveStoreCustomization(customization);
             if (success) {
-                alert('Personalização salva com sucesso!');
+                showSuccess('Personalização salva com sucesso!');
             } else {
-                alert('Erro ao salvar personalização.');
+                showError('Erro ao salvar personalização.');
             }
         } catch (error) {
             console.error('Error saving customization:', error);
-            alert('Erro ao salvar personalização.');
+            showError('Erro ao salvar personalização.');
         } finally {
             setIsSaving(false);
         }
@@ -510,10 +511,10 @@ export const SettingsPage = () => {
             try {
                 const reset = await resetStoreCustomization(store.id);
                 setCustomization(reset);
-                alert('Personalizações resetadas!');
+                showSuccess('Personalizações resetadas!');
             } catch (error) {
                 console.error('Error resetting customization:', error);
-                alert('Erro ao resetar personalização.');
+                showError('Erro ao resetar personalização.');
             }
         }
     };
@@ -542,7 +543,7 @@ export const SettingsPage = () => {
             updateCustomization(type, base64);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Erro ao carregar imagem. Tente novamente.');
+            showError('Erro ao carregar imagem. Tente novamente.');
         }
     };
 
@@ -576,15 +577,15 @@ export const SettingsPage = () => {
             ]);
 
             if (settingsResult.success && hoursResult.success) {
-                alert('Alterações salvas com sucesso!');
+                showSuccess('Alterações salvas com sucesso!');
                 // Optionally reload the page to refresh data
                 window.location.reload();
             } else {
-                alert('Erro ao salvar algumas alterações.');
+                showError('Erro ao salvar algumas alterações.');
             }
         } catch (error: any) {
             console.error('Error saving settings:', error);
-            alert(error.response?.data?.error || 'Erro ao salvar alterações.');
+            showError(error.response?.data?.error || 'Erro ao salvar alterações.');
         } finally {
             setIsSaving(false);
         }
@@ -592,7 +593,7 @@ export const SettingsPage = () => {
 
     const copyStoreLink = () => {
         navigator.clipboard.writeText(`https://simpliagenda.com.br/${storeData.slug}`);
-        alert('Link copiado!');
+        showSuccess('Link copiado!');
     };
 
     const tabs = [
@@ -620,7 +621,7 @@ export const SettingsPage = () => {
             }
         });
         setWorkingHours(newHours);
-        alert('Horários aplicados aos dias selecionados! Lembre-se de clicar em "Salvar Alterações" no final da página.');
+        showInfo('Horários aplicados! Lembre-se de clicar em "Salvar Alterações".');
     };
 
     const toggleBulkDay = (dayIndex: number) => {
@@ -785,7 +786,7 @@ export const SettingsPage = () => {
                                                 leftIcon={<Copy size={14} />}
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`https://simpliagenda.com.br/${storeData.slug}`);
-                                                    alert('Link copiado!');
+                                                    showSuccess('Link copiado!');
                                                 }}
                                             >
                                                 Copiar

@@ -8,6 +8,7 @@ import { initMercadoPago, CardPayment } from '@mercadopago/sdk-react';
 import api from '../../services/api';
 import { licenseApi } from '../../services/licenseApi';
 import { Check, CreditCard, QrCode, Key, Lock, AlertCircle, Copy, ArrowRight } from 'lucide-react';
+import { showSuccess } from '../../utils/toast';
 import './MercadoPagoCheckout.css';
 
 // Initialize Mercado Pago with public key
@@ -278,7 +279,7 @@ export default function MercadoPagoCheckout({ plan, onSuccess, onError, onClose 
                                                 className="pix-copy-btn"
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(pixData.qrCode);
-                                                    alert('Copiado!');
+                                                    showSuccess('Copiado!');
                                                 }}
                                             >
                                                 <Copy size={16} />

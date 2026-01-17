@@ -26,6 +26,7 @@ import { LandingPageBarber } from './LandingPageBarber';
 import { LandingPageNails } from './LandingPageNails';
 import { LandingPageDental } from './LandingPageDental';
 import { BookingWizard } from '../../components/BookingWizard';
+import { formatPhoneForWhatsApp } from '../../utils/phone';
 
 const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -150,7 +151,7 @@ export const StoreBookingPage = ({
                                 // Redes sociais
                                 socialLinks: [
                                     { platform: 'instagram', url: 'https://instagram.com/psimarianacosta' },
-                                    { platform: 'whatsapp', url: 'https://wa.me/5547991394589' }
+                                    { platform: 'whatsapp', url: `https://wa.me/${formatPhoneForWhatsApp(DEMO_STORE.phone)}` }
                                 ]
                             };
                             setCustomization(demoCustomization as any);

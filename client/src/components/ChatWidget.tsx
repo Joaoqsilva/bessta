@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { supportApi } from '../services/platformApi';
 import { useAuth } from '../context/AuthContext';
+import { formatPhoneForWhatsApp } from '../utils/phone';
 import './ChatWidget.css';
 
 type ChatMode = 'home' | 'faq' | 'ticket' | 'chat';
@@ -128,7 +129,7 @@ export const ChatWidget = ({
 
     const startWhatsAppChat = () => {
         const phoneNumber = mode === 'store' && storePhone
-            ? storePhone.replace(/\D/g, '')
+            ? formatPhoneForWhatsApp(storePhone)
             : '5547991394589'; // SaaS default
 
         const message = mode === 'store'
