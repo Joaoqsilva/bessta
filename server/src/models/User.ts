@@ -30,6 +30,10 @@ export interface IUser {
     googleId?: string;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    // Email verification
+    emailVerified?: boolean;
+    emailVerificationToken?: string;
+    emailVerificationExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
@@ -115,6 +119,19 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     resetPasswordExpires: {
+        type: Date,
+        select: false,
+    },
+    // Email verification
+    emailVerified: {
+        type: Boolean,
+        default: false,
+    },
+    emailVerificationToken: {
+        type: String,
+        select: false,
+    },
+    emailVerificationExpires: {
         type: Date,
         select: false,
     },

@@ -3,9 +3,10 @@ import { Button } from '../../components/Button';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '../../components/Input';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, Store, ArrowRight, Calendar, AlertCircle, CheckCircle, ChevronDown } from 'lucide-react';
+import { Mail, Lock, User, Phone, Store, ArrowRight, Calendar, AlertCircle, CheckCircle, ChevronDown, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { formatPhone } from '../../utils/formatters';
+import { authService } from '../../services/auth';
 import './AuthPages.css';
 
 export const RegisterPage = () => {
@@ -14,6 +15,14 @@ export const RegisterPage = () => {
     const [step, setStep] = useState(1);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+
+    // Email verification state
+    const [showVerification, setShowVerification] = useState(false);
+    const [verificationEmail, setVerificationEmail] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationLoading, setVerificationLoading] = useState(false);
+    const [verificationError, setVerificationError] = useState('');
+    const [resendLoading, setResendLoading] = useState(false);
 
     // Redirect authenticated users to their appropriate dashboard
     useEffect(() => {
@@ -158,7 +167,7 @@ export const RegisterPage = () => {
         }
 
         // Attempt registration
-        const success = await register({
+        const result = await register({
             storeName: formData.storeName,
             ownerName: formData.ownerName,
             email: formData.email,
@@ -168,7 +177,11 @@ export const RegisterPage = () => {
             category: formData.category,
         });
 
-        if (success) {
+        // Check if registration requires verification
+        if (result && typeof result === 'object' && 'requiresVerification' in result) {
+            setVerificationEmail(formData.email);
+            setShowVerification(true);
+        } else if (result) {
             setSuccess(true);
             // Navigate to dashboard after success message
             setTimeout(() => {
@@ -178,6 +191,126 @@ export const RegisterPage = () => {
             setError('Este email já está cadastrado. Tente fazer login ou use outro email.');
         }
     };
+
+    const handleVerifyEmail = async () => {
+        if (!verificationCode || verificationCode.length !== 6) {
+            setVerificationError('Digite o código de 6 dígitos');
+            return;
+        }
+
+        setVerificationLoading(true);
+        setVerificationError('');
+
+        try {
+            const result = await authService.verifyEmail(verificationEmail, verificationCode);
+            if (result.success && result.token) {
+                // Store token and reload
+                localStorage.setItem('token', result.token);
+                setSuccess(true);
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 1500);
+            } else {
+                setVerificationError(result.error || 'Código inválido ou expirado');
+            }
+        } catch (err: any) {
+            setVerificationError(err.response?.data?.error || 'Erro ao verificar email');
+        } finally {
+            setVerificationLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        setResendLoading(true);
+        try {
+            await authService.resendVerification(verificationEmail);
+            setVerificationError('');
+            alert('Código reenviado! Verifique seu email.');
+        } catch (err) {
+            setVerificationError('Erro ao reenviar código');
+        } finally {
+            setResendLoading(false);
+        }
+    };
+
+    // Show verification screen
+    if (showVerification && !success) {
+        return (
+            <div className="auth-page">
+                <div className="auth-container">
+                    <div className="auth-form-side">
+                        <div className="auth-form-container">
+                            <div className="auth-header">
+                                <div className="auth-logo">
+                                    <Calendar size={32} />
+                                    <span>Simpliagenda</span>
+                                </div>
+                                <h1>Verifique seu Email</h1>
+                                <p>Enviamos um código de 6 dígitos para <strong>{verificationEmail}</strong></p>
+                            </div>
+
+                            {verificationError && (
+                                <div className="auth-error">
+                                    <AlertCircle size={18} />
+                                    {verificationError}
+                                </div>
+                            )}
+
+                            <div className="auth-form">
+                                <div className="form-group">
+                                    <label>Código de Verificação</label>
+                                    <Input
+                                        type="text"
+                                        placeholder="000000"
+                                        value={verificationCode}
+                                        onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        leftIcon={<Mail size={18} />}
+                                        maxLength={6}
+                                        style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem' }}
+                                    />
+                                </div>
+
+                                <Button
+                                    variant="primary"
+                                    onClick={handleVerifyEmail}
+                                    disabled={verificationLoading || verificationCode.length !== 6}
+                                    fullWidth
+                                >
+                                    {verificationLoading ? 'Verificando...' : 'Verificar Email'}
+                                </Button>
+
+                                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                                    <button
+                                        type="button"
+                                        onClick={handleResendCode}
+                                        disabled={resendLoading}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'var(--color-primary)',
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem'
+                                        }}
+                                    >
+                                        <RefreshCw size={16} className={resendLoading ? 'spin' : ''} />
+                                        {resendLoading ? 'Reenviando...' : 'Reenviar código'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="auth-visual-side auth-visual-register">
+                        <div className="auth-visual-content">
+                            <h2 className="auth-visual-title">Quase lá!</h2>
+                            <p className="auth-visual-subtitle">Verifique seu email para ativar sua conta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (success) {
         return (
@@ -189,15 +322,15 @@ export const RegisterPage = () => {
                                 <div className="auth-success-icon">
                                     <CheckCircle size={48} />
                                 </div>
-                                <h2>Conta criada com sucesso! 🎉</h2>
-                                <p>Sua loja <strong>{formData.storeName}</strong> foi criada.</p>
+                                <h2>Email verificado com sucesso! 🎉</h2>
+                                <p>Sua loja <strong>{formData.storeName}</strong> foi ativada.</p>
                                 <p className="auth-success-redirect">Redirecionando para o dashboard...</p>
                             </div>
                         </div>
                     </div>
                     <div className="auth-visual-side auth-visual-register">
                         <div className="auth-visual-content">
-                            <h2 className="auth-visual-title">Bem-vindo ao SimpliAgenda!</h2>
+                            <h2 className="auth-visual-title">Bem-vindo ao Simpliagenda!</h2>
                             <p className="auth-visual-description">
                                 Sua jornada para simplificar agendamentos começa agora.
                             </p>

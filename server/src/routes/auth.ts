@@ -14,7 +14,7 @@ import AccountLockoutService from '../services/AccountLockoutService';
 import rateLimit from 'express-rate-limit';
 import { validate } from '../middleware/validate';
 import { registerSchema, loginSchema, updateProfileSchema } from '../schemas/authSchema';
-import { sendPasswordResetEmail } from '../services/mailService';
+import { sendPasswordResetEmail, sendEmailVerification } from '../services/mailService';
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -163,8 +163,17 @@ router.post('/register', validate(registerSchema), async (req: AuthRequest, res:
         user.storeId = store._id;
         await user.save();
 
-        // Generate token
-        const token = generateToken(user);
+        // Generate email verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.emailVerificationToken = verificationCode;
+        user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        user.emailVerified = false;
+        await user.save();
+
+        // Send verification email
+        sendEmailVerification(user.email, verificationCode, user.ownerName).catch(err =>
+            console.error('Failed to send verification email:', err)
+        );
 
         // Log successful registration
         const ip = req.ip || req.socket.remoteAddress || 'unknown';
@@ -178,7 +187,9 @@ router.post('/register', validate(registerSchema), async (req: AuthRequest, res:
 
         res.status(201).json({
             success: true,
-            token,
+            requiresVerification: true,
+            message: 'Conta criada! Verifique seu email para ativar sua conta.',
+            email: user.email,
             user: {
                 id: user._id,
                 email: user.email,
@@ -452,6 +463,16 @@ router.post('/login', validate(loginSchema), async (req: AuthRequest, res: Respo
             return res.status(401).json({
                 success: false,
                 error: 'Conta desativada. Entre em contato com o suporte.'
+            });
+        }
+
+        // Check if email is verified (only for store_owner, not admin or client)
+        if (user.role === 'store_owner' && !user.emailVerified) {
+            return res.status(403).json({
+                success: false,
+                error: 'Email não verificado. Por favor, verifique seu email antes de fazer login.',
+                requiresVerification: true,
+                email: user.email
             });
         }
 
@@ -1012,6 +1033,122 @@ router.post('/reset-password', async (req, res) => {
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ success: false, error: 'Erro ao redefinir senha' });
+    }
+});
+
+/**
+ * POST /api/auth/verify-email
+ * Verify email with code sent during registration
+ */
+router.post('/verify-email', async (req: AuthRequest, res: Response) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+
+    try {
+        const { email, code } = req.body;
+
+        if (!email || !code) {
+            return res.status(400).json({ success: false, error: 'Email e código são obrigatórios' });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // Find user with verification token
+        const user = await User.findOne({
+            email: normalizedEmail,
+            emailVerificationToken: code,
+            emailVerificationExpires: { $gt: Date.now() }
+        }).select('+emailVerificationToken +emailVerificationExpires');
+
+        if (!user) {
+            return res.status(400).json({ success: false, error: 'Código inválido ou expirado' });
+        }
+
+        // Mark email as verified
+        user.emailVerified = true;
+        user.emailVerificationToken = undefined;
+        user.emailVerificationExpires = undefined;
+        await user.save();
+
+        // Get store
+        let store = null;
+        if (user.storeId) {
+            store = await Store.findById(user.storeId);
+        }
+
+        // Generate token for auto-login
+        const token = generateToken(user);
+
+        await AuditLogService.log({
+            userId: user._id.toString(),
+            action: 'EMAIL_VERIFIED',
+            ip,
+            severity: 'info'
+        });
+
+        res.json({
+            success: true,
+            message: 'Email verificado com sucesso!',
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                ownerName: user.ownerName,
+                phone: user.phone,
+                role: user.role,
+                storeId: user.storeId,
+                plan: user.plan,
+            },
+            store: store ? {
+                id: store._id,
+                slug: store.slug,
+                name: store.name,
+                plan: store.plan,
+            } : null
+        });
+    } catch (error) {
+        console.error('Verify email error:', error);
+        res.status(500).json({ success: false, error: 'Erro ao verificar email' });
+    }
+});
+
+/**
+ * POST /api/auth/resend-verification
+ * Resend verification email
+ */
+router.post('/resend-verification', async (req: AuthRequest, res: Response) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, error: 'Email é obrigatório' });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        const user = await User.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            // Don't reveal if user exists
+            return res.json({ success: true, message: 'Se o email existir, um novo código será enviado.' });
+        }
+
+        if (user.emailVerified) {
+            return res.status(400).json({ success: false, error: 'Este email já foi verificado' });
+        }
+
+        // Generate new verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.emailVerificationToken = verificationCode;
+        user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        await user.save();
+
+        // Send verification email
+        await sendEmailVerification(user.email, verificationCode, user.ownerName);
+
+        res.json({ success: true, message: 'Código de verificação reenviado!' });
+    } catch (error) {
+        console.error('Resend verification error:', error);
+        res.status(500).json({ success: false, error: 'Erro ao reenviar código' });
     }
 });
 

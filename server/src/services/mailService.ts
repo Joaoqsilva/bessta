@@ -57,6 +57,31 @@ export const sendEmail = async (to: string, subject: string, html: string): Prom
     }
 };
 
+export const sendEmailVerification = async (email: string, code: string, name: string) => {
+    const subject = 'Verifique seu Email - Simpliagenda';
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #4f46e5;">Bem-vindo ao Simpliagenda!</h2>
+            </div>
+            <p>Olá, <strong>${name}</strong>!</p>
+            <p>Obrigado por se cadastrar. Para ativar sua conta, insira o código de verificação abaixo:</p>
+            
+            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1f2937;">${code}</span>
+            </div>
+
+            <p style="text-align: center; color: #6b7280;">Este código é válido por 24 horas.</p>
+            <p>Se você não criou esta conta, ignore este email.</p>
+            
+            <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+            <p style="font-size: 12px; color: #6b7280; text-align: center;">Simpliagenda</p>
+        </div>
+    `;
+
+    return await sendEmail(email, subject, html);
+};
+
 export const sendAppointmentConfirmation = async (appointment: any, store: IStore) => {
     if (!appointment.customerEmail) return;
 

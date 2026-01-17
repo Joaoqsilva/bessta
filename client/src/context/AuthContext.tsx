@@ -114,7 +114,7 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     googleLogin: (credential: string) => Promise<boolean>;
-    register: (data: RegisterData) => Promise<boolean>;
+    register: (data: RegisterData) => Promise<boolean | { requiresVerification: boolean }>;
     logout: () => void;
     updateStore: (updates: Partial<UserStore>) => void;
 }
@@ -262,10 +262,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const register = async (data: RegisterData): Promise<boolean> => {
+    const register = async (data: RegisterData): Promise<boolean | { requiresVerification: boolean }> => {
         setIsLoading(true);
         try {
             const response = await authService.register(data);
+
+            // Check if email verification is required (no token returned)
+            if (response.success && (response as any).requiresVerification) {
+                setIsLoading(false);
+                return { requiresVerification: true };
+            }
 
             if (response.success && response.token) {
                 localStorage.setItem(STORAGE_KEYS.TOKEN, response.token);

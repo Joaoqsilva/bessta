@@ -59,5 +59,15 @@ export const authService = {
     resetPassword: async (data: { email: string; code: string; newPassword: string }): Promise<{ success: boolean; message?: string; error?: string }> => {
         const response = await api.post('/auth/reset-password', data);
         return response.data;
+    },
+
+    verifyEmail: async (email: string, code: string): Promise<AuthResponse & { message?: string }> => {
+        const response = await api.post('/auth/verify-email', { email, code });
+        return response.data;
+    },
+
+    resendVerification: async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+        const response = await api.post('/auth/resend-verification', { email });
+        return response.data;
     }
 };
