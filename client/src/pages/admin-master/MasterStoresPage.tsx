@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    Store, Search, Filter, Eye, Trash2, Ban, CheckCircle,
-    MoreVertical, ChevronLeft, ChevronRight, Plus, UserX, Power, PowerOff
+    Store, Search, Eye, Trash2, Ban,
+    ChevronLeft, ChevronRight, Power, PowerOff,
+    Calendar, Users, Star, MapPin, Phone, Mail,
+    ExternalLink, Layout, Clock, XCircle
 } from 'lucide-react';
 import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
 import { Modal } from '../../components/Modal';
 import { getAllRegisteredStores, updateStoreStatus, deleteStore, type RegisteredStore } from '../../context/AdminMasterService';
 import './MasterStoresPage.css';
@@ -18,17 +19,19 @@ export const MasterStoresPage = () => {
     const [pagination, setPagination] = useState({ page: 1, limit: 10, totalPages: 1, totalStores: 0 });
     const [isLoading, setIsLoading] = useState(true);
 
+    // Modal states
     const [selectedStore, setSelectedStore] = useState<RegisteredStore | null>(null);
+    const [showStoreModal, setShowStoreModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteUserToo, setDeleteUserToo] = useState(false);
-    const [showActionsMenu, setShowActionsMenu] = useState<string | null>(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchQuery !== debouncedSearch) {
                 setDebouncedSearch(searchQuery);
-                setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1 on search change
+                setPagination(prev => ({ ...prev, page: 1 }));
             }
         }, 500);
         return () => clearTimeout(timer);
@@ -43,20 +46,6 @@ export const MasterStoresPage = () => {
     useEffect(() => {
         loadStores();
     }, [pagination.page, debouncedSearch, statusFilter]);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (showActionsMenu) {
-                const target = event.target as HTMLElement;
-                if (!target.closest('.dropdown')) {
-                    setShowActionsMenu(null);
-                }
-            }
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, [showActionsMenu]);
 
     const loadStores = async () => {
         setIsLoading(true);
@@ -84,19 +73,40 @@ export const MasterStoresPage = () => {
         }
     };
 
-    const handleStatusChange = async (storeId: string, newStatus: 'active' | 'pending' | 'suspended') => {
-        await updateStoreStatus(storeId, newStatus);
-        loadStores();
-        setShowActionsMenu(null);
+    const handleStoreClick = (store: RegisteredStore) => {
+        setSelectedStore(store);
+        setShowStoreModal(true);
+    };
+
+    const handleStatusChange = async (newStatus: 'active' | 'pending' | 'suspended') => {
+        if (!selectedStore) return;
+        setActionLoading(true);
+        try {
+            await updateStoreStatus(selectedStore.id, newStatus);
+            // Update local state
+            setSelectedStore(prev => prev ? { ...prev, status: newStatus } : null);
+            loadStores();
+        } catch (error) {
+            console.error('Error updating status:', error);
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     const handleDelete = async () => {
-        if (selectedStore) {
+        if (!selectedStore) return;
+        setActionLoading(true);
+        try {
             await deleteStore(selectedStore.id, deleteUserToo);
             loadStores();
             setShowDeleteModal(false);
+            setShowStoreModal(false);
             setSelectedStore(null);
             setDeleteUserToo(false);
+        } catch (error) {
+            console.error('Error deleting store:', error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -118,18 +128,21 @@ export const MasterStoresPage = () => {
         }
     };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
     return (
         <div className="master-stores-page">
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Gerenciar Lojas</h1>
-                    <p className="page-subtitle">Visualize e gerencie todas as lojas da plataforma</p>
+                    <p className="page-subtitle">Clique em uma loja para ver detalhes e gerenciar</p>
                 </div>
-                {/* <div className="header-actions">
-                    <Button variant="primary" leftIcon={<Plus size={18} />}>
-                        Adicionar Loja
-                    </Button>
-                </div> */}
             </div>
 
             {/* Filters */}
@@ -171,11 +184,12 @@ export const MasterStoresPage = () => {
                 </div>
             </div>
 
-            {/* Stores Table */}
+            {/* Stores Grid */}
             <div className="stores-container">
                 {isLoading ? (
-                    <div className="flex justify-center items-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                    <div className="loading-state">
+                        <div className="spinner"></div>
+                        <p>Carregando lojas...</p>
                     </div>
                 ) : stores.length === 0 ? (
                     <div className="empty-state">
@@ -185,124 +199,57 @@ export const MasterStoresPage = () => {
                     </div>
                 ) : (
                     <>
-                        <table className="stores-table">
-                            <thead>
-                                <tr>
-                                    <th>Loja</th>
-                                    <th>Proprietário</th>
-                                    <th>Categoria</th>
-                                    <th>Plano</th>
-                                    <th>Agendamentos</th>
-                                    <th>Clientes</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {stores.map((store) => (
-                                    <tr key={store.id}>
-                                        <td>
-                                            <div className="store-cell">
-                                                <div className="store-avatar">{store.name.charAt(0)}</div>
-                                                <div className="store-info">
-                                                    <span className="store-name">{store.name}</span>
-                                                    <span className="store-slug">/{store.slug}</span>
-                                                </div>
+                        <div className="stores-grid">
+                            {stores.map((store) => (
+                                <div
+                                    key={store.id}
+                                    className="store-card"
+                                    onClick={() => handleStoreClick(store)}
+                                >
+                                    <div className="store-card-header">
+                                        <div className="store-avatar">{store.name.charAt(0)}</div>
+                                        <div className="store-main-info">
+                                            <h3 className="store-name">{store.name}</h3>
+                                            <span className="store-slug">/{store.slug}</span>
+                                        </div>
+                                        <span className={`status-badge status-${store.status}`}>
+                                            {getStatusLabel(store.status)}
+                                        </span>
+                                    </div>
+
+                                    <div className="store-card-body">
+                                        <div className="store-owner">
+                                            <Mail size={14} />
+                                            <span>{store.ownerEmail}</span>
+                                        </div>
+                                        <div className="store-stats-row">
+                                            <div className="store-stat">
+                                                <Calendar size={14} />
+                                                <span>{store.totalAppointments} agend.</span>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div className="owner-info">
-                                                <span className="owner-name">{store.ownerName}</span>
-                                                <span className="owner-email">{store.ownerEmail}</span>
+                                            <div className="store-stat">
+                                                <Users size={14} />
+                                                <span>{store.totalCustomers} clientes</span>
                                             </div>
-                                        </td>
-                                        <td>{store.category}</td>
-                                        <td>
-                                            <span className={`plan-badge plan-${store.plan}`}>
-                                                {getPlanLabel(store.plan)}
-                                            </span>
-                                        </td>
-                                        <td className="number-cell">{store.totalAppointments}</td>
-                                        <td className="number-cell">{store.totalCustomers}</td>
-                                        <td>
-                                            <span className={`status-badge status-${store.status}`}>
-                                                {getStatusLabel(store.status)}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="actions-cell">
-                                                <Link to={`/${store.slug}`} target="_blank">
-                                                    <button className="action-btn" title="Ver Loja">
-                                                        <Eye size={16} />
-                                                    </button>
-                                                </Link>
-                                                <div className="dropdown">
-                                                    <button
-                                                        type="button"
-                                                        className="action-btn"
-                                                        onClick={() => setShowActionsMenu(showActionsMenu === store.id ? null : store.id)}
-                                                    >
-                                                        <MoreVertical size={16} />
-                                                    </button>
-                                                    {showActionsMenu === store.id && (
-                                                        <div className="dropdown-menu">
-                                                            {store.status !== 'active' && (
-                                                                <button onClick={() => handleStatusChange(store.id, 'active')}>
-                                                                    <Power size={14} />
-                                                                    Ativar
-                                                                </button>
-                                                            )}
-                                                            {store.status === 'active' && (
-                                                                <button onClick={() => handleStatusChange(store.id, 'suspended')}>
-                                                                    <PowerOff size={14} />
-                                                                    Desativar
-                                                                </button>
-                                                            )}
-                                                            {store.status !== 'suspended' && (
-                                                                <button onClick={() => handleStatusChange(store.id, 'suspended')}>
-                                                                    <Ban size={14} />
-                                                                    Suspender
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                className="danger"
-                                                                onClick={() => {
-                                                                    setSelectedStore(store);
-                                                                    setShowDeleteModal(true);
-                                                                    setShowActionsMenu(null);
-                                                                }}
-                                                            >
-                                                                <Trash2 size={14} />
-                                                                Excluir Loja
-                                                            </button>
-                                                            <button
-                                                                className="danger"
-                                                                onClick={() => {
-                                                                    setSelectedStore(store);
-                                                                    setDeleteUserToo(true);
-                                                                    setShowDeleteModal(true);
-                                                                    setShowActionsMenu(null);
-                                                                }}
-                                                            >
-                                                                <UserX size={14} />
-                                                                Excluir Loja + Conta
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                        </div>
+                                    </div>
+
+                                    <div className="store-card-footer">
+                                        <span className={`plan-badge plan-${store.plan}`}>
+                                            {getPlanLabel(store.plan)}
+                                        </span>
+                                        <span className="category-tag">{store.category}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
 
                         {/* Pagination Controls */}
-                        <div className="pagination-controls flex justify-between items-center p-4 border-t border-gray-100">
-                            <div className="text-sm text-gray-500">
-                                Mostrando page {pagination.page} de {pagination.totalPages} ({pagination.totalStores} lojas)
+                        <div className="pagination-controls">
+                            <div className="pagination-info">
+                                Página {pagination.page} de {pagination.totalPages} ({pagination.totalStores} lojas)
                             </div>
-                            <div className="flex gap-2">
+                            <div className="pagination-buttons">
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -327,6 +274,153 @@ export const MasterStoresPage = () => {
                 )}
             </div>
 
+            {/* Store Details Modal */}
+            <Modal
+                isOpen={showStoreModal}
+                onClose={() => { setShowStoreModal(false); setSelectedStore(null); }}
+                title="Detalhes da Loja"
+            >
+                {selectedStore && (
+                    <div className="store-details-modal">
+                        {/* Header */}
+                        <div className="modal-store-header">
+                            <div className="modal-store-avatar">{selectedStore.name.charAt(0)}</div>
+                            <div className="modal-store-info">
+                                <h2>{selectedStore.name}</h2>
+                                <span className="modal-store-slug">/{selectedStore.slug}</span>
+                            </div>
+                            <span className={`status-badge status-${selectedStore.status}`}>
+                                {getStatusLabel(selectedStore.status)}
+                            </span>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="modal-stats-grid">
+                            <div className="modal-stat-card">
+                                <Calendar size={20} />
+                                <div className="stat-content">
+                                    <span className="stat-value">{selectedStore.totalAppointments}</span>
+                                    <span className="stat-label">Agendamentos</span>
+                                </div>
+                            </div>
+                            <div className="modal-stat-card">
+                                <Users size={20} />
+                                <div className="stat-content">
+                                    <span className="stat-value">{selectedStore.totalCustomers}</span>
+                                    <span className="stat-label">Clientes</span>
+                                </div>
+                            </div>
+                            <div className="modal-stat-card">
+                                <Star size={20} />
+                                <div className="stat-content">
+                                    <span className="stat-value">{selectedStore.rating?.toFixed(1) || '0.0'}</span>
+                                    <span className="stat-label">Avaliação ({selectedStore.totalReviews || 0})</span>
+                                </div>
+                            </div>
+                            <div className="modal-stat-card">
+                                <Layout size={20} />
+                                <div className="stat-content">
+                                    <span className="stat-value">{getPlanLabel(selectedStore.plan)}</span>
+                                    <span className="stat-label">Plano</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Info Sections */}
+                        <div className="modal-info-sections">
+                            <div className="info-section">
+                                <h4>Informações do Proprietário</h4>
+                                <div className="info-row">
+                                    <span className="info-label">Nome:</span>
+                                    <span className="info-value">{selectedStore.ownerName}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span className="info-label">Email:</span>
+                                    <span className="info-value">{selectedStore.ownerEmail}</span>
+                                </div>
+                                {selectedStore.phone && (
+                                    <div className="info-row">
+                                        <span className="info-label">Telefone:</span>
+                                        <span className="info-value">{selectedStore.phone}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="info-section">
+                                <h4>Informações da Loja</h4>
+                                <div className="info-row">
+                                    <span className="info-label">Categoria:</span>
+                                    <span className="info-value">{selectedStore.category}</span>
+                                </div>
+                                {selectedStore.address && (
+                                    <div className="info-row">
+                                        <span className="info-label">Endereço:</span>
+                                        <span className="info-value">{selectedStore.address}</span>
+                                    </div>
+                                )}
+                                <div className="info-row">
+                                    <span className="info-label">Criada em:</span>
+                                    <span className="info-value">{formatDate(selectedStore.createdAt)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="modal-actions-section">
+                            <h4>Ações Rápidas</h4>
+                            <div className="quick-actions-grid">
+                                <Link to={`/${selectedStore.slug}`} target="_blank" className="quick-action-btn view">
+                                    <ExternalLink size={18} />
+                                    Ver Página
+                                </Link>
+
+                                {selectedStore.status !== 'active' && (
+                                    <button
+                                        className="quick-action-btn activate"
+                                        onClick={() => handleStatusChange('active')}
+                                        disabled={actionLoading}
+                                    >
+                                        <Power size={18} />
+                                        Ativar
+                                    </button>
+                                )}
+
+                                {selectedStore.status === 'active' && (
+                                    <button
+                                        className="quick-action-btn deactivate"
+                                        onClick={() => handleStatusChange('suspended')}
+                                        disabled={actionLoading}
+                                    >
+                                        <PowerOff size={18} />
+                                        Desativar
+                                    </button>
+                                )}
+
+                                {selectedStore.status !== 'suspended' && (
+                                    <button
+                                        className="quick-action-btn suspend"
+                                        onClick={() => handleStatusChange('suspended')}
+                                        disabled={actionLoading}
+                                    >
+                                        <Ban size={18} />
+                                        Suspender
+                                    </button>
+                                )}
+
+                                <button
+                                    className="quick-action-btn delete"
+                                    onClick={() => setShowDeleteModal(true)}
+                                    disabled={actionLoading}
+                                >
+                                    <Trash2 size={18} />
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
             {/* Delete Confirmation Modal */}
             <Modal
                 isOpen={showDeleteModal}
@@ -336,15 +430,14 @@ export const MasterStoresPage = () => {
                 <div className="delete-modal-content">
                     <p>Tem certeza que deseja excluir a loja <strong>{selectedStore?.name}</strong>?</p>
 
-                    <div style={{ margin: '1rem 0', padding: '1rem', background: '#fef3c7', borderRadius: '8px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                    <div className="delete-checkbox-wrapper">
+                        <label className="delete-checkbox-label">
                             <input
                                 type="checkbox"
                                 checked={deleteUserToo}
                                 onChange={(e) => setDeleteUserToo(e.target.checked)}
-                                style={{ width: '18px', height: '18px' }}
                             />
-                            <span style={{ fontWeight: 500 }}>Também excluir a conta do proprietário ({selectedStore?.ownerEmail})</span>
+                            <span>Também excluir a conta do proprietário ({selectedStore?.ownerEmail})</span>
                         </label>
                     </div>
 
@@ -358,7 +451,12 @@ export const MasterStoresPage = () => {
                         <Button variant="outline" onClick={() => { setShowDeleteModal(false); setDeleteUserToo(false); }}>
                             Cancelar
                         </Button>
-                        <Button variant="secondary" onClick={handleDelete} className="danger-btn">
+                        <Button
+                            variant="secondary"
+                            onClick={handleDelete}
+                            className="danger-btn"
+                            isLoading={actionLoading}
+                        >
                             {deleteUserToo ? 'Excluir Loja e Conta' : 'Excluir Apenas Loja'}
                         </Button>
                     </div>
