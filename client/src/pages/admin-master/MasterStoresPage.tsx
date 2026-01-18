@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Store, Search, Filter, Eye, Trash2, Ban, CheckCircle,
@@ -43,6 +43,20 @@ export const MasterStoresPage = () => {
     useEffect(() => {
         loadStores();
     }, [pagination.page, debouncedSearch, statusFilter]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (showActionsMenu) {
+                const target = event.target as HTMLElement;
+                if (!target.closest('.dropdown')) {
+                    setShowActionsMenu(null);
+                }
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [showActionsMenu]);
 
     const loadStores = async () => {
         setIsLoading(true);
@@ -222,14 +236,11 @@ export const MasterStoresPage = () => {
                                                         <Eye size={16} />
                                                     </button>
                                                 </Link>
-                                                <div className="dropdown" style={{ zIndex: showActionsMenu === store.id ? 100 : 1, position: 'relative' }}>
+                                                <div className="dropdown">
                                                     <button
+                                                        type="button"
                                                         className="action-btn"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            e.preventDefault();
-                                                            setShowActionsMenu(showActionsMenu === store.id ? null : store.id);
-                                                        }}
+                                                        onClick={() => setShowActionsMenu(showActionsMenu === store.id ? null : store.id)}
                                                     >
                                                         <MoreVertical size={16} />
                                                     </button>
